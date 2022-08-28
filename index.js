@@ -505,7 +505,7 @@ async function handleSendOtpByEmailRequest(usid, response) {
         emailfrom: "alexander@alpha-howl.com",
         fromname: "Alexander",
         subject: "Email Subject",
-        messagebody: "Hell7"
+        messagebody: "Hell8"
     });
 
     response.status(200).send("Mail sent");
