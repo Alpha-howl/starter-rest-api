@@ -509,6 +509,7 @@ async function handleSendOtpByEmailRequest(usid, response) {
     }, {
       json: true
     }).then(res => {
+      console.log(res);
       const isSuccessful = res?.data?.result;
       response.status(200).send({
         emailWasSent: isSuccessful
