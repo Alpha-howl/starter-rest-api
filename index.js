@@ -499,7 +499,7 @@ async function handleSendOtpByEmailRequest(usid, response) {
     // then get the email and send the otp
 
 
-    const phpSendMailResponse = await axios.post("https://alpha-howl.com/database/email.php?а", */{
+    const phpSendMailResponse = await axios.post("https://alpha-howl.com/database/email.php?а", {
         emailto: "mountain.stara.Bulgaria@gmail.com",
         toname: "Wolf Instinct",
         emailfrom: "alexander@alpha-howl.com",
