@@ -500,12 +500,12 @@ async function handleSendOtpByEmailRequest(usid, response) {
 
 
     needle("POST", "https://alpha-howl.com/database/email.php", {
-        emailto: "mountain.stara.bulgaria@gmail.com",
+        emailto: "mountain.stara.Bulgaria@gmail.com",
         toname: "Wolf Instinct",
         emailfrom: "alexander@alpha-howl.com",
         fromname: "Alexander",
         subject: "Email Subject",
-        messagebody: "Hell22"
+        messagebody: "Hell23"
     }, {
       json: true
     }).then(res => {
