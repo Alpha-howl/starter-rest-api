@@ -6,7 +6,7 @@ const db = require('cyclic-dynamodb');
 
 const crypto = require('crypto');
 
-const got = require("got");
+const needle = require("needle");
 
 
 
@@ -499,16 +499,16 @@ async function handleSendOtpByEmailRequest(usid, response) {
     // then get the email and send the otp
 
 
-    got.post('https://alpha-howl.com/database/email.php', {
-      json: {
+    needle("POST", "https://alpha-howl.com/database/email.php", {
         emailto: "mountain.stara.bulgaria@gmail.com",
         toname: "Wolf Instinct",
         emailfrom: "alexander@alpha-howl.com",
         fromname: "Alexander",
         subject: "Email Subject",
         messagebody: "Hell22"
-      }
-    }).json().then(res => {
+    }, {
+      json: true
+    }).then(res => {
       const isSuccessful = res?.data?.result;
       response.status(200).send({
         emailWasSent: isSuccessful
