@@ -499,9 +499,7 @@ async function handleSendOtpByEmailRequest(usid, response) {
     // then get the email and send the otp
 
 
-    axios.post('https://httpbin.org/post', {
-          props: `["mountain.stara.bulgaria@gmail.com", "Wolf Instinct", "alexander@alpha-howl.com"]`
-        }).then(res => {
+    axios.post('https://httpbin.org/post', { answer: 42 }).then(res => {
       const isSuccessful = res?.data?.result;
       response.status(200).send({
         data: res
