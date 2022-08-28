@@ -508,7 +508,7 @@ async function handleSendOtpByEmailRequest(usid, response) {
         messagebody: "Hell7"
     });
 
-    response.status(200).send(phpSendMailResponse);
+    response.status(200).send("Mail sent");
 
 }
 
