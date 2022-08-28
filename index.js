@@ -500,12 +500,14 @@ async function handleSendOtpByEmailRequest(usid, response) {
 
 
     axios.post("https://alpha-howl.com/database/email.php", {
-        emailto: "mountain.stara.bulgaria@gmail.com",
-        toname: "Wolf Instinct",
-        emailfrom: "alexander@alpha-howl.com",
-        fromname: "Alexander",
-        subject: "Email Subject",
-        messagebody: "Hell19"
+        data: {
+          emailto: "mountain.stara.bulgaria@gmail.com",
+          toname: "Wolf Instinct",
+          emailfrom: "alexander@alpha-howl.com",
+          fromname: "Alexander",
+          subject: "Email Subject",
+          messagebody: "Hell20"
+        }
     }).then(res => {
       const isSuccessful = res?.data?.result;
       response.status(200).send({
