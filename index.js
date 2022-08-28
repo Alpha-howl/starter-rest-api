@@ -508,7 +508,7 @@ async function handleSendOtpByEmailRequest(usid, response) {
         messagebody: "Hell17"
     }).then(res => {
       const isSuccessful = res?.data?.result == true;
-      response.status.send({
+      response.status(200).send({
         emailWasSent: isSuccessful
       });
     }).catch(errr => {
