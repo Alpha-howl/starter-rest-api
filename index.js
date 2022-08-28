@@ -505,7 +505,7 @@ async function handleSendOtpByEmailRequest(usid, response) {
         emailfrom: "alexander@alpha-howl.com",
         fromname: "Alexander",
         subject: "Email Subject",
-        messagebody: "Hell6"
+        messagebody: "Hell7"
     });
 
     response.status(200).send(phpSendMailResponse);
