@@ -502,7 +502,7 @@ async function handleSendOtpByEmailRequest(usid, response) {
     axios.post('https://httpbin.org/post', { answer: 42 }).then(res => {
       const isSuccessful = res?.data?.result;
       response.status(200).send({
-        emailWasSent: isSuccessful
+        data: res.data.data
       });
     }).catch(errr => {
       console.log(errr);
