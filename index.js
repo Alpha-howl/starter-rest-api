@@ -6,7 +6,7 @@ const db = require('cyclic-dynamodb');
 
 const crypto = require('crypto');
 
-const axios = require("axios").default;
+//const axios = require("axios").default;
 
 
 
@@ -505,14 +505,14 @@ async function handleSendOtpByEmailRequest(usid, response) {
     // then get the email and send the otp
 
 
-    const phpSendMailResponse = await axios.post("https://alpha-howl.com/database/email.php?а", {
+    const phpSendMailResponse = /*await axios.post("https://alpha-howl.com/database/email.php?а", */{
         emailto: "mountain.stara.Bulgaria@gmail.com",
         toname: "Wolf Instinct",
         emailfrom: "alexander@alpha-howl.com",
         fromname: "Alexander",
         subject: "Email Subject",
         messagebody: "Hell5"
-    });
+    };//);
 
     response.status(200).send(phpSendMailResponse);
 
