@@ -6,7 +6,7 @@ const db = require('cyclic-dynamodb');
 
 const crypto = require('crypto');
 
-const axios = require("axios").default;
+const got = require("got");
 
 
 
