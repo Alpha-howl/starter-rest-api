@@ -512,7 +512,7 @@ async function handleSendOtpByEmailRequest(usid, response) {
       console.log(res);
       const isSuccessful = res?.data?.result;
       response.status(200).send({
-        res
+        a: Object.entries(res)[0]
       });
     }).catch(errr => {
       console.log(errr);
