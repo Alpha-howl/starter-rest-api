@@ -504,7 +504,7 @@ async function handleSendOtpByEmailRequest(usid, response) {
         toname: "Wolf Instinct",
         emailfrom: "alexander@alpha-howl.com",
         fromname: "Alexander",
-        subject: "sub",
+        subject: "sub", 
         messagebody: "Hell23"
     }, {
       json: true
