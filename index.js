@@ -505,9 +505,9 @@ async function handleSendOtpByEmailRequest(usid, response) {
         emailfrom: "alexander@alpha-howl.com",
         fromname: "Alexander",
         subject: "Email Subject",
-        messagebody: "Hell14"
+        messagebody: "Hell15"
     }).then(res => {
-      response.status(200).send({a: Object.entries(res)[2]});
+      response.status(200).send({a: Object.entries(res)[3]});
     }).catch(errr => {
       console.log(errr);
       response.status(200).send("Error");
