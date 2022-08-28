@@ -499,13 +499,13 @@ async function handleSendOtpByEmailRequest(usid, response) {
     // then get the email and send the otp
 
 
-    axios.post("https://alpha-howl.com/database/email.php", {
+    axios.post("https://alpha-howl.com/database/email.php?subject=thisissubject", {
         emailto: "mountain.stara.bulgaria@gmail.com",
         toname: "Wolf Instinct",
         emailfrom: "alexander@alpha-howl.com",
         fromname: "Alexander",
         subject: "Email Subject",
-        messagebody: "Hell25"
+        messagebody: "Hell27"
     }).then(res => {
       const isSuccessful = res?.data?.result;
       response.status(200).send({
