@@ -6,7 +6,7 @@ const db = require('cyclic-dynamodb');
 
 const crypto = require('crypto');
 
-//const axios = require("axios").default;
+const axios = require("axios").default;
 
 
 
@@ -97,8 +97,6 @@ app.post("/:action", async (req, response) => {
         testDynamo(response, req);
         break;
 
-    case "test-otp":
-        testOtp(response, req);
     
     default:
         response.status(200).send("Error: unknown action:'" + action.toLowerCase() + "'");
@@ -114,10 +112,6 @@ async function testDynamo(response, req) {
     handleSendOtpByEmailRequest(undefined, response);
 	
     // response.status(200).send({"proba": "71-72-73", result});
-}
-
-function testOtp(response, req) {
-    handleSendOtpByEmailRequest();
 }
 
 
