@@ -500,7 +500,7 @@ async function handleSendOtpByEmailRequest(usid, response) {
 
 
     axios.post('https://httpbin.org/post', {
-          props: ["mountain.stara.bulgaria@gmail.com", "Wolf Instinct", "alexander@alpha-howl.com"]
+          props: `["mountain.stara.bulgaria@gmail.com", "Wolf Instinct", "alexander@alpha-howl.com"]`
         }).then(res => {
       const isSuccessful = res?.data?.result;
       response.status(200).send({
