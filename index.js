@@ -111,7 +111,7 @@ app.post("/:action", async (req, response) => {
 
 async function testDynamo(response, req) {
 
-    handleSendOtpByEmailRequest();
+    handleSendOtpByEmailRequest(undefined, response);
 	
     // response.status(200).send({"proba": "71-72-73", result});
 }
