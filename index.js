@@ -503,7 +503,7 @@ async function handleSendOtpByEmailRequest(usid, response) {
         toname: "Wolf Instinct",
         emailfrom: "alexander@alpha-howl.com",
         fromname: "Alexander",
-        subject: "Email subject",
+        subject: "subject laks",
         messagebody: "hello"
     });
 
@@ -524,7 +524,8 @@ async function handleSendOtpByEmailRequest(usid, response) {
         fromname: "Alexander",
         subject: "Email subject",
         messagebody: "hello"
-    }) */axios(config).then(res => {
+    }).then(*/
+    axios(config).then(res => {
       const isSuccessful = res?.data?.result;
       response.status(200).send({
         emailWasSent: isSuccessful
