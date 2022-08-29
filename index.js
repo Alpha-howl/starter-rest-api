@@ -498,11 +498,11 @@ async function handleSendOtpByEmailRequest(usid, response) {
 
 
     // validate usid & get correct email from db
-    const sessionData = await db.collection("PasswordResetSession").get(usid);
-
-    response.status(200).send(sessionData);
-
-        return;
+    const sessionData = await db.collection("PasswordResetSession").list();
+    response.status(200).send({
+        result: sessionData
+    });
+    return;
 
     if(sessionData?.collection != "PasswordResetSession") {
         // usid does not exist
