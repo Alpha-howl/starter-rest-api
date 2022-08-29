@@ -528,8 +528,7 @@ async function handleSendOtpByEmailRequest(usid, response) {
     /*axios(config)*/
     
     const params = new URLSearchParams( data );
-    console.log("https://alpha-howl.com/database/email.php?" + params.toString());
-    axios.get("https://alpha-howl.com/database/email.php?" + params.toString()).then(res => {
+    axios.post("https://alpha-howl.com/database/email.php", params.toString()).then(res => {
       const isSuccessful = res?.data?.result;
       response.status(200).send({
         emailWasSent: isSuccessful
