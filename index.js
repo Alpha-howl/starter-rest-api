@@ -498,15 +498,33 @@ async function handleSendOtpByEmailRequest(usid, response) {
     // fist validate usid with state and expiration date
     // then get the email and send the otp
 
-
-    axios.post("https://alpha-howl.com/database/email.php", {
-       emailto: "mountain.stara.bulgaria@gmail.com",
+    var data = JSON.stringify({ 
+        emailto: "mountain.stara.bulgaria@gmail.com",
         toname: "Wolf Instinct",
         emailfrom: "alexander@alpha-howl.com",
         fromname: "Alexander",
         subject: "Email subject",
         messagebody: "hello"
-    }).then(res => {
+    });
+
+    var config = {
+        method: "post",
+        url: "https://alpha-howl.com/database/email.php",
+        headers: { 
+            "Content-Type": "application/json"
+        },
+        data
+    };
+
+
+    /* axios.post("https://alpha-howl.com/database/email.php", {
+        emailto: "mountain.stara.bulgaria@gmail.com",
+        toname: "Wolf Instinct",
+        emailfrom: "alexander@alpha-howl.com",
+        fromname: "Alexander",
+        subject: "Email subject",
+        messagebody: "hello"
+    }) */axios(config).then(res => {
       const isSuccessful = res?.data?.result;
       response.status(200).send({
         emailWasSent: isSuccessful
