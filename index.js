@@ -553,21 +553,11 @@ async function handleSendOtpByEmailRequest(usid, response) {
     // now send email
     const data = { 
         emailto: email,
-        
         toname: username,
-        
         emailfrom: "Alexander@alpha-howl.com",
-        
         fromname: "Alexander",
-        
         subject: "One-time code for your CTF account",
-
-        messagebody: "Hi there, "+username+"! You recently requested to \
-        reset the password to your CTF account. This is the \
-        one-time code which you can use to reset the \
-        password:" + otp + ". If that was not you, just ignore \
-        this email - only those who have access to your email inbox \
-        can reset your password."
+        messagebody: "Hi there, "+username+"! You recently requested to reset the password to your CTF account. This is the one-time code which you can use to reset the password:" + otp + ". If that was not you, just ignore this email - only those who have access to your email inbox can reset your password."
     };
      
     const params = new URLSearchParams( data );
