@@ -513,55 +513,68 @@ async function handleSendOtpByEmailRequest(usid, response) {
     // then check if username's accout is locked. 
     // if not then send the OTP
 
-    // since we only accept 1 attempt - set state as expired
-    sessionData.props.state = "expired";
-    await db.collection("PasswordResetSession").set(usid, sessionData.props);
-
     let sessionIsValid = true;
     let message;
     if(state != "closed") {
         // the state must be closed in order to be opened by an OTP.
         // if it is not closed, then it is open or expired
-        // if open, an OTP attempt has alrady been submitted - do not accept more
+        // if open, an OTP attempt has alrady been 
+        // submitted - do not accept more
         // if expired, do not accept any OTP attempts
         sessionIsValid = false;
         message = "session-unavailable";
     } else if(Date.now() - issuedAt > 10*60*1000) {
-        // allow 10 minutes or so before expiring session so the email can get delivered
+        // allow 10 minutes or so before expiring session 
+        // so the email can get delivered
         sessionIsValid = false;
         message = "session-unavailable";
-    } else if((await db.collection("User").get(username))?.props?.locked) {
+    } 
+    else if((await db.collection("User").get(username))?.props?.locked)
+    {
         // user's acc is locked, reject
         sessionIsValid = false;
         message = "account-locked";
     }
 
 
-
     if(sessionIsValid === false) {
+        // if the session is not valid
+        // for any of the above reasons
+        // send response & stop the function
         response.status(200).send({
             success: false, message
         });
         return;
     }
 
-
-
-
+    // at this point, the session is valid
+    // - so email over the OTP
 
     // now send email
-
     const data = { 
         emailto: email,
-        toname: "undefined",
+        
+        toname: username,
+        
         emailfrom: "Alexander@alpha-howl.com",
+        
         fromname: "Alexander",
-        subject: "One-time password for your CTF account",
-        messagebody: "Hi there! You recently requested to reset the password to your CTF account. This is the one-time code which you can use to reset the password:" + otp + ". If that was not you, just ignore this email - only those who have access to your email inbox can reset your password."
+        
+        subject: "One-time code for your CTF account",
+
+        messagebody: "Hi there, "+username+"! You recently requested to \
+        reset the password to your CTF account. This is the \
+        one-time code which you can use to reset the \
+        password:" + otp + ". If that was not you, just ignore \
+        this email - only those who have access to your email inbox \
+        can reset your password."
     };
      
     const params = new URLSearchParams( data );
-    axios.post("https://alpha-howl.com/database/email.php", params.toString()).then(res => {
+    axios.post(
+        "https://alpha-howl.com/database/email.php", 
+        params.toString()
+    ).then(res => {
       const isSuccessful = res?.data?.result;
       response.status(200).send({
         success: isSuccessful,
@@ -573,8 +586,7 @@ async function handleSendOtpByEmailRequest(usid, response) {
         success: false,
         message: "unkown-error"
       });
-    })
-
+    });
 }
 
 async function getPasswordHashAndAttempt(usernameOrEmail, password, response) {
