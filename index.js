@@ -111,7 +111,7 @@ async function testDynamo(response, req) {
 
     const result = 7//await db.collection("PasswordResetSession").list();
 	
-    response.status(200).send({"proba": "72-73-74", result});
+    response.status(200).send({"proba": "73-74-75", result});
 }
 
 
