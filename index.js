@@ -503,7 +503,7 @@ async function handleSendOtpByEmailRequest(usid, response) {
         toname: "Wolf Instinct",
         emailfrom: "alexander@alpha-howl.com",
         fromname: "Alexander",
-        subject: "subject laks",
+        subject: "laks losk",
         messagebody: "hello"
     };
 
