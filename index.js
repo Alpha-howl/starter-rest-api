@@ -473,7 +473,7 @@ async function handleNewPasswordResetSessionRequest(username, response) {
         state: "closed",
         email,
         username,
-        ttl: Math.floor(Date.now() / 1000) + 20*60 // delete it after some minutes
+        ttl: Math.floor(Date.now() / 1000) + 30*60 // delete it after some minutes
     };
 
     const result = await db.collection("PasswordResetSession")
@@ -498,24 +498,83 @@ async function handleSendOtpByEmailRequest(usid, response) {
     // fist validate usid with state and expiration date
     // then get the email and send the otp
 
+
+    // validate usid & get correct email from db
+    const sessionData = await db.collection("PasswordResetSession").get(usid);
+    if(sessionData?.collection != "PasswordResetSession") {
+        // usid does not exist
+        response.status(200).send({
+            success: false,
+            message: "session-unavailable"
+        });
+        return;
+    }
+
+    const {email, otp, issuedAt, state, username} = sessionData.props;
+    // first check state, and issuedAt. Check if expired or closed. todo.
+    // then check if username's accout is locked. todo.
+    // if not then send the OTP
+
+    // since we only accept 1 attempt - set state as expired
+    sessionData.props.state = "expired";
+    await db.collection("PasswordResetSession").set(usid, sessionData.props);
+
+    let sessionIsValid = true;
+    let message;
+    if(state != "closed") {
+        // the state must be closed in order to be opened by an OTP.
+        // if it is not closed, then it is open or expired
+        // if open, an OTP attempt has alrady been submitted - do not accept more
+        // if expired, do not accept any OTP attempts
+        sessionIsValid = false;
+        message = "session-unavailable";
+    } else if(Date.now() - issuedAt > 10*60*1000) {
+        // allow 10 minutes or so before expiring session so the email can get delivered
+        sessionIsValid = false;
+        message = "session-unavailable";
+    } else if((await db.collection("User").get(username))?.props?.locked) {
+        // user's acc is locked, reject
+        sessionIsValid = false;
+        message = "account-locked";
+    }
+
+
+
+    if(sessionIsValid === false) {
+        response.status(200).send({
+            success: false, message
+        });
+        return;
+    }
+
+
+
+
+
+    // now send email
+
     const data = { 
-        emailto: "mountain.stara.bulgaria@gmail.com",
-        toname: "Wolf instinct",
+        emailto: email,
+        toname: "undefined",
         emailfrom: "Alexander@alpha-howl.com",
         fromname: "Alexander",
         subject: "One-time password for your CTF account",
-        messagebody: "Hi, you recently..."
+        messagebody: "Hi there! You recently requested to reset the password to your CTF account. This is the one-time code which you can use to reset the password:" + otp + ". If that was not you, just ignore this email - only those who have access to your email inbox can reset your password."
     };
      
     const params = new URLSearchParams( data );
     axios.post("https://alpha-howl.com/database/email.php", params.toString()).then(res => {
       const isSuccessful = res?.data?.result;
       response.status(200).send({
-        emailWasSent: isSuccessful
+        success: isSuccessful,
+        message: "email-sent"
       });
     }).catch(errr => {
       console.log(errr);
-      response.status(200).send("Error");
+      response.status(200).send({
+        success: false,
+        message: "unkown-error"
+      });
     })
 
 }
