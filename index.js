@@ -498,7 +498,7 @@ async function handleSendOtpByEmailRequest(usid, response) {
     // fist validate usid with state and expiration date
     // then get the email and send the otp
 
-    var data = { 
+    const data = { 
         emailto: "mountain.stara.bulgaria@gmail.com",
         toname: "Wolf instinct",
         emailfrom: "Alexander@alpha-howl.com",
@@ -506,26 +506,6 @@ async function handleSendOtpByEmailRequest(usid, response) {
         subject: "One-time password for your CTF account",
         messagebody: "Hi, you recently..."
     };
-
-    var config = {
-        method: "post",
-        url: "https://alpha-howl.com/database/email.php",
-        headers: { 
-            "Content-Type": "application/json"
-        },
-        data
-    };
-
-
-    /* axios.post("https://alpha-howl.com/database/email.php", {
-        emailto: "mountain.stara.bulgaria@gmail.com",
-        toname: "Wolf Instinct",
-        emailfrom: "alexander@alpha-howl.com",
-        fromname: "Alexander",
-        subject: "Email subject",
-        messagebody: "hello"
-    }).then(*/
-    /*axios(config)*/
      
     const params = new URLSearchParams( data );
     axios.post("https://alpha-howl.com/database/email.php", params.toString()).then(res => {
