@@ -498,14 +498,14 @@ async function handleSendOtpByEmailRequest(usid, response) {
     // fist validate usid with state and expiration date
     // then get the email and send the otp
 
-    var data = JSON.stringify({ 
+    var data = { 
         emailto: "mountain.stara.bulgaria@gmail.com",
         toname: "Wolf Instinct",
         emailfrom: "alexander@alpha-howl.com",
         fromname: "Alexander",
         subject: "subject laks",
         messagebody: "hello"
-    });
+    };
 
     var config = {
         method: "post",
