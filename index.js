@@ -109,7 +109,7 @@ app.post("/:action", async (req, response) => {
 
 async function testDynamo(response, req) {
 
-    const result = await db.collection("PasswordResetSession").list();
+    const result = 7//await db.collection("PasswordResetSession").list();
 	
     response.status(200).send({"proba": "72-73-74", result});
 }
