@@ -527,8 +527,8 @@ async function handleSendOtpByEmailRequest(usid, response) {
     }).then(*/
     /*axios(config)*/
     
-    const params = new URLSearchParams( data );
-    axios.post("https://alpha-howl.com/database/email.php", params.toString()).then(res => {
+    /*const params = new URLSearchParams( data );
+    axios.post("https://alpha-howl.com/database/email.php", params.toString())*/axios(config).then(res => {
       const isSuccessful = res?.data?.result;
       response.status(200).send({
         emailWasSent: isSuccessful
