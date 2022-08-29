@@ -493,8 +493,6 @@ async function handleNewPasswordResetSessionRequest(username, response) {
 
 
 async function handleSendOtpByEmailRequest(usid, response) {
-
-    // todo
     // fist validate usid with state and expiration date
     // then get the email and send the otp
 
@@ -511,8 +509,8 @@ async function handleSendOtpByEmailRequest(usid, response) {
     }
 
     const {email, otp, issuedAt, state, username} = sessionData.props;
-    // first check state, and issuedAt. Check if expired or closed. todo.
-    // then check if username's accout is locked. todo.
+    // first check state, and issuedAt. Check if expired or closed. 
+    // then check if username's accout is locked. 
     // if not then send the OTP
 
     // since we only accept 1 attempt - set state as expired
