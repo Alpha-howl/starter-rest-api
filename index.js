@@ -500,11 +500,11 @@ async function handleSendOtpByEmailRequest(usid, response) {
 
     var data = { 
         emailto: "mountain.stara.bulgaria@gmail.com",
-        toname: "Wolf Instinct",
-        emailfrom: "alexander@alpha-howl.com",
+        toname: "Wolf instinct",
+        emailfrom: "Alexander@alpha-howl.com",
         fromname: "Alexander",
-        subject: "laks losk daa",
-        messagebody: "hello"
+        subject: "One-time password for your CTF account",
+        messagebody: "Hi, you recently..."
     };
 
     var config = {
