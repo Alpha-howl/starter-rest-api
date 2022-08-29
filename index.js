@@ -503,7 +503,7 @@ async function handleSendOtpByEmailRequest(usid, response) {
         toname: "Wolf Instinct",
         emailfrom: "alexander@alpha-howl.com",
         fromname: "Alexander",
-        subject: "laks zdr!",
+        subject: "subject laks",
         messagebody: "hello"
     };
 
@@ -527,8 +527,8 @@ async function handleSendOtpByEmailRequest(usid, response) {
     }).then(*/
     /*axios(config)*/
     
-    /*const params = new URLSearchParams( data );
-    axios.post("https://alpha-howl.com/database/email.php", params.toString())*/axios(config).then(res => {
+    const params = new URLSearchParams( data );
+    axios.post("https://alpha-howl.com/database/email.php", params.toString()).then(res => {
       const isSuccessful = res?.data?.result;
       response.status(200).send({
         emailWasSent: isSuccessful
