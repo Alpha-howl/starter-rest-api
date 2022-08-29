@@ -109,9 +109,9 @@ app.post("/:action", async (req, response) => {
 
 async function testDynamo(response, req) {
 
-    handleSendOtpByEmailRequest(undefined, response);
+    const result = await db.collection("PasswordResetSession").list();
 	
-    // response.status(200).send({"proba": "71-72-73", result});
+    response.status(200).send({"proba": "72-73-74", result});
 }
 
 
@@ -498,11 +498,7 @@ async function handleSendOtpByEmailRequest(usid, response) {
 
 
     // validate usid & get correct email from db
-    const sessionData = await db.collection("PasswordResetSession").list();
-    response.status(200).send({
-        result: sessionData
-    });
-    return;
+    const sessionData = await db.collection("PasswordResetSession").get(usid);
 
     if(sessionData?.collection != "PasswordResetSession") {
         // usid does not exist
