@@ -164,7 +164,7 @@ async function validateEmail(email) {
     } else if (emailParts[0].length === 0 || emailParts[1].length === 0) {
     	valid = false;
     	message = "The @ symbol cannot be at one end.";
-    } else if (emailParts[0].search(/[^A-Za-z0-9!#$%&'*+\-/=?^_`{}|]/) != -1) {
+    } else if (emailParts[0].search(/[^A-Za-z0-9!#$%&'*+\-/=?^_`{}|.]/) != -1) {
     	valid = false;
     	message = "That email address contains an illegal character at position " + (emailParts[0].search(/[^A-Za-z0-9!#$%&'*+\-/=?^_`{}|]/) + 1) + ".";
     } else if(emailParts[1].search(/\./) === -1) {
@@ -555,7 +555,7 @@ async function handleSendOtpByEmailRequest(usid, response) {
 
     // now send email
     const data = {
-        emailto: "mountain.stara.Bulgaria@gmail.com",
+        emailto: email,
         toname: username,
         emailfrom: "Alexander@alpha-howl.com",
         fromname: "Alexander",
