@@ -662,8 +662,11 @@ async function handleOtpSubmission(usid, otpAttempt, response) {
         message = "session-opened";
     }
 
+
+    response.status(200).send({usid, updatedSessionData});
+
     
-    const dbWriteResult = await db.collection("PasswordResetSession").set("open"+usid, updatedSessionData);
+    /* const dbWriteResult = await db.collection("PasswordResetSession").set("open"+usid, updatedSessionData);
     
     if(dbWriteResult?.collection == "PasswordResetSession") {
         response.status(200).send({
@@ -674,7 +677,7 @@ async function handleOtpSubmission(usid, otpAttempt, response) {
             success: false,
             message: "db-error"
         });
-    }
+    } */
 
 }
 
