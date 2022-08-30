@@ -728,6 +728,9 @@ async function getPasswordHashAndAttempt(usernameOrEmail, password, response) {
     const correctPasswordHash = (await userTable.get(key))?.props?.passwordHash;
     const givenPasswordHash = hashString(password);
 
+    delete userData.props.created;
+    delete userData.props.updated;
+
     return [correctPasswordHash, givenPasswordHash, key, isLocked, userData.props];
 }
 function generateJtw(username) {
