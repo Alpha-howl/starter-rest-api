@@ -607,7 +607,7 @@ async function handleOtpSubmission(usid, otpAttempt, response) {
 
     let sessionIsValid = true;
     let message;
-    if(state != "closed" $$ false) {
+    if(state != "closed" && false) {
         // the state must be closed in order to be opened by an OTP.
         // if it is not closed, then it is open or expired
         // if open, an OTP attempt has alrady been 
