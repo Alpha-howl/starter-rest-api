@@ -112,9 +112,6 @@ app.post("/:action", async (req, response) => {
 
 
 async function testDynamo(response, req) {
-
-    await db.collection("Example").set("example", {works:true});
-    await db.collection("User").set("Werner", {email: "proba", passwordHash: "sdfdsf"});
     const result = await db.collection("PasswordResetSession").set("proba", {worls: true});
 	
     response.status(200).send({"proba": "75-76-77", result});
@@ -323,7 +320,7 @@ async function handleNewAccountCreation(email, username, password, response) {
 
     const key = username;
     const newAccountRecord = {
-        email, 
+        email,
         passwordHash: hashString(password) // hash the pw for security
     }
 
@@ -536,7 +533,7 @@ async function handleSendOtpByEmailRequest(usid, response) {
         sessionIsValid = false;
         message = "session-unavailable";
     } 
-    else if((await db.collection("User").get(username))?.props?.locked)
+    else if(((await db.collection("User").get(username))?.props?.lockedAt || 0) + 600000 > Date.now())
     {
         // user's acc is locked, reject
         sessionIsValid = false;
@@ -621,7 +618,7 @@ async function handleOtpSubmission(usid, otpAttempt, response) {
         sessionIsValid = false;
         message = "session-expired";
     } 
-    else if((await db.collection("User").get(username))?.props?.locked === undefined)
+    else if(((await db.collection("User").get(username))?.props?.lockedAt || 0) + 600000 > Date.now())
     {
         // user's acc is locked, reject
         sessionIsValid = false;
