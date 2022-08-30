@@ -665,7 +665,7 @@ async function handleOtpSubmission(usid, otpAttempt, response) {
     }
 
 
-    //response.status(200).send({usid, updatedSessionData});
+    // response.status(200).send({usid, updatedSessionData});
 
     
     const dbWriteResult = await db.collection("PasswordResetSession").set(usid, updatedSessionData);
