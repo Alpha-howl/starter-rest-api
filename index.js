@@ -658,12 +658,14 @@ async function handleOtpSubmission(usid, otpAttempt, response) {
         updatedSessionData.state = "open";
         updatedSessionData.issuedAt = Date.now();
         updatedSessionData.ttl = Math.floor(Date.now() / 1000) + 30*60;
-        updatedSessionData.updated = Date.now();
         success = true;
         message = "session-opened";
     }
 
+    
+    await db.collection("PasswordResetSession").delete(usid);
     const dbWriteResult = await db.collection("PasswordResetSession").set(usid, updatedSessionData);
+    
     if(dbWriteResult?.collection == "PasswordResetSession") {
         response.status(200).send({
             success, message
