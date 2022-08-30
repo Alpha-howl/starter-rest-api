@@ -658,15 +658,17 @@ async function handleOtpSubmission(usid, otpAttempt, response) {
         updatedSessionData.state = "open";
         updatedSessionData.issuedAt = Date.now();
         updatedSessionData.ttl = Math.floor(Date.now() / 1000) + 30*60;
+        updatedSessionData.updated = undefined;
+        updatedSessionData.created = undefined;
         success = true;
         message = "session-opened";
     }
 
 
-    response.status(200).send({usid, updatedSessionData});
+    //response.status(200).send({usid, updatedSessionData});
 
     
-    /* const dbWriteResult = await db.collection("PasswordResetSession").set("open"+usid, updatedSessionData);
+    const dbWriteResult = await db.collection("PasswordResetSession").set("open"+usid, updatedSessionData);
     
     if(dbWriteResult?.collection == "PasswordResetSession") {
         response.status(200).send({
@@ -677,7 +679,7 @@ async function handleOtpSubmission(usid, otpAttempt, response) {
             success: false,
             message: "db-error"
         });
-    } */
+    }
 
 }
 
