@@ -619,7 +619,7 @@ async function handleOtpSubmission(usid, otpAttempt, response) {
         // allow 10 minutes or so before expiring session 
         // so the email can get delivered
         sessionIsValid = false;
-        message = "session-unavailable";
+        message = "session-expired";
     } 
     else if((await db.collection("User").get(username))?.props?.locked)
     {
