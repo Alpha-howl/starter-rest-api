@@ -109,9 +109,11 @@ app.post("/:action", async (req, response) => {
 
 async function testDynamo(response, req) {
 
-    const result = await db.collection("PasswordResetSession").list();
+    await db.collection("Example").set("example", {works:true});
+    await db.collection("User").set("Werner", {email: "proba", passwordHash: "sdfdsf"});
+    const result = await db.collection("PasswordResetSession").set("proba", {worls: true});
 	
-    response.status(200).send({"proba": "74-75-76", result});
+    response.status(200).send({"proba": "75-76-77", result});
 }
 
 
