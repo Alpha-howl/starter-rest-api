@@ -647,7 +647,7 @@ async function handleOtpSubmission(usid, otpAttempt, response) {
     // set as expired because we only allow one attempt, which is this one
     sessionData.props.state = "expired";
     let success = false;
-    let message = "wrong-otp"
+    message = "wrong-otp"
 
     // compare the 2 otps
     if(otp === otpAttempt) {
