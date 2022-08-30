@@ -658,6 +658,7 @@ async function handleOtpSubmission(usid, otpAttempt, response) {
         updatedSessionData.state = "open";
         updatedSessionData.issuedAt = Date.now();
         updatedSessionData.ttl = Math.floor(Date.now() / 1000) + 30*60;
+        updatedSessionData.updated = Date.now();
         success = true;
         message = "session-opened";
     }
