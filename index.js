@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 
-process.env.CYCLIC_DB = "sore-teal-whale-coatCyclicDB";
+process.env.CYCLIC_DB = "shy-plum-bass-slipCyclicDB";
 const db = require('cyclic-dynamodb');
 
 const crypto = require('crypto');
