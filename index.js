@@ -92,6 +92,10 @@ app.post("/:action", async (req, response) => {
     case "send-otp-for-usid":
         handleSendOtpByEmailRequest(req?.body?.usid, response);
         break;
+
+    case "validate-otp-attempt":
+        handleOtpSubmission(req?.body?.usid, req?.body?.otp, response);
+        break;
     
     case "test-dynamo":
         testDynamo(response, req);
@@ -555,7 +559,7 @@ async function handleSendOtpByEmailRequest(usid, response) {
 
     // now send email
     const data = {
-        emailto: "mountain.stara.Bulgaria@gmail.com",
+        emailto: email,
         toname: username,
         emailfrom: "Alexander@alpha-howl.com",
         fromname: "Alexander",
@@ -581,6 +585,96 @@ async function handleSendOtpByEmailRequest(usid, response) {
       });
     });
 }
+
+
+async function handleOtpSubmission(usid, otpAttempt, response) {
+    // validate usid & get correct email from db
+    const sessionData = await db.collection("PasswordResetSession").get(usid);
+
+    if(sessionData?.collection != "PasswordResetSession") {
+        // usid does not exist
+        response.status(200).send({
+            success: false,
+            message: "session-unavailable"
+        });
+        return;
+    }
+
+    const {email, otp, issuedAt, state, username} = sessionData.props;
+    // first check state, and issuedAt. Check if expired or closed. 
+    // then check if username's accout is locked. 
+    // if not then send the OTP
+
+    let sessionIsValid = true;
+    let message;
+    if(state != "closed") {
+        // the state must be closed in order to be opened by an OTP.
+        // if it is not closed, then it is open or expired
+        // if open, an OTP attempt has alrady been 
+        // submitted - do not accept more
+        // if expired, do not accept any OTP attempts
+        sessionIsValid = false;
+        message = "session-unavailable";
+    } else if(Date.now() - issuedAt > 100*60*1000) {
+        // allow 10 minutes or so before expiring session 
+        // so the email can get delivered
+        sessionIsValid = false;
+        message = "session-unavailable";
+    } 
+    else if((await db.collection("User").get(username))?.props?.locked)
+    {
+        // user's acc is locked, reject
+        sessionIsValid = false;
+        message = "account-locked";
+    }
+
+
+    if(sessionIsValid === false) {
+        // if the session is not valid
+        // for any of the above reasons
+        // send response & stop the function
+        response.status(200).send({
+            success: false, message
+        });
+        return;
+    }
+
+
+
+    // at this point, the session is valid
+    // initially, set the success, mssage and state as if the OTP
+    // is wrong, and change if it is not wrong.
+    // set as expired because we only allow one attempt, which is this one
+    sessionData.props.state = "expired";
+    let success = false;
+    let message = "wrong-otp"
+
+    // compare the 2 otps
+    if(otp === otpAttempt) {
+        // user has supplied correct OTP
+        // mark session as open
+        // update issuedAt
+        sessionData.props.state = "open";
+        sessionData.props.issuedAt = Date.now();
+        success = true;
+        message = "session-opened"
+    }
+
+    const dbWriteResult = await db.collection("PasswordResetSession").set(usid, sessionData.props);
+    if(dbWriteResult?.collection == "PasswordResetSession") {
+        response.status(200).send({
+            success, message
+        });
+    } else {
+        response.status(200).send({
+            success: false,
+            message: "db-error"
+        });
+    }
+
+}
+
+
 
 async function getPasswordHashAndAttempt(usernameOrEmail, password, response) {
     const userTable = db.collection("User");
