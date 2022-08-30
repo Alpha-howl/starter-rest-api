@@ -615,7 +615,7 @@ async function handleOtpSubmission(usid, otpAttempt, response) {
         // if expired, do not accept any OTP attempts
         sessionIsValid = false;
         message = "session-unavailable";
-    } else if(Date.now() - issuedAt > 100*60*1000) {
+    } else if(Date.now() - issuedAt > 10*60*1000) {
         // allow 10 minutes or so before expiring session 
         // so the email can get delivered
         sessionIsValid = false;
@@ -645,7 +645,8 @@ async function handleOtpSubmission(usid, otpAttempt, response) {
     // initially, set the success, mssage and state as if the OTP
     // is wrong, and change if it is not wrong.
     // set as expired because we only allow one attempt, which is this one
-    sessionData.props.state = "expired";
+    const updatedSessionData = {...sessionData.props};
+    updatedSessionData.state = "expired";
     let success = false;
     message = "wrong-otp"
 
@@ -654,13 +655,13 @@ async function handleOtpSubmission(usid, otpAttempt, response) {
         // user has supplied correct OTP
         // mark session as open
         // update issuedAt
-        sessionData.props.state = "open";
-        sessionData.props.issuedAt = Date.now();
+        updatedSessionData.state = "open";
+        updatedSessionData.issuedAt = Date.now();
         success = true;
-        message = "session-opened"
+        message = "session-opened";
     }
 
-    const dbWriteResult = await db.collection("PasswordResetSession").set(usid, sessionData.props);
+    const dbWriteResult = await db.collection("PasswordResetSession").set(usid, updatedSessionData);
     if(dbWriteResult?.collection == "PasswordResetSession") {
         response.status(200).send({
             success, message
