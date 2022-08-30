@@ -614,7 +614,7 @@ async function handleOtpSubmission(usid, otpAttempt, response) {
         // submitted - do not accept more
         // if expired, do not accept any OTP attempts
         sessionIsValid = false;
-        message = "session-unavailable";
+        message = "session-unavailable"+ state;
     } else if(Date.now() - issuedAt > 100*60*1000) {
         // allow 10 minutes or so before expiring session 
         // so the email can get delivered
