@@ -96,6 +96,10 @@ app.post("/:action", async (req, response) => {
     case "validate-otp-attempt":
         handleOtpSubmission(req?.body?.usid, req?.body?.otp, response);
         break;
+
+    case "set-new-password":
+        handleSetNewPasswordRequest(req?.body?.usid, req?.body?.password, response);
+        break;
     
     case "test-dynamo":
         testDynamo(response, req);
@@ -604,7 +608,7 @@ async function handleOtpSubmission(usid, otpAttempt, response) {
 
     let sessionIsValid = true;
     let message;
-    if(state != "closed" && false) {
+    if(state != "closed") {
         // the state must be closed in order to be opened by an OTP.
         // if it is not closed, then it is open or expired
         // if open, an OTP attempt has alrady been 
@@ -612,7 +616,7 @@ async function handleOtpSubmission(usid, otpAttempt, response) {
         // if expired, do not accept any OTP attempts
         sessionIsValid = false;
         message = "session-unavailable";
-    } else if(Date.now() - issuedAt > 100*60*1000) {
+    } else if(Date.now() - issuedAt > 10*60*1000) {
         // allow 10 minutes or so before expiring session 
         // so the email can get delivered
         sessionIsValid = false;
@@ -677,6 +681,20 @@ async function handleOtpSubmission(usid, otpAttempt, response) {
             message: "db-error"
         });
     }
+
+}
+
+
+async function handleSetNewPasswordRequest(usid, newPassword, response) {
+    // check if session exists in db
+    // check if state = "open" for this session
+    // make sure <2mins passed since session
+    // was updated to "open"
+    // if these checks pass, hash new password and
+    // update user account and set session as expired
+    // else return error
+
+    // todo.
 
 }
 
