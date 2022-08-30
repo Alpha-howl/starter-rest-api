@@ -595,7 +595,7 @@ async function handleOtpSubmission(usid, otpAttempt, response) {
         // usid does not exist
         response.status(200).send({
             success: false,
-            message: "session-unavailable"
+            message: "session-unavailable"+sessionData?.collection
         });
         return;
     }
