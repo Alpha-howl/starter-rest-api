@@ -702,7 +702,7 @@ async function handleSetNewPasswordRequest(usid, newPassword, response) {
     } else if(session.props.state != "open" && false) {
         sessionIsValid = false;
         message = "session-unavailable";
-    } else if((Date.now() - session.props.issuedAt) > 100*60*1000) {
+    } else if((Date.now() - session.props.issuedAt) > 10*60*1000) {
         sessionIsValid = false;
         message = "session-expired";
     }
