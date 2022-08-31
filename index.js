@@ -717,7 +717,15 @@ async function handleSetNewPasswordRequest(usid, newPassword, response) {
     }
 
     // if code is still executing, session is valid
-    // hash the new password
+    // validate & hash the new password
+    const passwordValidationResult = validatePassword(newPassword);
+    if(passwordValidationResult.valid === false) {
+        // password invalid
+        response.status(200).send({success:false,
+                                message:passwordValidationResult.message});
+        return;
+    }
+    // password is valid at this point
     const newHashedPassword = hashString(newPassword);
 
     // update user account
@@ -734,10 +742,7 @@ async function handleSetNewPasswordRequest(usid, newPassword, response) {
     delete session.props.created;
     await db.collection("PasswordResetSession").set(usid, session.props);
     
-    response.status(200).send({
-        success: true,
-        message: "password-updated"
-    });
+    response.status(200).send({ success: true, message: "password-updated" });
 }
 
 
