@@ -699,7 +699,7 @@ async function handleSetNewPasswordRequest(usid, newPassword, response) {
     if( session?.collection != "PasswordResetSession" ) {
         sessionIsValid = false;
         message = "session-unavailable";
-    } else if(session.props.state != "open") {
+    } else if(session.props.state != "open" && false) {
         sessionIsValid = false;
         message = "session-unavailable";
     } else if((Date.now() - session.props.issuedAt) > 100*60*1000) {
