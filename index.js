@@ -694,9 +694,53 @@ async function handleSetNewPasswordRequest(usid, newPassword, response) {
     // update user account and set session as expired
     // else return error
 
-    // todo.
+    const session = await db.collection("PasswordResetSession").get(usid);
+    let message,sessionIsValid = true;
+    if( session?.collection != "PasswordResetSession" ) {
+        sessionIsValid = false;
+        message = "session-unavailable";
+    } else if(session.props.state != "open") {
+        sessionIsValid = false;
+        message = "session-unavailable";
+    } else if((Date.now() - session.props.issuedAt) > 2*60*1000) {
+        sessionIsValid = false;
+        message = "session-expired";
+    }
 
+    if(sessionIsValid === false) {
+        // session is invalid
+        response.status(200).send({
+            success: false,
+            message
+        });
+        return;
+    }
+
+    // if code is still executing, session is valid
+    // hash the new password
+    const newHashedPassword = hashString(newPassword);
+
+    // update user account
+    const userData = (await db.collection("User").get(session.props.username)).props;
+    delete userData.updated;
+    delete userData.created;
+    userData.passwordHash = newHashedPassword;
+    userData.lockedAt = Date.now() - 600000;
+    await db.collection("User").set(session.props.username, userData);
+
+    session.props.state = "expired";
+    session.props.ttl = Math.floor(Date.now() / 1000) + 20*60;
+    delete session.props.updated;
+    delete session.props.created;
+    await db.collection("PasswordResetSession").set(usid, session.props);
+    
+    response.status(200).send({
+        success: true,
+        message: "password-updated"
+    });
 }
+
+
 
 
 
