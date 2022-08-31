@@ -719,6 +719,10 @@ async function handleSetNewPasswordRequest(usid, newPassword, response) {
     // if code is still executing, session is valid
     // validate & hash the new password
     const passwordValidationResult = validatePassword(newPassword);
+
+    response.status(200).send({result: passwordValidationResult});
+    return;
+
     if(passwordValidationResult.valid === false) {
         // password invalid
         response.status(200).send({success:false,
