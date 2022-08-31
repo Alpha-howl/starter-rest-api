@@ -720,9 +720,6 @@ async function handleSetNewPasswordRequest(usid, newPassword, response) {
     // validate & hash the new password
     const passwordValidationResult = await validatePassword(newPassword);
 
-    response.status(200).send({result: passwordValidationResult});
-    return;
-
     if(passwordValidationResult.valid === false) {
         // password invalid
         response.status(200).send({success:false,
