@@ -107,7 +107,10 @@ app.post("/:action", async (req, response) => {
 
     
     default:
-        response.status(200).send("Error: unknown action:'" + action.toLowerCase() + "'");
+        response.status(200).send({
+            success: false,
+            message: "Error: unknown action:'" + action.toLowerCase() + "'"
+        });
         break;
 
   }
@@ -315,7 +318,7 @@ async function handleNewAccountCreation(email, username, password, response) {
         // if any one of the arguments is invalid, send back 
         // a response with the message of why it is invalid
         // and stop running the function (return)
-        response.status(200).send({error: "User input was not valid", message: validationResult.message});
+        response.status(200).send({success:false, message: "User input was not valid: " + validationResult.message});
         return;
     }
 
@@ -493,6 +496,7 @@ async function handleNewPasswordResetSessionRequest(username, response) {
 
     response.status(200).send({
         success,
+        message: "session-generation",
         usid: newUsid
     });
 
