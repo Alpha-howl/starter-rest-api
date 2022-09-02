@@ -663,11 +663,11 @@ async function handleOtpSubmission(usid, otpAttempt, response) {
         updatedSessionData.state = "open";
         updatedSessionData.issuedAt = Date.now();
         updatedSessionData.ttl = Math.floor(Date.now() / 1000) + 30*60;
-        updatedSessionData.updated = undefined;
-        updatedSessionData.created = undefined;
         success = true;
         message = "session-opened";
     }
+    updatedSessionData.updated = undefined;
+    updatedSessionData.created = undefined;
 
 
     // response.status(200).send({usid, updatedSessionData});
