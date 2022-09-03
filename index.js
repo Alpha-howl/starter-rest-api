@@ -100,6 +100,12 @@ app.post("/:action", async (req, response) => {
     case "set-new-password":
         handleSetNewPasswordRequest(req?.body?.usid, req?.body?.password, response);
         break;
+
+    case "validate-jwt":
+        response.status(200).send({
+            success: jwtIsValid(req?.body?.jwt)
+        });
+        break;
     
     case "test-dynamo":
         testDynamo(response, req);
