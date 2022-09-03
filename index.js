@@ -107,6 +107,10 @@ app.post("/:action", async (req, response) => {
         });
         break;
     
+    case "get-acc-details":
+        handleGetAccDetailsRequest(req?.body?.jwt, response);
+        break;
+    
     case "test-dynamo":
         testDynamo(response, req);
         break;
@@ -757,6 +761,27 @@ async function handleSetNewPasswordRequest(usid, newPassword, response) {
 }
 
 
+async function handleGetAccDetailsRequest(jwt, response) {
+    // first validate the jwt
+    if(!userIsLoggedIn(jwt)) {
+        response.status(200).send({
+            success: false,
+            message: "must-be-logged-in"
+        });
+        return;
+    }
+
+    // todo - get username from jwt
+    // todo - send data in format {success, data:{...}}
+    const username = getUsernameFromJwt(jwt);
+    const accDetails = (await db.collection("User").get(username))?.props;
+
+    response.status(200).send({
+        success: true,
+        data: accDetails
+    });
+
+}
 
 
 
