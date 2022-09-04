@@ -676,8 +676,8 @@ async function handleOtpSubmission(usid, otpAttempt, response) {
         success = true;
         message = "session-opened";
     }
-    updatedSessionData.updated = undefined;
-    updatedSessionData.created = undefined;
+    updatedSessionData?.updated = undefined;
+    updatedSessionData?.created = undefined;
 
 
     // response.status(200).send({usid, updatedSessionData});
@@ -745,8 +745,8 @@ async function handleSetNewPasswordRequest(usid, newPassword, response) {
 
     // update user account
     const userData = (await db.collection("User").get(session.props.username)).props;
-    delete userData.updated;
-    delete userData.created;
+    delete userData?.updated;
+    delete userData?.created;
     userData.passwordHash = newHashedPassword;
     userData.lockedAt = Date.now() - 600000;
     await db.collection("User").set(session.props.username, userData);
@@ -831,8 +831,8 @@ async function getPasswordHashAndAttempt(usernameOrEmail, password, response) {
     const correctPasswordHash = (await userTable.get(key))?.props?.passwordHash;
     const givenPasswordHash = hashString(password);
 
-    delete userData.props.created;
-    delete userData.props.updated;
+    delete userData?.props?.created;
+    delete userData?.props?.updated;
 
     return [correctPasswordHash, givenPasswordHash, key, isLocked, userData.props];
 }
