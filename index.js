@@ -823,7 +823,7 @@ async function getPasswordHashAndAttempt(usernameOrEmail, password, response) {
     if(!userData) {
         response.status(200).send({
             success: false,
-            message: "unknown-error"
+            message: "wrong-credentials"
         });
         return;
     }
