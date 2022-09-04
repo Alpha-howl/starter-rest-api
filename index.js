@@ -820,6 +820,13 @@ async function getPasswordHashAndAttempt(usernameOrEmail, password, response) {
     // At this point, the key is the username of the account
     // check if the account with that key is locked
     const userData = (await userTable.get(key));
+    if(!userData) {
+        response.status(200).send({
+            success: false,
+            message: "unknown-error"
+        });
+        return;
+    }
     const lockedAt = userData?.props?.lockedAt;
     let isLocked = false;
     if(typeof lockedAt === "number") {
@@ -838,7 +845,7 @@ async function getPasswordHashAndAttempt(usernameOrEmail, password, response) {
         delete userData.props.updated;
     }
 
-    return [correctPasswordHash, givenPasswordHash, key, isLocked, userData.props];
+    return [correctPasswordHash, givenPasswordHash, key, isLocked, userData?.props];
 }
 function generateJtw(username) {
     // generate a jwt for that username
