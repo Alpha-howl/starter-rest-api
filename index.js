@@ -357,7 +357,13 @@ async function handleNewAccountCreation(email, username, password, response) {
 
 }
 async function handleUserLoginAttempt(usernameOrEmail, password, response) {
-    const [correctPasswordHash, givenPasswordHash, key, isLocked, userData] = await getPasswordHashAndAttempt(usernameOrEmail, password, response);
+    
+    const authenticationResult = await getPasswordHashAndAttempt(usernameOrEmail, password, response);
+    if(!authenticationResult) {
+        return;
+    }
+
+    const [correctPasswordHash, givenPasswordHash, key, isLocked, userData] = authenticationResult;
 
     if(isLocked) {
         response.status(200).send({
@@ -412,7 +418,13 @@ function handleUserLogout(usernameOrEmail, response) {
     return false;
 }
 async function handleAccountDeletion(usernameOrEmail, password, jwt, response) {
-    const [correctPasswordHash, givenPasswordHash, key, isLocked] = await getPasswordHashAndAttempt(usernameOrEmail, password, response);
+    const authenticationResult = await getPasswordHashAndAttempt(usernameOrEmail, password, response);
+    if(!authenticationResult) {
+        return;
+    }
+
+    const [correctPasswordHash, givenPasswordHash, key, isLocked, userData] = authenticationResult;
+
 
     if(isLocked) {
         response.status(200).send({
