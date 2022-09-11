@@ -68,7 +68,7 @@ app.post("/:action", async (req, response) => {
         break;
     
     case "delete-account":
-        if(!userIsLoggedIn(req?.body?.jwt)) {
+        if(!(await userIsLoggedIn(req?.body?.jwt))) {
             response.status(200).send({
                 success: false,
                 message: "must-be-logged-in"
@@ -103,7 +103,7 @@ app.post("/:action", async (req, response) => {
 
     case "validate-jwt":
         response.status(200).send({
-            success: jwtIsValid(req?.body?.jwt)
+            success: await userIsLoggedIn(req?.body?.jwt)
         });
         break;
     
@@ -135,7 +135,7 @@ async function testDynamo(response, req) {
 }
 
 
-function userIsLoggedIn(jwt) {
+async function userIsLoggedIn(jwt) {
     let isLoggedIn = true;
     if(jwt == undefined || jwt?.split(".").length != 3) {
         // jwt does not exist so user is not logged in
@@ -145,6 +145,10 @@ function userIsLoggedIn(jwt) {
     if(jwtIsValid(jwt) === false) {
         // JWT is invalid
         // treat user as not logged in
+        isLoggedIn = false;
+    }
+    if(!(await db.collection("User").get(getUsernameFromJwt(jwt)))) {
+        // account does not exist
         isLoggedIn = false;
     }
 
@@ -775,7 +779,7 @@ async function handleSetNewPasswordRequest(usid, newPassword, response) {
 
 async function handleGetAccDetailsRequest(jwt, response) {
     // first validate the jwt
-    if(!userIsLoggedIn(jwt)) {
+    if(!(await userIsLoggedIn(jwt))) {
         response.status(200).send({
             success: false,
             message: "must-be-logged-in"
