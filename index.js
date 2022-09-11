@@ -141,7 +141,7 @@ async function userIsLoggedIn(jwt) {
         // jwt does not exist so user is not logged in
         // user must be logged in: error message
         isLoggedIn = false;
-    }
+    } 
     if(jwtIsValid(jwt) === false) {
         // JWT is invalid
         // treat user as not logged in
