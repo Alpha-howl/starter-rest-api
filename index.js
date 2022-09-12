@@ -8,9 +8,22 @@ const crypto = require('crypto');
 
 const axios = require("axios").default;
 
+
+
+
 const WebSocket = require("ws");
 
 const server = require("http").createServer(app);
+
+const wss = new WebSocket.Server({ server });
+
+wss.on("connection", ws => {
+    ws.send("You connected");
+    ws.on("message", msg => {
+        ws.send("You wrote: " + msg);
+    });
+});
+
 
 
 
@@ -144,16 +157,7 @@ async function testDynamo(response, req) {
 }
 
 async function handleOpenWebsocketRequest(response) {
-    const wss = new WebSocket.Server({ server });
-
-    wss.on("connection", ws => {
-        ws.send("You connected");
-        ws.on("message", msg => {
-            ws.send("You wrote: " + msg);
-        });
-    });
-
-    response.status(200).send({success: true});
+    
 }
 
 
