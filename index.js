@@ -8,6 +8,8 @@ const crypto = require('crypto');
 
 const axios = require("axios").default;
 
+const WebSocket = require("ws");
+
 
 
 
@@ -115,6 +117,11 @@ app.post("/:action", async (req, response) => {
         testDynamo(response, req);
         break;
 
+
+    case "open-websocket":
+        handleOpenWebsocketRequest(response);
+        break;
+
     
     default:
         response.status(200).send({
@@ -132,6 +139,20 @@ async function testDynamo(response, req) {
     const result = await db.collection("PasswordResetSession").set("proba", {worls: true});
 	
     response.status(200).send({"proba": "75-76-77", result});
+}
+
+
+async function handleOpenWebsocketRequest(response) {
+    const wss = new WebSocket.Server({ port: 3000 });
+
+    wss.on("connection", ws => {
+        ws.send("You connected");
+        ws.on("message", msg => {
+            ws.send("You wrote: " + msg);
+        });
+    });
+
+    response.status(200).send({success: true});
 }
 
 
