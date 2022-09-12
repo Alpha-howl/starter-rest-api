@@ -10,6 +10,8 @@ const axios = require("axios").default;
 
 const WebSocket = require("ws");
 
+const server = require("http").createServer(app);
+
 
 
 
@@ -142,7 +144,7 @@ async function testDynamo(response, req) {
 }
 
 async function handleOpenWebsocketRequest(response) {
-    const wss = new WebSocket.Server({ port: 3000 });
+    const wss = new WebSocket.Server({ server });
 
     wss.on("connection", ws => {
         ws.send("You connected");
