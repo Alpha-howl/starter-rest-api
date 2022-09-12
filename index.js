@@ -141,9 +141,9 @@ async function testDynamo(response, req) {
     response.status(200).send({"proba": "75-76-77", result});
 }
 
-
+const wss = new WebSocket.Server({ port: 3000 });
 async function handleOpenWebsocketRequest(response) {
-    const wss = new WebSocket.Server({ port: 3000 });
+    
 
     wss.on("connection", ws => {
         ws.send("You connected");
