@@ -142,14 +142,14 @@ async function testDynamo(response, req) {
 }
 
 async function handleOpenWebsocketRequest(response) {
-    const wss = new WebSocket.Server({ port: 3000 });
+    /* const wss = new WebSocket.Server({ port: 3000 });
 
     wss.on("connection", ws => {
         ws.send("You connected");
         ws.on("message", msg => {
             ws.send("You wrote: " + msg);
         });
-    });
+    }); */
 
     response.status(200).send({success: true});
 }
