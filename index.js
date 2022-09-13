@@ -177,8 +177,7 @@ async function userIsLoggedIn(jwt) {
     if(!userData) {
         // account does not exist
         isLoggedIn = false;
-    }
-    if((userData.props.lockedAt || 0) + 600000 > Date.now()) {
+    } else if((userData.props.lockedAt || 0) + 600000 > Date.now()) {
         // if this is true, then the time when the account
         // will re-open is in the future, so the acc 
         // is still locked 
