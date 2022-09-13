@@ -11,8 +11,11 @@
 сокет ио
 <script>
 
+const socket = io("https://rich-tan-centipede-cape.cyclic.app:3000");
 
-
+socket.on("proba", data => {
+    console.log(data);
+});
 
 
 </script>
