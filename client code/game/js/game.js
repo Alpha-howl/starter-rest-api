@@ -641,6 +641,7 @@ async function checkUserLoggedIn() {
 		return window.$?.ajax != undefined;
 	});
 	// send req validate-jwt
+	console.log(5050);
 	const {success} = await $.ajax("https://shy-plum-bass-slip.cyclic.app/validate-jwt", {
 		method: "POST",
 		cache: false,
