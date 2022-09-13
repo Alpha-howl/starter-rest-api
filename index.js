@@ -11,6 +11,24 @@ const axios = require("axios").default;
 
 
 
+const WebSocket = require("ws"); 
+
+const server = require("https").createServer(app);
+
+const wss = new WebSocket.Server({ server });
+
+wss.on("connection", ws => {
+    ws.send("You connected");
+    ws.on("message", msg => {
+        ws.send("You wrote: " + msg);
+    });
+});
+
+
+
+
+
+
 
 function hashString(str) {
     return crypto.createHash("sha256").update(str).digest("hex");
