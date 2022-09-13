@@ -8,7 +8,7 @@ const crypto = require("crypto");
 
 const axios = require("axios").default;
 
-const pubnub = require("pubnub");
+const Pubnub = require("pubnub");
 
 
 
@@ -139,7 +139,7 @@ async function testDynamo(response, req) {
 }
 
 
-pubnub = new PubNub({
+const pubnub = new Pubnub({
     publishKey : "pub-c-9ab0b954-2551-4a44-85a2-cdbadb3760cb",
     subscribeKey : "sub-c-b06b11d8-a214-11ec-81c7-420d26494bdd",
     uuid: "sec-c-ZWVkYzZiZDAtODJjYS00YmVkLThmOWYtZjg4ODkwZjhlNWFk"
