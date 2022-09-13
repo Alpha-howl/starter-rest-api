@@ -1,0 +1,366 @@
+Tired this but it was too slow: 
+export class Maze {
+	constructor() {
+		// This will generate the maze grid, using rows and cols
+		this.grid = [];
+		this.graph = {};
+		this.width = COLS;
+		this.height = ROWS;
+		let i;
+		for(i = 0; i < ROWS; i++) {
+			this.grid.push(new Array(COLS));
+		}
+
+		/*Pick a random cell as the current cell and mark it as visited.
+	    While there are unvisited cells:
+	        Pick a random neighbour.
+	        If the chosen neighbour has not been visited:
+	            Remove the wall between the current cell and the chosen neighbour.
+	            Mark the chosen neighbour as visited.
+	        Make the chosen neighbour the current cell.*/
+
+
+	    // Maze generation:
+	    // Pick a random coordinate in the maze.
+	    let numberOfCells = this.width*this.height;
+		let currentCoord = [Math.floor(Math.random()*this.width), Math.floor(Math.random()*this.height)];
+		this.placeBlockAtCoord(currentCoord, "A");
+		const visited = [currentCoord.join("")];
+		while(visited.length < numberOfCells) { // While there are unvisited cells, pick a rnd neighbour, and remove the wall.
+			const randDirectionXorY = Math.floor(Math.random()*2); // 0 or 1
+			let randDirectionForwardsOrBackwards; // -1 or 1
+
+			if(randDirectionXorY === 0) {
+				// If we will move across the x-axis:
+				if(currentCoord[0] === 0) {
+					// currentCoord is at left-most side
+					randDirectionForwardsOrBackwards = 1;
+				} else if(currentCoord[0] === this.width-1) {
+					// is at right-most side
+					randDirectionForwardsOrBackwards = -1
+				}
+			} else {
+				// Will move up or down
+				if(currentCoord[1] === 0) {
+					// Is at the first row, so cannot move anymore upwards
+					randDirectionForwardsOrBackwards = 1;
+				} else if(currentCoord[1] === this.height-1) {
+					// cannot move down
+					randDirectionForwardsOrBackwards = -1;
+				}
+			}
+
+			randDirectionForwardsOrBackwards ??= Math.floor(Math.random()*2)*2-1;
+			const oldCoord = Array.from(currentCoord).join("");
+			currentCoord[randDirectionXorY] += randDirectionForwardsOrBackwards;
+			const newCoord = Array.from(currentCoord).join("");
+			if(!(visited.includes(newCoord))) {
+				this.graph[oldCoord] ||= [];
+				this.graph[oldCoord].push(newCoord);
+				this.graph[newCoord] ||= [];
+				this.graph[newCoord].push(oldCoord);
+				this.placeBlockAtCoord(currentCoord, "A");
+				visited.push(newCoord);
+			}
+		}
+		this.print();
+
+		console.table(this.graph);
+
+
+		this.createBlankMaze();
+
+		for(const key in this.graph) {
+			const cell1 = key;
+			const cellsWhichCell1GoesTo = this.graph[cell1];
+			cellsWhichCell1GoesTo.forEach(cellWhichCell1GoesTo => {
+				let direct1;
+				if(cell1[1] === cellWhichCell1GoesTo[1]) {
+					// On the same column
+					if(cell1[1] < cellWhichCell1GoesTo[1]) {
+						// cell1 is above so remove bottom border
+						direct1 = "bottom";
+					} else {
+						direct1 = "top";
+					}
+				} else {
+					// On the same row
+					if(cell1[0] < cellWhichCell1GoesTo[0]) {
+						// More to the left, so remove right border
+						direct1 = "right";
+					} else {
+						direct1 = "left";
+					}
+				}
+				document.getElementById("cell"+cell1).style["border-"+direct1] = "none";
+				const direct2 = direct1 === "top" ? "bottom" : direct1 === "bottom" ? "top" : direct1 === "left" ? "right" : "left";
+				document.getElementById("cell"+cellWhichCell1GoesTo).style["border-"+direct2] = "none";
+			});
+		}
+	}
+
+	placeBlockAtCoord(coord, data) {
+		// coord will be an array, where the x-coord is first and the y-coord is second;
+		this.grid[coord[1]][coord[0]] = data;
+	}
+
+	createBlankMaze() {
+	    let rowIndex, colIndex;
+	    const table = document.createElement("table");
+	    const tbody = document.createElement("tbody");
+	    for (rowIndex = 0; rowIndex < ROWS; rowIndex++) {
+	        const row = document.createElement("tr");
+	        for (colIndex = 0; colIndex < COLS; colIndex++) {
+	            const col = document.createElement("td");
+	            col.setAttribute("id", "cell" + rowIndex + colIndex);
+	            row.appendChild(col);
+	        }
+	        tbody.appendChild(row);
+	    }
+	    table.appendChild(tbody);
+	    document.getElementById("maze-container").appendChild(table);
+	}
+
+	print() {
+		console.table(this.grid);
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+then i tried this but cudnt get the recursive division alg working
+const ROWS = 5;
+const COLS = 5;
+
+// This will get the info about different maze blocks, which is kept in an external JSON file
+let MAZE_BLOCKS;
+export const GET_MAZE_BLOCKS = async () => {
+	if(MAZE_BLOCKS) {return MAZE_BLOCKS;}
+	get("./resources/blocks/blocks-data.json").then(result => {
+		MAZE_BLOCKS = JSON.parse(result);
+		return result;
+	});
+}
+
+
+
+export class Maze {
+	constructor() {
+		this.width = COLS;
+		this.height = ROWS;
+		this.COLS = this.width*2+1; // *2 To account for blocks which are replaced by walls, 
+		this.ROWS = this.height*2+1; // so the hollow blocks will be half of the total blocks, and there 
+		//will be +1 wall (because the border of the maze will be a wall on either side on both x and y axies.)
+		this.dimentions = [this.COLS, this.ROWS];
+		this.maze = this.initArray([]);
+
+		// This will palce the border walls (the ones on the outside of the maze)
+		this.maze.forEach((currentRow, index) => {
+			if(index === 0 || index === this.ROWS-1) {
+				currentRow.forEach((_, cellIndex) => {
+					this.maze[index][cellIndex] = ["BLACK_WALL"];
+				});
+			} else {
+				this.maze[index][0] = ["BLACK_WALL"];
+				this.maze[index][currentRow.length-1] = ["BLACK_WALL"];
+			}
+		});
+
+		// Now do the "recursive division" method to generate the maze
+		const randomWallStart = [[2,2], [this.COLS-3, this.ROWS-3]][this.randInt(0,2)]; // Picks top left or bottom right
+		const randomWallEnd = [[this.COLS-3, 2], [2, this.ROWS-3]][this.randInt(0,2)]; // Picks the other corner
+		this.recursiveDivision(randomWallStart, randomWallEnd);
+	}
+
+	randInt(min, max) { // Used in random generation of maze
+		return Math.floor(Math.random()*(max-min))+min;
+	}
+
+	initArray(value) {
+		return new Array(this.ROWS).fill().map(() => new Array(this.COLS).fill(value));
+	}
+
+	recursiveDivision(wallStart, wallEnd, its=0) {
+		this.maze[wallStart[1]][wallStart[0]] = ["FLAG1"];
+		this.maze[wallEnd[1]][wallEnd[0]] = ["FLAG2"];
+		const randXpoint = this.randInt(wallStart[0], wallEnd[0]); // Doesn't matter which way round the max and min are.
+		// The only difference is that when Math.random() is 0 we will get the maximum when min is bigger than max.
+		// Otherwise if max is larger, we will get the maximum possible val when Math.random() returns 1 (or v. close to it)
+		const randYpoint = this.randInt(wallStart[1], wallEnd[1]);
+
+		const directionToBuildWall = wallStart[0] === wallEnd[0] ? 0 : 1; // 0 = x-axis 1 = y-axis
+
+		const newWallStart = [randXpoint, randYpoint];
+		let forwardsOrBackwards = 1;
+		if(newWallStart[directionToBuildWall] > this.dimentions[directionToBuildWall]/2) {
+			forwardsOrBackwards = -1;
+		}
+
+		let currentPosition = newWallStart;
+		currentPosition[directionToBuildWall] +=  forwardsOrBackwards * 1;
+
+		while(this.maze[currentPosition[1]][currentPosition[0]] != "BLACK_WALL") {
+			this.maze[currentPosition[1]][currentPosition[0]] = ["BLACK_WALL"];
+			currentPosition[directionToBuildWall] += forwardsOrBackwards*1;
+			console.log(...currentPosition, ":",this.maze[currentPosition[1]][currentPosition[0]]);
+		}
+
+		if(its > Math.min(this.COLS-2)) {
+			return;
+		}
+		const beginningPos = currentPosition.slice();
+		beginningPos[directionToBuildWall] = 1; 
+		this.recursiveDivision(currentPosition,beginningPos,its+1);
+
+	}
+
+  posToSpace(x) {
+    return 2 * (x-1) + 1;
+  }
+
+  posToWall(x) {
+    return 2 * x;
+  }
+
+  inBounds(r, c) {
+    if((typeof this.maze[r] == "undefined") || (typeof this.maze[r][c] == "undefined")) {
+      return false; // out of bounds
+    }
+    return true;
+  }
+
+  isGap(...cells) {
+    return cells.every((array) => {
+      let row, col;
+      [row, col] = array;
+      if(this.maze[row][col].length > 0) {
+        if(!this.maze[row][col].includes("door")) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }
+
+  countSteps(array, r, c, val, stop) {
+
+    if(!this.inBounds(r, c)) {
+      return false; // out of bounds
+    }
+
+    if(array[r][c] <= val) {
+      return false; // shorter route already mapped
+    }
+
+    if(!this.isGap([r, c])) {
+      return false; // not traversable
+    }
+
+    array[r][c] = val;
+
+    if(this.maze[r][c].includes(stop)) {
+      return true; // reached destination
+    }
+
+    this.countSteps(array, r-1, c, val+1, stop);
+    this.countSteps(array, r, c+1, val+1, stop);
+    this.countSteps(array, r+1, c, val+1, stop);
+    this.countSteps(array, r, c-1, val+1, stop);
+  }
+
+  display() {
+    this.parentDiv = document.getElementById("maze-container");
+    while(this.parentDiv.firstChild) {
+      this.parentDiv.removeChild(this.parentDiv.firstChild);
+    }
+    const container = document.createElement("div");
+    container.id = "maze";
+    container.dataset.steps = this.totalSteps;
+
+    this.maze.forEach((row) => {
+      let rowDiv = document.createElement("div");
+      row.forEach((cell) => {
+        let cellDiv = document.createElement("div");
+        if(cell?.join) {
+          cellDiv.className = cell.join("");
+        }
+        rowDiv.appendChild(cellDiv);
+      });
+      container.appendChild(rowDiv);
+    });
+
+    this.parentDiv.appendChild(container);
+
+    return true;
+  }
+}
+
+export const myMaze = new Maze();
+myMaze.display();
+
+function updateLoadingBar(progress) {
+	console.log(Math.round(progress*100) + "% complete");
+}
+
+function loadAssets() {
+	let assetsLoaded = 0;
+	const totalAssets = 1;
+	return new Promise(done => {
+		GET_MAZE_BLOCKS().then(() => {
+			console.log("Loaded");
+			assetsLoaded += 1;
+		});
+		const checkingInterval = setInterval(() => {
+			const progress = assetsLoaded/totalAssets; 
+			updateLoadingBar(progress);
+			if(progress === 1) {
+				clearInterval(checkingInterval);
+				done();
+			}
+		}, 350);
+	});
+}
+
+loadAssets().then(() => {
+	console.log("Loaded all assets.");
+
+	//myMaze.print();
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+then i got the recursive wall division to work, along with another method - the "iterative backtracking", but the problem occured when I tried to save the maze-data as a string so that other players who wanted to join the same room would use the same maze. This is because the maze-data was a cyclical object, meaning that it referenced itself. This meant that JSON.stringify() woudn't work for it. I had to find another way to transfer the maze's data to the server, and then to the computers of whoever else joined the room.
+
+
+now i am debating whether i should delete the recursive wall division because I did a lot of iterative tests using the iterative backtracking method and therefore tailored the rest of the interacting modules to work well with this method and not with the wall division method.

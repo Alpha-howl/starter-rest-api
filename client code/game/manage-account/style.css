@@ -1,0 +1,118 @@
+.hidden {
+	display: none !important;
+}
+
+
+h1, h2, h3 {
+	font-family: sans-serif;
+}
+
+
+
+.data-container {
+	position: relative;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 75%;
+	font-size: larger;
+	font-family: sans-serif;
+}
+.row {
+	display: flex;
+	border-bottom: 1px solid rgba(35, 75, 255, .1);
+}
+.col {
+	flex: 1;
+	display: flex;
+	justify-content: center;
+}
+
+.row:nth-child(2n-1) {
+	background: rgba(0,0,0,.1);
+}
+
+
+
+@media screen and (max-width: 550px) {
+	.row {
+		flex-direction: column;
+	}
+	.col:first-of-type {
+		font-weight: 900;
+		margin-bottom: .25rem;
+	}
+	.col:first-of-type::after {
+		content: ":";
+	}
+}
+
+
+
+
+
+#account-actions-container {
+	margin-top: 2.5rem;
+}
+#account-actions-container .col {
+	cursor: pointer;
+	background: none;
+	color: inherit;
+	font-weight: inherit;
+	font-size: inherit;
+	border: none;
+	transition: background-color 350ms ease;
+	padding: .5rem 1rem;
+	border-radius: 7px;
+	margin: 10px;
+	width: calc(100% - 1rem)
+}
+#account-actions-container .col:hover {
+	background-color: rgba(255,200,200,1);
+}
+#account-actions-container .col:focus {
+	outline: 2px solid rgba(0,0,0,1);
+}
+.red {
+	color: red;
+	font-weight: 600;
+}
+.subtitle {
+	width: 100%;
+	text-align: center;
+}
+
+
+.link {
+	background: none;
+	border: none;
+	color: rgba(35, 75, 255, 1);
+	text-decoration: underline;
+	cursor: pointer;
+}
+.link:hover {
+	text-decoration: none;
+}
+.link:focus {
+	outline: 1px solid rgba(0,0,0,.2);
+}
+
+
+
+
+.floating, #error-screen {
+	display: flex;
+	background: white;
+	position: fixed;
+	inset: 0;
+	transform: none;
+	width: calc(100% - 2rem);
+
+	padding: 1rem;
+}
+
+.danger {
+	color: red !important;
+	background-color: rgba(255,200,200,1) !important;
+	outline: 2px solid red !important;
+	border: none !important;
+}

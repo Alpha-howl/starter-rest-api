@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Maze</title>
+	<style type="text/css">
+		#progress-container, .float {
+		  position: fixed;
+		  z-index: 100;
+		  background-color: #333;
+		  color: white;
+		  inset: 0;
+		  display: flex;
+		  justify-content: center;
+		  place-items: center;
+		  flex-direction: column;
+		}
+		.hidden {display: none;}
+		#progress-track {
+		  position: relative;
+		  width: 40%;
+		  height: 1px;
+		  background-color: silver;
+		}
+		#progress-bar {
+		  position: absolute;
+		  left: 0;
+		  top: 0;
+		  height: 7px;
+		  width: 0;
+		  background-color: gold;
+		  transition: width 200ms ease-out;
+		}
+		#progress-hint {
+		  margin-top: 10px;
+		  color: gold;
+		}
+	</style>
+	<script type="text/javascript">
+		// Quick definition of get, which requests from a server found at some url
+		const get = (url) => {
+			return new Promise(async resolve => {
+				const result = await fetch(url);
+				let resourceStringValue = "";
+				const body = result.body.getReader();
+				body.read().then(stream => {
+					stream.value.forEach(charCode => {
+						resourceStringValue += String.fromCharCode(charCode);
+					});
+					resolve(resourceStringValue);
+				});
+			});
+		};
+	</script>
+	<script src="js/game.js" type="module"></script>
+</head>
+<body>
+
+
+<div id="progress-container">
+	<div id="progress-track">
+		<div id="progress-bar"></div>
+	</div>
+	<div id="progress-hint">0%</div>
+</div>
+
+<div class="float hidden" id="sign-in-msg">
+	<p>
+		You are not logged in with an account. To be able to play online, you must 
+		<a href="../login/?continue=../game">log in or sign up</a>.
+	</p>
+</div>
+
+
+
+<div id="maze-container"></div>
+
+<canvas id="canvas1" class="hidden"></canvas>
+
+
+<div id="main-menu">
+	<button id="settings-btn">Settings</button>
+	<button id="account-btn">Account</button>
+	<button id="join-room-btn">Play online</button>
+</div>
+
+
+</body>
+</html>

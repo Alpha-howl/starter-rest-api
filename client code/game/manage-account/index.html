@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script type="text/javascript" src="../../login/js/jquery.js"></script>
+	<script type="text/javascript" src="script.js" defer></script>
+	<script type="text/javascript" src="../../login/js/toast.js" defer></script>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<link rel="stylesheet" type="text/css" href="../../login/css/style.css">
+	<link rel="stylesheet" type="text/css" href="../../login/css/styles.css">
+	<title>Your account</title>
+</head>
+<body>
+
+<div id="not-signed-in-msg" class="hidden">
+	<p>You are not signed in.</p>
+	<p>To use this page, please <a href="../../login">sign in</a> first.</p>
+</div>
+
+<div id="signed-in-container" class="hidden">
+	<h2 class="title">
+		Hi there,
+		<span id="username-greeting" class="fill-in-un">...</span>!
+		Here are your account details:
+	</h2>
+
+
+	<div class="data-container" id="account-details-container">
+		<div class="row">
+			<div class="col">Password</div>
+			<div class="col">(hidden) 
+				<button class="link" onclick="location.assign('../../login/index.html?action=reset-password')">
+					change
+				</button>
+		</div>
+		</div>
+		<div class="row">
+			<div class="col">Username</div>
+			<div class="col"><span class="fill-in-un"></span></div>
+		</div>
+	</div>
+
+	<div class="data-container" id="account-actions-container">
+		<div class="row">
+			<h3 class="subtitle">
+				Account actions
+			</h3>
+		</div>
+		<div class="red">
+			<button class="col" onclick="logOut();">
+				Log out
+			</button>
+			<button class="col" onclick="deleteAccountBtnClick()">
+				Delete account
+			</button>
+		</div>
+	</div>
+</div>
+
+<div id="loading-screen">
+	<h2 class="title">
+		We're looking for your account!
+	</h2>
+</div>
+
+
+<div id="error-screen" class="hidden">
+	An unexpected error occured. Please refresh the page to try again.
+</div>
+
+<form action="javascript:deleteAccountFormSubmit();" id="delete-acc-form" class="hidden floating">
+	<h2 class="title">
+		Fill in the inputs to proceed
+	</h2>
+	
+
+	<label for="un">
+		Enter the username or email for this account
+	</label>
+	<input type="text" id="un" name="usernameOrEmail" placeholder="Username/email" required>
+
+
+	<label for="password">
+		Enter your current password to confirm you want to delete your account
+	</label>
+	<input type="password" id="password" name="password" placeholder="Enter your current password" required>
+
+	<p>
+		Note that this is a permanent action which cannot be undone. You will lose all of your progress and account data.
+	</p>
+
+	<input type="submit" name="submit" value="I have read the above statement" class="submit">
+
+	<button onclick="cancelDeleteAccount();" class="secondary">Cancel</button>
+
+</form>
+
+</body>
+</html>

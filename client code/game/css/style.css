@@ -1,0 +1,210 @@
+* {margin: 0; padding: 0; box-sizing: border-box;}
+body {
+    width: 100vw;
+    height: 100vh;
+}
+#canvas1 {
+    width: 1200px;
+    height: 750px;
+    background-color: #76c564;
+    border: 1px solid black;
+}
+#maze-container {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.hidden {
+    display: none;
+}
+
+#maze {
+  position: relative;
+  background-color: #a7c53f;
+  background-size: 8em 8em;
+}
+#maze div {
+  display: flex;
+}
+#maze div div {
+  position: relative;
+  width: 1.2rem;
+  height: 1.2rem;
+}
+#maze div div::after {
+  position: absolute;
+  left: -3px;
+  top: -4px;
+  text-align: center;
+  text-shadow: 0 0 1px black;
+  font-size: 1.2em;
+  z-index: 10;
+}
+#maze div div.door.exit::after {
+  content: "\1F6AA";
+}
+#maze div div.nubbin::after {
+  content: "\1F33C";
+}
+#maze div.nubbin:nth-of-type(3n)::after {
+  content: "\1F344";
+}
+#maze div.nubbin:nth-of-type(5n)::after {
+  content: "\1F33B";
+}
+#maze div.nubbin:nth-of-type(7n)::after {
+  content: "\1F48E";
+}
+#maze div.nubbin:nth-of-type(13n)::after {
+  content: "\1F381";
+}
+#maze div.hero::after {
+  content: "\1F6B6" !important;
+}
+#maze.face-right div.hero::after {
+  transform: scale(-1, 1);
+}
+.FLAG1 {
+    background-color: #a00;
+}
+.FLAG2 {
+    background-color: #0a0;
+}
+#maze div div.BLACK_WALL, #maze div div.nubbin.BLACK_WALL, #maze div div.door.exit {
+  background-color: #000;
+  background-size: 0.5em 0.5em;
+}
+#maze div div.nubbin.BLACK_WALL::after {
+  content: "";
+}
+#maze div div.sentinel.BLACK_WALL {
+  background: transparent;
+}
+#maze div div.sentinel.BLACK_WALL::after {
+  content: "\1F40A";
+}
+#maze div.sentinel.BLACK_WALL:nth-of-type(3n)::after {
+  content: "\1F40D";
+}
+#maze div div.key::after {
+  content: "\1F511";
+}
+
+#maze div div:nth-child(odd) {
+  width: 1em;
+}
+#maze div:nth-child(odd) div {
+  height: 1em;
+}
+
+#maze.finished::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  content: "Game Over";
+  background: rgba(0,0,0,0.4);
+  text-transform: uppercase;
+  font-family: monospace;
+  font-size: 5em;
+  text-shadow: 2px 2px 2px rgba(0,0,0,0.8);
+  color: #fff;
+  z-index: 10;
+}
+
+#maze_output {
+  display: flex;
+  margin: 0.5em auto;
+}
+#maze_score, #maze_message {
+  font-family: fantasy;
+  font-weight: bold;
+  font-size: 1em;
+}
+#maze_score {
+  flex: 1;
+  white-space: nowrap;
+  text-align: left;
+}
+#maze_score::before {
+  content: "Score: ";
+}
+#maze_score.has-key::after {
+  content: "\00a0\1F511";
+}
+#maze_message {
+  flex: 3;
+  text-align: right;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+#maze-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.maze {
+    position: relative;
+    background-color: #a7c53f;
+    background-size: 8em 8em;
+}
+.maze div {
+    display: flex;
+}
+.maze div div {
+    box-sizing: border-box;
+    position: relative;
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+
+
+
+
+.left { border-left: 2px solid rgb(0, 45, 114); }
+.right { border-right: 2px solid rgb(0, 45, 114); }
+.top { border-top: 2px solid rgb(0, 45, 114); }
+.bottom { border-bottom: 2px solid rgb(0, 45, 114); }
+
+
+
+.row {
+  display: flex;
+}
+.cell {
+  height: 2.5rem;
+  width: 2.5rem;
+  border: 2px solid rgb(0, 45, 114);
+  position: relative;
+  z-index: 10;
+}
+
+a {
+  color: rgba(130, 130, 255, 1);
+}
+a:active {
+  color: white;
+}

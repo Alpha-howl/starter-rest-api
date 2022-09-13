@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Calc next free room</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+
+
+// This is one of the modules:
+
+
+const MAX_PLAYERS_PER_ROOM = 5;
+
+async function calcNextFreeRoom(overflowData) {
+	let overflows = overflowData?.overflows || 0;
+	return new Promise(async (resolve, reject) => {
+		let roomToJoin = overflows || 0;
+
+		const roomData = await executeSQL(`SELECT * FROM Room WHERE RoomID = ${roomToJoin}`);
+		const numOfPlayers = parseInt(roomData?.playerCount) || 0;
+		let res = false;
+		if(numOfPlayers >= MAX_PLAYERS_PER_ROOM) {
+			roomToJoin++;
+			overflows++;
+		}
+
+		if(res !== false) {
+
+			// Now update overflows table using updatedOverflowData
+			const sql1 = await executeSQL(`UPDATE OverflowsTable 
+										SET Overflows = ${overflows}, 
+											timeLastPlayerJoinedARoom = ${Math.trunc(new Date().getTime() / 60000)}`,
+			{dbName: "alphahow_database1"});
+
+
+			// First update this player's row in the User table so that it contains the room the player has joined in the joinedRoom field. 
+			const sql2 = await executeSQL(`UPDATE User 
+										SET joinedRoom = ${roomToJoin}
+										WHERE UserID = ${parseInt(localStorage.getItem("loggedInUserId"))}`);
+
+			// todo - update this room's row in the Room table so that its playerClunk field includes this player's id and playerCount is incremented, or add this row if it does not exist.
+			let sql3;
+			let mazeData;
+			if(numOfPlayers > 0) { // Room exists, update it
+				sql3 = await executeSQL(`UPDATE Room 
+										SET playerClunk = ${roomData.playerClunk + "," + localStorage.getItem("loggedInUserId")},
+											playerCount = ${numOfPlayers + 1}
+										WHERE UserID = ${parseInt(localStorage.getItem("loggedInUserId"))}`);	
+			} else { // Room does not exist, add it as a record
+				generateMaze();
+				mazeData = JSON.decycle(GRID);
+				sql3 = await executeSQL(`INSERT INTO Room (mazeData, playerCount)
+										VALUES (${mazeData}, 1);`);
+			}
+			
+
+
+			
+			console.log(sql1, sql2, sql3);
+			console.log("If one of the sqls shows an error, call reject fnc");
+			resolve([roomToJoin, mazeData]);
+		}
+	});
+}
+
+
+const executeSQL = async (sqlStatement, options) => {
+    const response = await jQuery.ajax({
+        type: "POST",
+        url: 'https://alpha-howl.com/database/php.php',
+        dataType: 'json',
+        data: {"argument": sqlStatement, action: options?.action||"SQL", dbName: options?.dbName}
+    });
+    // Yup, I made the https://alpha-howl.com/database/php.php server-side php script. Read the comment about CORS in the php script please.
+    return JSON.parse(response.result);
+};
+
+
+// Todo - make the account system. When they create an acc, insert this data into the User table. When logging in, search by username.
+
+
+
+
+
+/* Room-[].json keys: {playerCount}*/
+/*overflowdata: {overflows, timeLastPlayerJoinedARoom}
+timeLastPlayerJoinedARoom is given as minutes. So milliseconds / 60000
+*/
+
+
+</script>
+</body>
+</html>
