@@ -52,7 +52,7 @@ function displayScreen(screenId) {
 setTimeout(() => {
   console.log(5);
   Array.from(document.forms.loginForm.children).forEach(el => {
-    el.setAttribute("value", el.getAttribute("value"));
+    el.setAttribute("value", el.getAttribute("value") || "");
   });
 }, 1500);
 
