@@ -189,8 +189,9 @@ async function userIsLoggedIn(jwt) {
 
 function getUsernameFromJwt(jwt) {
     const payload = jwt.split(".")[1];
+    let payloadObject;
     try {
-        const payloadObject = JSON.parse(
+        payloadObject = JSON.parse(
             Buffer.from(payload, "base64").toString()
         );
     } catch(errr) {
