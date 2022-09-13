@@ -54,6 +54,7 @@ setTimeout(() => {
   Array.from(document.forms.loginForm.children).forEach(el => {
     el.setAttribute("value", el.getAttribute("value") || "");
   });
+  console.log("Form validity updated");
 }, 1500);
 
 
