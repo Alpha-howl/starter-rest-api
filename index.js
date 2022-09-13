@@ -416,6 +416,10 @@ async function handleUserLoginAttempt(usernameOrEmail, password, response) {
 
     if(correctPasswordHash === givenPasswordHash) {
         // passwords match
+        // first remove the wrong password attempt counter
+        userData.wrongPasswordCounter = 0;
+        await db.collection("User").set(key, userData);
+
         // generate JWT and send to client
         // generate new jwt:
         const newJwt = generateJtw(key);
