@@ -4,17 +4,26 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proba</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.2/socket.io.js" integrity="sha512-VJ6+sp2E5rFQk05caiXXzQd1wBABpjEj1r5kMiLmGAAgwPItw1YpqsCCBtq8Yr1x6C49/mTpRdXtq8O2RcZhlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"
+        integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <title>Testing</title>
 </head>
 <body>
-сокет ио 3
+wss
 <script>
 
-const socket = io("https://rich-tan-centipede-cape.cyclic.app:3000");
 
-socket.on("proba", data => {
-    console.log(data);
+const socket = new WebSocket("wss://shy-plum-bass-slip.cyclic.app:3000");
+
+socket.addEventListener("open", evnt => {
+    console.log(evnt);
+    socket.send("Меssage from client");
+});
+
+
+socket.addEventListener("message", evnt => {
+    console.log(evnt.data);
 });
 
 
