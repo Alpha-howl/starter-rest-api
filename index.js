@@ -11,7 +11,7 @@ const axios = require("axios").default;
 
 
 
-const WebSocket = require("ws");
+const WebSocket = require("ws"); 
 
 const server = require("http").createServer(app);
 
@@ -1085,6 +1085,6 @@ app.use('*', (req, res) => {
 
 // Start the server
 const port = process.env.PORT || 3000; 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`index.js listening on ${port}`);
 });
