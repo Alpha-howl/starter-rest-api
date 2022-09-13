@@ -50,7 +50,6 @@ function displayScreen(screenId) {
 
 
 setTimeout(() => {
-  console.log(5);
   Array.from(document.forms.loginForm.children).forEach(el => {
     el.setAttribute("value", el.getAttribute("value") || "");
   });
@@ -155,7 +154,7 @@ function parseResponse(response) {
           localStorage.removeItem("cached-username");
         }
         const query = new URLSearchParams(location.search);
-        redirect(query.get("continue") || "../");
+        redirect(query.get("continue") || "../game");
         break;
       }
       case "account-deleted": {
