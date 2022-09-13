@@ -1,10 +1,10 @@
-const express = require('express');
+const express = require("express");
 const app = express();
 
 process.env.CYCLIC_DB = "shy-plum-bass-slipCyclicDB";
-const db = require('cyclic-dynamodb');
+const db = require("cyclic-dynamodb");
 
-const crypto = require('crypto');
+const crypto = require("crypto");
 
 const axios = require("axios").default;
 
