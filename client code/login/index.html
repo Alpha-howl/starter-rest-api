@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>CTF - log in or sign up</title>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<link rel="stylesheet" type="text/css" href="css/styles.css">
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript" src="js/toast.js"></script>
+	<script type="text/javascript" src="js/script.js" defer></script>
+</head>
+<body>
+	<div class="entire-wrapper">
+	  <h1 class="title">Please enter your details</h1>
+	  <form action="javascript:void(0);" id="loginForm" class="visible">
+	    <h3>
+	      Login - log into an existing account
+	    </h3>
+	    
+	    <input type="text"
+	           pattern="([A-Za-z0-9._%+-@]){3,100}$"
+	           placeholder="Username/email" 
+	           id="usernameOrEmail" 
+	           name="username"
+	           required/>
+	    <div class="info" tabindex="3" msg="Enter the username or email associated with your existing account."></div>
+	    <input type="password" placeholder="password"
+	           id="enterPassword" 
+	           name="password"
+	           required/>
+	    <div class="info" tabindex="3" msg="Enter the password for this existing account here. If you've forgotten it, you can reset it by clicking on the 'Forgot password?' link below."></div>
+	    
+	    <input type="checkbox" id="rememberMeLogin"/>
+	    <label for="rememberMeLogin">
+	      Remember me
+	    </label>
+	    
+	    <a class="link" onclick="showForgotPasswordScreen();">Forgot password?</a>
+	    
+	    <input class="submit" 
+	           value="Log in now" type="submit"
+	           onclick="loginBtnClick();" />
+	    <button class="secondary" onclick="displayScreen('signupForm');">
+	      Or sign up
+	    </button>
+	  </form>
+	  
+	  <form action="javascript:void(0);" id="signupForm">
+	    <h3>
+	      Sign up - create a new account
+	    </h3>
+	    
+	    <input type="text" 
+	           placeholder="Create username" 
+	           id="usernameInput" 
+	           pattern="(^)\w{3,30}($)"
+	           required/>
+	    <div class="info" tabindex="3" msg="Usernames must be between 3-30 characters long and can only include letters, numbers and underscores."></div>
+	    <input type="email" 
+	           placeholder="enter email" 
+	           id="emailInput"
+	           required/>
+	    <div class="info" tabindex="3" msg="Emails must be between 3-100 characters in length and should be in the format me.example@example.com"></div>
+	    <input type="password" placeholder="create a password"
+	           id="createPassword"
+	           pattern="(^)(?=.*[0-9])(?=.*[a-z])(?=.*([A-Z]|[ .\-_]))[A-Za-z0-9 .\-_]{8,30}($|\n)"
+	           required/>
+	    <div class="info" tabindex="3" msg="Passwords must be between 8-30 characters in length, must have at least one number, one lowercase letter and one uppercase letter or an allowed special character: full stop, space, dash or underscore."></div>
+	    
+	    <input class="submit" 
+	           value="Create account" type="submit" 
+	           onclick="signUpBtnClick();" />
+	    <button class="secondary" onclick="displayScreen('loginForm');">
+	      Or login
+	    </button>
+	  </form>
+
+
+	  <form action="javascript:void(0);" id="forgotPasswordForm">
+	  		
+	  	<h3>
+	  		Enter the username for the account you want to reset the password for:
+	  	</h3>
+
+	  	<input type="text"
+	  		placeholder="Your existing username" 
+	  		pattern="(^)\w{3,30}($)"
+	  		name="username"
+				required
+			/>
+			<input class="submit" 
+	           value="Next" type="submit" 
+	           onclick="requestNewUsid(this);" 
+			/>
+			<button class="secondary" onclick="displayScreen('loginForm');">
+				Cancel
+			</button>
+
+	  </form>
+
+
+	  <form action="javascript:void(0);" id="enterOtpForm">
+	  		
+	  	<h3>
+	  		Enter the OTP here
+	  	</h3>
+
+	  	<h3 style="font-size: small">
+	  		Give the email a few minutes to arrive, and check your email inbox. We sent an email containing an OTP (one-time passcode) which can be used in the next several minutes to reset your account's password. Enter that OTP below, making sure to include all spaces and characters exactly as seen in your email message.
+	  	</h3>
+
+	  	<input type="text"
+	  		placeholder="Enter OTP" 
+	  		name="otp"
+				required
+			/>
+			<input class="submit"
+	           value="Next" type="submit" 
+	           onclick="sendOtpToServer(this);"
+			/>
+			<button class="secondary" onclick="displayScreen('loginForm');">
+				Cancel
+			</button>
+
+	  </form>
+
+	  <form action="javascript:void(0);" id="chooseNewPasswordForm">
+	  		
+	  	<h3>
+	  		Choose your new password
+	  	</h3>
+
+	  	<h3 style="font-size: small">
+	  		Passwords must be between 8 and 30 characters long, have at least one number, one lowercase letter, and one uppercase letter or one special character. The only special characters allowed are periods, spaces, dashes, and underscores.
+	  	</h3>
+
+	  	<input type="password"
+	  		placeholder="Enter your new password" 
+	  		name="password"
+				required
+			/>
+			<input class="submit"
+	           value="Reset password" type="submit" 
+	           onclick="sendNewPasswordToServer(this);"
+			/>
+			<button class="secondary" onclick="displayScreen('loginForm');">
+				Cancel
+			</button>
+
+	  </form>
+	</div>
+</body>
+</html>
