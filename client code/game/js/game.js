@@ -635,7 +635,7 @@ function loadAssets() {
 	}
 }
 
-
+ 
 async function checkUserLoggedIn() {
 	await utils.waitUntil(() => {
 		return window.$?.ajax != undefined;
@@ -646,7 +646,7 @@ async function checkUserLoggedIn() {
 		method: "POST",
 		cache: false,
 		data: {
-			jwt: localStorage.getItem("jwt") || "a.b.v"
+			jwt: localStorage.getItem("jwt")
 		}
 	});
 

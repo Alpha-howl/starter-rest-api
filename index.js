@@ -190,9 +190,13 @@ async function userIsLoggedIn(jwt) {
 
 function getUsernameFromJwt(jwt) {
     const payload = jwt.split(".")[1];
-    const payloadObject = JSON.parse(
-        Buffer.from(payload, "base64").toString()
-    );
+    try {
+        const payloadObject = JSON.parse(
+            Buffer.from(payload, "base64").toString()
+        );
+    } catch(errr) {
+        return "a"; // return an illegal username so it is not found in db
+    }
     const usernameFromJwt = payloadObject.sub;
     return usernameFromJwt;
 }
