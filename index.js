@@ -13,7 +13,7 @@ const axios = require("axios").default;
 
 const WebSocket = require("ws"); 
 
-const server = require("https").createServer(app);
+const server = require("http").createServer(app);
 
 const wss = new WebSocket.Server({ server });
 
