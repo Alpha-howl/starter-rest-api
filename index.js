@@ -8,25 +8,7 @@ const crypto = require('crypto');
 
 const axios = require("axios").default;
 
-
-
-
-const WebSocket = require("ws"); 
-
-const server = require("https").createServer(app);
-
-const wss = new WebSocket.Server({ server });
-
-wss.on("connection", ws => {
-    ws.send("You connected");
-    ws.on("message", msg => {
-        ws.send("You wrote: " + msg);
-    });
-});
-
-
-
-
+const pubnub = require("pubnub");
 
 
 
@@ -133,8 +115,8 @@ app.post("/:action", async (req, response) => {
         break;
 
 
-    case "open-websocket":
-        handleOpenWebsocketRequest(response);
+    case "pubnub-proba":
+        pubnubProba(response);
         break;
 
     
@@ -156,8 +138,27 @@ async function testDynamo(response, req) {
     response.status(200).send({"proba": "75-76-77", result});
 }
 
-async function handleOpenWebsocketRequest(response) {
-    
+
+pubnub = new PubNub({
+    publishKey : "pub-c-9ab0b954-2551-4a44-85a2-cdbadb3760cb",
+    subscribeKey : "sub-c-b06b11d8-a214-11ec-81c7-420d26494bdd",
+    uuid: "sec-c-ZWVkYzZiZDAtODJjYS00YmVkLThmOWYtZjg4ODkwZjhlNWFk"
+});
+
+async function pubnubProba(response) {
+    pubnub.subscribe({
+        channels: ["proba"],
+    });
+    await pubnub.publish({
+        channel: "proba",
+        message: {
+            "worls": true
+        }
+    });
+    response.status(200).send({
+        success: true,
+        channel: "proba"
+    });
 }
 
 
@@ -1085,6 +1086,6 @@ app.use('*', (req, res) => {
 
 // Start the server
 const port = process.env.PORT || 3000; 
-server.listen(port, () => {
+app.listen(port, () => {
   console.log(`index.js listening on ${port}`);
 });
