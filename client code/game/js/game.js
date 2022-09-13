@@ -645,7 +645,7 @@ async function checkUserLoggedIn() {
 		method: "POST",
 		cache: false,
 		data: {
-			jwt: localStorage.getItem("jwt")
+			jwt: localStorage.getItem("jwt") || ""
 		}
 	});
 
