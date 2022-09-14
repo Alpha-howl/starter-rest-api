@@ -112,7 +112,8 @@ app.post("/:action", async (req, response) => {
 
     case "join-room":
         // todo - validate JWT and see what else needs to be done in the flow chart
-        handleJoinRoomRequest(req?.body?.jwt, response);
+        // handleJoinRoomRequest(req?.body?.jwt, response);
+        response.status(200).send(await getLastRoomJoined());
         break;
     
     case "test-dynamo":
@@ -135,6 +136,11 @@ app.post("/:action", async (req, response) => {
 
 });
 
+async function getLastRoomJoined() {
+    return await db.collection("Overflows").set("overflows", 0);
+	/* const overflows = db.collection("Overflows").overflows;
+    return (overflows || 0) + 1; */
+}
 
 
 
