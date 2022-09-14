@@ -109,11 +109,15 @@ app.post("/:action", async (req, response) => {
     case "get-acc-details":
         handleGetAccDetailsRequest(req?.body?.jwt, response);
         break;
+
+    case "join-room":
+        // todo - validate JWT and see what else needs to be done in the flow chart
+        handleJoinRoomRequest(req?.body?.jwt, response);
+        break;
     
     case "test-dynamo":
         testDynamo(response, req);
         break;
-
 
     case "pubnub-proba":
         pubnubProba(response);
@@ -130,6 +134,9 @@ app.post("/:action", async (req, response) => {
   }
 
 });
+
+
+
 
 
 async function testDynamo(response, req) {
