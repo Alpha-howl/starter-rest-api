@@ -137,9 +137,8 @@ app.post("/:action", async (req, response) => {
 });
 
 async function getLastRoomJoined() {
-    return await db.collection("Overflows").set("overflows", 0);
-	/* const overflows = db.collection("Overflows").overflows;
-    return (overflows || 0) + 1; */
+	const overflows = await db.collection("Overflows").get("overflows");
+    return (overflows || 0) + 1;
 }
 
 
