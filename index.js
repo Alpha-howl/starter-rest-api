@@ -113,7 +113,11 @@ app.post("/:action", async (req, response) => {
     case "join-room":
         // todo - validate JWT and see what else needs to be done in the flow chart
         // handleJoinRoomRequest(req?.body?.jwt, response);
-        response.status(200).send(await getLastRoomJoined());
+        handleJoinRoomRequest(req?.body?.jwt, response);
+        break;
+
+    case "ready-to-play":
+        handleReadyToPlayRequest(req?.body?.roomId, req?.body?.jwt, response);
         break;
     
     case "test-dynamo":
@@ -137,10 +141,37 @@ app.post("/:action", async (req, response) => {
 });
 
 async function getLastRoomJoined() {
-	const overflows = await db.collection("Overflows").get("overflows");
+	const overflows = (await db.collection("Overflows").get("overflows"))?.props?.overflows;
     return (overflows || 0) + 1;
 }
-
+async function roomIsFull(roomId) {
+    // check whether the room with id=roomId is full
+    const roomData = await db.collection("Room").get(roomId);
+    if(! roomData?.props) {
+        // room does not exist, create it
+        await db.collection("Room").set(roomId, {
+            mazeData: generateMaze(),
+            joinedPlayers: [],
+            preparedPlayers: [],
+            fullyReadyPlayers: {},
+            state: "loading",
+            startTime: undefined,
+            teamsInfo: undefined,
+            ttl: Math.floor(Date.now() / 1000) + 30*60 // half an hour
+        });
+        // new room is not full, so return false
+        return false;
+    }
+    // room exists: check how many players there are
+    // return true if the room is full
+    return roomData.props.joinedPlayers.length === MAX_NUMBER_OF_PLAYERS;
+}
+async function incrementOverflows() {
+    const overflows = (await db.collection("Overflows").get("overflows"))?.props?.overflows;
+    await db.collection("Overflows").set("overflows", {
+        overflows: (overflows || 0) + 1
+    });
+}
 
 
 
@@ -1075,6 +1106,216 @@ function generateRandomOTP(bytes=8, charGroupLength=2) {
 function generateRandomUSID() {
 	return generateRandomOTP(32, 32);
 }
+
+
+
+
+
+
+
+
+
+async function handleJoinRoomRequest(jwt, response) {
+    if( ! (await userIsLoggedIn(jwt)) ) {
+        response.status(200).send({
+            success: false,
+            message: "must-be-logged-in"
+        });
+        return;
+    }
+
+    const username = getUsernameFromJwt(jwt);
+    let lastRoomId = await getLastRoomJoined();
+    const lastRoomHasSpace = Boolean(! (await roomIsFull(lastRoomId)));
+
+    let mazeData;
+    if(lastRoomHasSpace) {
+        // the last room has an empty space - join it
+        const roomData = await db.collection("Room").get(lastRoomId);
+        roomData.joinedPlayers.append(username);
+        await db.collection("Room").set(lastRoomId, {
+            mazeData: roomData.mazeData,
+            joinedPlayers: roomData.joinedPlayers,
+            preparedPlayers: roomData.preparedPlayers,
+            fullyReadyPlayers: roomData.fullyReadyPlayers,
+            state: roomData.state,
+            startTime: roomData.startTime,
+            teamsInfo: roomData.teamsInfo,
+            ttl: roomData.ttl // half an hour
+        });
+        mazeData = roomData.mazeData;
+    } else {
+        // the room is full, join the next one
+        // next room = current room's id + 1:
+        lastRoomId += 1;
+        // then generate what will be the new room's maze
+        mazeData = generateMaze();
+        // inside the overflows table, increment the value of overflows
+        await incrementOverflows();
+        // create the record of the new room using all the data described
+        // in the ERD
+        await db.collection("Room").set(lastRoomId, {
+            mazeData: mazeData,
+            joinedPlayers: [username],
+            preparedPlayers: [],
+            fullyReadyPlayers: {},
+            state: "loading",
+            startTime: undefined,
+            teamsInfo: undefined,
+            ttl: Math.floor(Date.now() / 1000) + 30*60 // half an hour
+        });
+    }
+
+    // finally report back to the user and send the maze data
+    // so the client can display it in a lobby-like manner while
+    // waiting for more players to join
+    response.status(200).send({
+        success: true,
+        message: "joined-room",
+        mazeData: mazeData
+    });
+}
+async function handleReadyToPlayRequest(roomId, jwt, response) {
+    const roomData = await db.collection("Room").get(roomId);
+    const username = getUsernameFromJwt(jwt);
+
+    if(! (await userIsLoggedIn(jwt))) {
+        response.status(200).send({
+            success: false, 
+            message: "must-be-logged-in"
+        });
+        return;
+    }
+
+    if(!roomData.joinedPlayers.contains(username)) {
+        // if the user has tampered with the request payload
+        // reject their request
+        response.status(200).send({
+            success: false, message: "unknown-error"
+        });
+        return;
+    }
+    if(roomData.joinedPlayers.length < MAX_NUMBER_OF_PLAYERS) {
+        // not enough players have joined, wait for more
+        response.status(200).send({
+            success: false, 
+            message: "waiting-for-players"
+        });
+        return;
+    } else {
+        // there are enough players now
+        if(!roomData.preparedPlayers.contains(username)) {
+            roomData.preparedPlayers.append(username);
+        }
+
+        if(roomData.preparedPlayers.length < MAX_NUMBER_OF_PLAYERS) {
+            // some players have not displayed the maze, wait for them
+            response.status(200).send({
+                success: false, 
+                message: "waiting-for-players"
+            });
+            return;
+        } else {
+            // enough players are now "prepared"
+            // pick teams, generate pubnub and send response to start game
+            const teamsInfo = pickTeams(roomData.preparedPlayers);
+            
+            const pubnubChannelName = "ctf-room-" + roomId; // eg "ctf-room-19"
+            pubnub.subscribe({channels: [pubnubChannelName]}); // see pubnub docs
+            pubnub.addListener({
+                message: function(receivedMessage) {
+                    handlePubNubReceivedMessage(receivedMessage);
+                }
+            });
+            
+            response.status(200).send({
+                success: true,
+                message: "start-game",
+                pubnubChannelName,
+                teamsInfo
+            });
+        }
+    }
+}
+async function handlePubNubReceivedMessage(receivedMessage) {
+
+    const username = getUsernameFromJwt(receivedMessage.message.jwt);
+    const roomId = receivedMessage.message.roomId;
+
+    const roomData = await db.collection("Room").get(roomId);
+    if(! roomData.preparedPlayers.contains(username)) {
+        return;
+    }
+
+    if(! jwtIsValid(receivedMessage.message.jwt)) {
+        return;
+    }
+
+    const action = receivedMessage.action;
+    switch(action) {
+        case "ready-to-play": {
+            // client is ready to start playing
+            const teamsInfo = roomData.teamsInfo;
+            const userTeamInfo = teamsInfo.teamA.players.contains(username) ? 
+                ["teamA", teamsInfo.teamA] : ["teamB", teamsInfo.teamB];
+            const spawnPoint = userTeamInfo[1].spawnPoint;
+            const team = userTeamInfo[0];
+            roomData.fullyReadyPlayers[username] = {
+                position: spawnPoint, isDead: false, team: team
+            }
+            const numOfPlayers = Object.keys(roomData.fullyReadyPlayers).length
+            if(numOfPlayers == MAX_NUMBER_OF_PLAYERS) {
+                PubNub.publish({
+                    channel: "ctf-room-" + roomId,
+                    message: {message: "start-in-3s"}
+                });
+                setTimeout(() => {
+                    roomData.state = "playing";
+                    db.collection("Room").set(roomId, {
+                        mazeData: roomData.mazeData,
+                        joinedPlayers: roomData.joinedPlayers,
+                        preparedPlayers: roomData.preparedPlayers,
+                        fullyReadyPlayers: roomData.fullyReadyPlayers,
+                        state: roomData.state,
+                        startTime: Date.now(),
+                        teamsInfo: roomData.teamsInfo,
+                        ttl: Math.floor(Date.now() / 1000) + 30*60
+                    });
+                }, 3200);
+            } else {
+                db.collection("Room").set(roomId, {
+                    mazeData: roomData.mazeData,
+                    joinedPlayers: roomData.joinedPlayers,
+                    preparedPlayers: roomData.preparedPlayers,
+                    fullyReadyPlayers: roomData.fullyReadyPlayers,
+                    state: roomData.state,
+                    startTime: undefined,
+                    teamsInfo: roomData.teamsInfo,
+                    ttl: roomData.ttl
+                });
+            }
+            break;
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 app.get("/", (req, res) => {
     res.status(200).send(`<!DOCTYPE html>
