@@ -1388,7 +1388,9 @@ async function handleJoinRoomRequest(jwt, response) {
             ttl: roomData.ttl // half an hour
         });
         mazeData = roomData.mazeData;
+        console.log("Room exists");
     } else {
+        console.log("Make new room");
         // the room is full, join the next one
         // next room = current room's id + 1:
         lastRoomId += 1;
