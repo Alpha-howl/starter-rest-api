@@ -140,6 +140,178 @@ app.post("/:action", async (req, response) => {
 
 });
 
+const COLS = 11;
+const ROWS = 11;
+
+
+
+
+class Cell {
+	#x;
+	#y;
+	#index;
+	#neighbours = [];
+	#visited = false;
+	#walls = [true, true, true, true];
+
+	constructor(paramX, paramY, paramIndex) {
+		this.#x = paramX;
+		this.#y = paramY;
+		this.#index = paramIndex;
+	}
+
+
+	getY() {
+		return this.#y;
+	}
+	getX() {
+		return this.#x;
+	}
+	getIndex() {
+		return this.#index;
+	}
+	getNeighbours() {
+		return this.#neighbours;
+	}
+	isVisited() {
+		return this.#visited;
+	}
+	markAsVisited() {
+		this.#visited = true;
+	}
+	getWalls() {
+		return this.#walls;
+	}
+	removeWall(wallIndex) {
+		if(wallIndex > 3 || wallIndex < 0) {
+			throw "Error - wallIndex out of range (search 4354532)";
+			return;
+		}
+		this.#walls[wallIndex] = false;
+	}
+
+	initialiseNeighbours(grid, cols, rows) {
+		if(this.#neighbours.length != 0) {
+			return;
+		}
+
+		if(this.#x > 0) {
+			const leftNeighIndex = this.#index-1;
+			this.#neighbours.push(grid[leftNeighIndex]);
+		}
+		if(this.#y > 0) {
+			const topNeighIndex = this.#index - cols;
+			this.#neighbours.push(grid[topNeighIndex]);
+		}
+		if(this.#x < cols-1) {
+			const rightNeighIndex = this.#index + 1;
+			this.#neighbours.push(grid[rightNeighIndex]);
+		}
+		if(this.#y < rows-1) {
+			const bottomNeighIndex = this.#index + cols;
+			this.#neighbours.push(grid[bottomNeighIndex]);
+		}
+	}
+}
+function randomDfs(cols, rows, probToVisitCellAgain=0.5) {
+	// first, generate the initial grid of cells with all walls intact:
+	// number of cells = resolution of maze = rows x columns
+	const grid = new Array(cols*rows);
+	// inject those cells into the grid array now
+	for (let i = 0; i < grid.length; i++) {
+		// find the current cell's row and column to instantiate it
+		const row = Math.floor(i / cols);
+		const col = i % cols;
+		grid[i] = new Cell(/*x*/col, /*y*/row, /*index in grid*/i);
+	}
+
+	for (let i = 0; i < grid.length; i++) {
+		// call the initialiseNeighbours method for each cell
+		grid[i].initialiseNeighbours(grid, cols, rows);
+	}
+
+
+	// define stack of cells to be processed & place
+	// the initial cell in it to start with
+	const cellsToProcessStack = [grid[0]];
+
+
+	while (cellsToProcessStack.length != 0) {
+		// pop the last cell from the stack & call it the current cell
+		const currentCell = cellsToProcessStack.splice(-1)[0];
+
+		if (Math.random() > probToVisitCellAgain) {
+			currentCell.markAsVisited();
+		}
+
+		// check to see if cell has unvisited neighbours
+		// by using a linear search and a flag
+		let hasUnvisitedNeighbours = false;
+		const unvisitedNeighbours = [];
+		const allNeighbours = currentCell.getNeighbours();
+		for (let i = 0; i < allNeighbours.length; i++) {
+			if(!allNeighbours[i].isVisited()) {
+				hasUnvisitedNeighbours = true;
+				unvisitedNeighbours.push(allNeighbours[i]);
+			}
+		}
+
+
+		if (hasUnvisitedNeighbours) {
+			// as in the structured English description, we have to do the following:
+			// if there are unvisited neighbours, push the cell onto the stack
+			// and remove the wall between that cell and one of the unvisited neighbours
+
+			cellsToProcessStack.push(currentCell);
+			const rand = Math.floor(Math.random()*unvisitedNeighbours.length);
+			const chosenNeighbour = unvisitedNeighbours[rand];
+
+			// now find the location of the neighbour relative to the current cell
+			// and remove the walls between the neighbour and the current cell
+			const indexDifference = currentCell.getIndex() - chosenNeighbour.getIndex();
+			if(indexDifference === -cols) {
+				// the neighbour is directly downwards from current cell, so
+				// remove top wall of neighbour and bottom wall of current cell
+				grid[chosenNeighbour.getIndex()].removeWall(0);
+				grid[currentCell.getIndex()].removeWall(2);
+			}
+			else if(indexDifference === cols) {
+				// neighbour is directly upwards from current cell, so
+				// remove bottom wall of neighbour and top wall of current cell
+				grid[chosenNeighbour.getIndex()].removeWall(2);
+				grid[currentCell.getIndex()].removeWall(0);
+			}
+			else if(indexDifference === -1) {
+				// neighbour is to the right -> of the current cell
+				// remove left wall of neighbour and right wall of current
+				grid[chosenNeighbour.getIndex()].removeWall(3);
+				grid[currentCell.getIndex()].removeWall(1);
+			}
+			else {
+				// indexDifference = 1, and the neighbour is to
+				// the left <- of the current cell
+				grid[chosenNeighbour.getIndex()].removeWall(1);
+				grid[currentCell.getIndex()].removeWall(3);
+			}
+
+			// now push neighbour to stack so it is 
+			// also processed like the current cell just was
+			cellsToProcessStack.push(grid[chosenNeighbour.getIndex()]);
+
+		} else {
+			// has no unvisited neigh.
+			// do nothing, all paths have alrady been carved around
+			// this cell - so no need for new paths
+		} // end if
+	} // end while
+	// finally, return the maze data (the grid array)
+	return grid;
+}
+
+
+
+
+
 async function getLastRoomJoined() {
 	const overflows = (await db.collection("Overflows").get("overflows"))?.props?.overflows;
     return (overflows || 0) + 1;
@@ -151,7 +323,7 @@ async function roomIsFull(roomId) {
     if(! roomData?.props) {
         // room does not exist, create it
         await db.collection("Room").set(roomId, {
-            mazeData: generateMaze(),
+            mazeData: randomDfs(COLS, ROWS),
             joinedPlayers: [],
             preparedPlayers: [],
             fullyReadyPlayers: {},
