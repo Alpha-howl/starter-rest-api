@@ -1413,6 +1413,7 @@ async function handleJoinRoomRequest(jwt, response) {
     // finally report back to the user and send the maze data
     // so the client can display it in a lobby-like manner while
     // waiting for more players to join
+    console.log(mazeData);
     response.status(200).send({
         success: true,
         message: "joined-room",
