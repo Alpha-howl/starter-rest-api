@@ -318,11 +318,10 @@ async function getLastRoomJoined() {
 }
 async function roomIsFull(roomId) {
     // check whether the room with id=roomId is full
-    console.log(roomId.toString());
     const roomData = await db.collection("Room").get(roomId.toString());
     if(! roomData?.props) {
         // room does not exist, create it
-        await db.collection("Room").set(roomId, {
+        await db.collection("Room").set(roomId.toString(), {
             mazeData: randomDfs(COLS, ROWS),
             joinedPlayers: [],
             preparedPlayers: [],
@@ -1306,7 +1305,7 @@ async function handleJoinRoomRequest(jwt, response) {
         // the last room has an empty space - join it
         const roomData = await db.collection("Room").get(lastRoomId);
         roomData.joinedPlayers.append(username);
-        await db.collection("Room").set(lastRoomId, {
+        await db.collection("Room").set(lastRoomId.toString(), {
             mazeData: roomData.mazeData,
             joinedPlayers: roomData.joinedPlayers,
             preparedPlayers: roomData.preparedPlayers,
@@ -1327,7 +1326,7 @@ async function handleJoinRoomRequest(jwt, response) {
         await incrementOverflows();
         // create the record of the new room using all the data described
         // in the ERD
-        await db.collection("Room").set(lastRoomId, {
+        await db.collection("Room").set(lastRoomId.toString(), {
             mazeData: mazeData,
             joinedPlayers: [username],
             preparedPlayers: [],
@@ -1349,7 +1348,7 @@ async function handleJoinRoomRequest(jwt, response) {
     });
 }
 async function handleReadyToPlayRequest(roomId, jwt, response) {
-    const roomData = await db.collection("Room").get(roomId);
+    const roomData = await db.collection("Room").get(roomId.toString());
     const username = getUsernameFromJwt(jwt);
 
     if(! (await userIsLoggedIn(jwt))) {
@@ -1415,7 +1414,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
     const username = getUsernameFromJwt(receivedMessage.message.jwt);
     const roomId = receivedMessage.message.roomId;
 
-    const roomData = await db.collection("Room").get(roomId);
+    const roomData = await db.collection("Room").get(roomId.toString());
     if(! roomData.preparedPlayers.contains(username)) {
         return;
     }
@@ -1444,7 +1443,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 });
                 setTimeout(() => {
                     roomData.state = "playing";
-                    db.collection("Room").set(roomId, {
+                    db.collection("Room").set(roomId.toString(), {
                         mazeData: roomData.mazeData,
                         joinedPlayers: roomData.joinedPlayers,
                         preparedPlayers: roomData.preparedPlayers,
@@ -1456,7 +1455,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                     });
                 }, 3200);
             } else {
-                db.collection("Room").set(roomId, {
+                db.collection("Room").set(roomId.toString(), {
                     mazeData: roomData.mazeData,
                     joinedPlayers: roomData.joinedPlayers,
                     preparedPlayers: roomData.preparedPlayers,
