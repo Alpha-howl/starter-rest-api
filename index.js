@@ -393,7 +393,7 @@ async function roomIsFull(roomId) {
         // room does not exist, create it
         const newGrid = randomDfs(COLS, ROWS);
         await db.collection("Room").set(roomId.toString(), {
-            mazeData: (newGrid),
+            mazeData: JSON.decycle(newGrid),
             joinedPlayers: [],
             preparedPlayers: [],
             fullyReadyPlayers: {},
