@@ -1375,7 +1375,8 @@ async function handleJoinRoomRequest(jwt, response) {
     if(lastRoomHasSpace) {
         // the last room has an empty space - join it
         const roomData = await db.collection("Room").get(lastRoomId.toString());
-        roomData.joinedPlayers.append(username);
+        roomData.props.joinedPlayers ||= [];
+        roomData.props.joinedPlayers.push(username);
         await db.collection("Room").set(lastRoomId.toString(), {
             mazeData: roomData.mazeData,
             joinedPlayers: roomData.joinedPlayers,
