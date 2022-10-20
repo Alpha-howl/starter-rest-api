@@ -146,7 +146,7 @@ async function getLastRoomJoined() {
 }
 async function roomIsFull(roomId) {
     // check whether the room with id=roomId is full
-    const roomData = await db.collection("Room").get(roomId);
+    const roomData = await db.collection("Room").get(roomId.toString());
     if(! roomData?.props) {
         // room does not exist, create it
         await db.collection("Room").set(roomId, {
