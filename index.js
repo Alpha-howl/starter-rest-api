@@ -393,7 +393,7 @@ async function roomIsFull(roomId) {
         // room does not exist, create it
         const newGrid = randomDfs(COLS, ROWS);
         await db.collection("Room").set(roomId.toString(), {
-            mazeData: JSON.decycle(newGrid),
+            mazeData: (newGrid),
             joinedPlayers: [],
             preparedPlayers: [],
             fullyReadyPlayers: {},
@@ -1393,7 +1393,7 @@ async function handleJoinRoomRequest(jwt, response) {
         // next room = current room's id + 1:
         lastRoomId += 1;
         // then generate what will be the new room's maze
-        mazeData = generateMaze();
+        mazeData = randomDfs(COLS, ROWS);
         // inside the overflows table, increment the value of overflows
         await incrementOverflows();
         // create the record of the new room using all the data described
@@ -1416,7 +1416,7 @@ async function handleJoinRoomRequest(jwt, response) {
     response.status(200).send({
         success: true,
         message: "joined-room",
-        mazeData: mazeData
+        mazeData: JSON.decycle(mazeData)
     });
 }
 async function handleReadyToPlayRequest(roomId, jwt, response) {
