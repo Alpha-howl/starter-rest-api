@@ -184,7 +184,8 @@ class Cell {
 	}
 	removeWall(wallIndex) {
 		if(wallIndex > 3 || wallIndex < 0) {
-			throw "Error - wallIndex out of range (search 4354532)";
+            console.log("Wall index out of range");
+			//throw "Error - wallIndex out of range (search 4354532)";
 			return;
 		}
 		this.#walls[wallIndex] = false;
