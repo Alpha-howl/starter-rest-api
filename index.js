@@ -407,6 +407,7 @@ async function roomIsFull(roomId) {
     }
     // room exists: check how many players there are
     // return true if the room is full
+    console.log(roomData.props.joinedPlayers);
     return roomData.props.joinedPlayers.length === MAX_NUMBER_OF_PLAYERS;
 }
 async function incrementOverflows() {
