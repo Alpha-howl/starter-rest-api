@@ -213,6 +213,40 @@ class Cell {
 			this.#neighbours.push(grid[bottomNeighIndex]);
 		}
 	}
+
+    toJSO() {
+        return {
+            x: this.#x,
+            y: this.#y,
+            index: this.#index,
+            neighbours: this.#neighbours,
+            visited: this.#visited,
+            walls: this.#walls,
+            toJSO() {
+                return {
+                    x: this.#x,
+                    y: this.#y,
+                    index: this.#index,
+                    neighbours: this.#neighbours,
+                    visited: this.#visited,
+                    walls: this.#walls,
+                    toCellObj: () => {
+                        const thisCellVersion = new Cell(this.#x, this.#y, this.#index);
+                        if(this.#visited) {
+                            thisCellVersion.markAsVisited();
+                        }
+                        this.#walls.forEach((wall, index) => {
+                            if(wall === false) {
+                                thisCellVersion.removeWall(index);
+                            }
+                        });
+
+                        return thisCellVersion;
+                    }
+                };
+            }
+        };
+    }
 }
 function randomDfs(cols, rows, probToVisitCellAgain=0.5) {
 	// first, generate the initial grid of cells with all walls intact:
@@ -391,9 +425,10 @@ async function roomIsFull(roomId) {
     const roomData = await db.collection("Room").get(roomId.toString());
     if(! roomData?.props) {
         // room does not exist, create it
-        const newGrid = randomDfs(COLS, ROWS);
+        // convert array of cells to array of JSOs so it can be saved in the db
+        const newGrid = randomDfs(COLS, ROWS).map(cell => cell.toJSO());
         await db.collection("Room").set(roomId.toString(), {
-            mazeData: JSON.decycle(newGrid),
+            mazeData: newGrid,
             joinedPlayers: [],
             preparedPlayers: [],
             fullyReadyPlayers: {},
@@ -1397,6 +1432,7 @@ async function handleJoinRoomRequest(jwt, response) {
         lastRoomId += 1;
         // then generate what will be the new room's maze
         mazeData = randomDfs(COLS, ROWS);
+        mazeData = mazeData.map(cell => cell.toJSO());
         // inside the overflows table, increment the value of overflows
         await incrementOverflows();
         // create the record of the new room using all the data described
@@ -1420,7 +1456,7 @@ async function handleJoinRoomRequest(jwt, response) {
     response.status(200).send({
         success: true,
         message: "joined-room",
-        mazeData: JSON.decycle(mazeData)
+        mazeData: mazeData
     });
     // problem - cannot decycle a Cell class. todo - fix. add a Cell method "convertToObject"
 }
