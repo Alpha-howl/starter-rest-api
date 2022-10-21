@@ -1472,8 +1472,9 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
                 gotten: await (db.collection("Room").get(roomId.toString())),
                 old: roomData,
                 conditionOld: roomData?.joinedPlayers?.includes(username),
-                conditionNew: await (db.collection("Room").get(roomId.toString()))?.props?.joinedPlayers?.includes(username),
-                username
+                conditionNew: await (db.collection("Room").get(roomId.toString())).props,
+                username,
+                roomId
             }
         });
         return;
