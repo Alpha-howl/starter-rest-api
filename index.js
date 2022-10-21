@@ -1468,7 +1468,13 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
         // if the user has tampered with the request payload (ie changed the roomid of the sent req)
         // reject their request
         response.status(200).send({
-            success: false, message: "unknown-error", roomData: {gotten: await (db.collection("Room").get(roomId.toString()))}
+            success: false, message: "unknown-error", roomData: {
+                gotten: await (db.collection("Room").get(roomId.toString())),
+                old: roomData,
+                conditionOld: roomData?.joinedPlayers?.includes(username),
+                conditionNew: await (db.collection("Room").get(roomId.toString()))?.props?.joinedPlayers?.includes(username),
+                username
+            }
         });
         return;
     }
