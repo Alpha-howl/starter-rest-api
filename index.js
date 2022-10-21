@@ -1465,7 +1465,7 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
         return;
     }
 
-    if(! (roomData?.joinedPlayers?.includes(username))) {
+    if(! (roomData2?.props?.joinedPlayers?.includes(username))) {
         // if the user has tampered with the request payload (ie changed the roomid of the sent req)
         // reject their request
         response.status(200).send({
