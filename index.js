@@ -35,9 +35,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-const COLS = 11;
-const ROWS = 11;
-
 app.post("/:action", async (req, response) => {
   response.header("Access-Control-Allow-Origin", "*");
   response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
