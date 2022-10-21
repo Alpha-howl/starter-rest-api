@@ -1481,7 +1481,7 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
         });
         return;
     }
-    if(roomData.joinedPlayers.length < MAX_NUMBER_OF_PLAYERS) {
+    if(roomData2.props.joinedPlayers.length < MAX_NUMBER_OF_PLAYERS) {
         // not enough players have joined, wait for more
         response.status(200).send({
             success: false, 
@@ -1490,11 +1490,11 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
         return;
     } else {
         // there are enough players now
-        if(!roomData.preparedPlayers.contains(username)) {
-            roomData.preparedPlayers.append(username);
+        if(!roomData2.props.preparedPlayers.contains(username)) {
+            roomData2.props.preparedPlayers.append(username);
         }
 
-        if(roomData.preparedPlayers.length < MAX_NUMBER_OF_PLAYERS) {
+        if(roomData2.props.preparedPlayers.length < MAX_NUMBER_OF_PLAYERS) {
             // some players have not displayed the maze, wait for them
             response.status(200).send({
                 success: false, 
@@ -1504,7 +1504,7 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
         } else {
             // enough players are now "prepared"
             // pick teams, generate pubnub and send response to start game
-            const teamsInfo = pickTeams(roomData.preparedPlayers);
+            const teamsInfo = pickTeams(roomData2.props.preparedPlayers);
             
             const pubnubChannelName = "ctf-room-" + roomId; // eg "ctf-room-19"
             pubnub.subscribe({channels: [pubnubChannelName]}); // see pubnub docs
