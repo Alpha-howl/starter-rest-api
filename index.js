@@ -221,30 +221,7 @@ class Cell {
             index: this.#index,
             neighbours: this.#neighbours,
             visited: this.#visited,
-            walls: this.#walls,
-            toJSO() {
-                return {
-                    x: this.#x,
-                    y: this.#y,
-                    index: this.#index,
-                    neighbours: this.#neighbours,
-                    visited: this.#visited,
-                    walls: this.#walls,
-                    toCellObj: () => {
-                        const thisCellVersion = new Cell(this.#x, this.#y, this.#index);
-                        if(this.#visited) {
-                            thisCellVersion.markAsVisited();
-                        }
-                        this.#walls.forEach((wall, index) => {
-                            if(wall === false) {
-                                thisCellVersion.removeWall(index);
-                            }
-                        });
-
-                        return thisCellVersion;
-                    }
-                };
-            }
+            walls: this.#walls
         };
     }
 }
