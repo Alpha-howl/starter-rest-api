@@ -1531,7 +1531,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
     const roomId = receivedMessage.message.roomId;
 
     const roomData = await db.collection("Room").get(roomId.toString());
-    if(! roomData.preparedPlayers.contains(username)) {
+    if(! roomData.props.preparedPlayers.includes(username)) {
         return;
     }
 
@@ -1544,7 +1544,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
         case "ready-to-play": {
             // client is ready to start playing
             const teamsInfo = roomData.teamsInfo;
-            const userTeamInfo = teamsInfo.teamA.players.contains(username) ? 
+            const userTeamInfo = teamsInfo.teamA.players.includes(username) ? 
                 ["teamA", teamsInfo.teamA] : ["teamB", teamsInfo.teamB];
             const spawnPoint = userTeamInfo[1].spawnPoint;
             const team = userTeamInfo[0];
