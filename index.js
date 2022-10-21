@@ -1472,7 +1472,7 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
                 gotten: await (db.collection("Room").get(roomId.toString())),
                 old: roomData,
                 conditionOld: roomData?.joinedPlayers?.includes(username),
-                conditionNew: await (db.collection("Room").get(roomId.toString())).props,
+                conditionNew: await (db.collection("Room").get(roomId.toString())),
                 username,
                 roomId
             }
