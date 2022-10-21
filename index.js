@@ -127,6 +127,10 @@ app.post("/:action", async (req, response) => {
     case "pubnub-proba":
         pubnubProba(response);
         break;
+    
+    case "maze-proba":
+        mazeProba();
+        break;
 
     
     default:
@@ -215,14 +219,7 @@ class Cell {
 	}
 
     toJSO() {
-        return {
-            x: this.#x,
-            y: this.#y,
-            index: this.#index,
-            neighbours: this.#neighbours,
-            visited: this.#visited,
-            walls: this.#walls
-        };
+        return 50;
     }
 }
 function randomDfs(cols, rows, probToVisitCellAgain=0.5) {
@@ -459,7 +456,18 @@ async function pubnubProba(response) {
         channel: "proba"
     });
 }
-
+async function mazeProba() {
+    const newMaze = randomDfs(3,3);
+    const JSOMaze = newMaze.map(cell => {
+        return cell.toJSO();
+    });
+    response.status(200).send({
+        success: true, 
+        message: {
+            worls: true
+        }
+    });
+}
 
 async function userIsLoggedIn(jwt) {
     let isLoggedIn = true;
