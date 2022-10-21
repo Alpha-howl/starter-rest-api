@@ -463,9 +463,7 @@ function mazeProba(response) {
     });
     response.status(200).send({
         success: true, 
-        message: {
-            worls: true
-        }
+        message: JSOMaze
     });
 }
 
