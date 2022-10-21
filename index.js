@@ -35,6 +35,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
+const COLS = 11;
+const ROWS = 11;
 
 app.post("/:action", async (req, response) => {
   response.header("Access-Control-Allow-Origin", "*");
@@ -1490,7 +1492,7 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
         return;
     } else {
         // there are enough players now
-        if(!roomData2.props.preparedPlayers.contains(username)) {
+        if(!roomData2.props.preparedPlayers.includes(username)) {
             roomData2.props.preparedPlayers.append(username);
         }
 
@@ -1504,7 +1506,7 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
         } else {
             // enough players are now "prepared"
             // pick teams, generate pubnub and send response to start game
-            const teamsInfo = pickTeams(roomData2.props.preparedPlayers);
+            const teamsInfo = pickTeams(roomData2.props.preparedPlayers, COLS, ROWS);
             
             const pubnubChannelName = "ctf-room-" + roomId; // eg "ctf-room-19"
             pubnub.subscribe({channels: [pubnubChannelName]}); // see pubnub docs
@@ -1585,12 +1587,38 @@ async function handlePubNubReceivedMessage(receivedMessage) {
     }
 }
 
+function pickTeams(preparedPlayers, cols, rows) { 
+	// preparedPlayers is the array of usernames 
+	// shuffle the player usernames into a rand order:
+	const randomOrderUsernames = preparedPlayers.sort(() => Math.random() - .5); 
+
+	const playerNumber = randomOrderUsernames.length; 
+	const usernamesOfTeamA = randomOrderUsernames.slice(0, playerNumber/2); 
+	const usernamesOfTeamB = randomOrderUsernames.slice(playerNumber/2, playerNumber);
 
 
+	// now spawn points...
+	// team A will spawn in the top left
+	// team b will spawn in the bottom right
+	// so they are an equal dst from centre
+	const spawnPointA = [0,0];
+	const spawnPointB = [cols-1, rows-1];
 
+	const teamsInfo = {
+		teamA: {
+			players: usernamesOfTeamA,
+			spawnPoint: spawnPointA,
+			colour: "#E83100" // red
+		},
+		teamB: {
+			players: usernamesOfTeamB,
+			spawnPoint: spawnPointB,
+			colour: "#2D4628" // green
+		}
+	}
 
-
-
+	return teamsInfo;
+}
 
 
 
