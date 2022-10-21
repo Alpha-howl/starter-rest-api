@@ -1454,6 +1454,7 @@ async function handleJoinRoomRequest(jwt, response) {
 }
 async function handleReadyToPlayRequest(roomId, jwt, response) {
     const roomData = await (db.collection("Room").get(roomId.toString())).props;
+    const roomData2 = await (db.collection("Room").get(roomId.toString()))
     const username = getUsernameFromJwt(jwt);
 
     if(! (await userIsLoggedIn(jwt))) {
@@ -1470,9 +1471,9 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
         response.status(200).send({
             success: false, message: "unknown-error", roomData: {
                 gotten: await (db.collection("Room").get(roomId.toString())),
-                old: roomData,
+                old: roomData2,
                 conditionOld: roomData?.joinedPlayers?.includes(username),
-                conditionNew: await (db.collection("Room").get(roomId.toString())),
+                conditionNew: await (db.collection("Room").get(roomId.toString())).key,
                 username,
                 roomId
             }
