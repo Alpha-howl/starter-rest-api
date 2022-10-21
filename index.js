@@ -1423,7 +1423,9 @@ async function handleJoinRoomRequest(jwt, response) {
         lastRoomId += 1;
         // then generate what will be the new room's maze
         mazeData = randomDfs(COLS, ROWS);
-        mazeData = mazeData.map(cell => cell.toJSO());
+        mazeData = mazeData.map(cell => {
+            return cell.toJSO();
+        });
         console.log(mazeData);
         // inside the overflows table, increment the value of overflows
         await incrementOverflows();
