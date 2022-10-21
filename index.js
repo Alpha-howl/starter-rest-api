@@ -219,7 +219,14 @@ class Cell {
 	}
 
     toJSO() {
-        return 50;
+        return {
+            x: this.#x,
+            y: this.#y,
+            index: this.#index,
+            neighbours: this.#neighbours,
+            visited: this.#visited,
+            walls: this.#walls
+        };
     }
 }
 function randomDfs(cols, rows, probToVisitCellAgain=0.5) {
