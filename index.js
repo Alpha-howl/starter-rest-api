@@ -223,7 +223,8 @@ class Cell {
             x: this.#x,
             y: this.#y,
             index: this.#index,
-            neighbours: this.#neighbours,
+            neighbours: [], // cannot compute this as it 
+            // would result in a infinite loop (client has to re-init neighbours)
             visited: this.#visited,
             walls: this.#walls
         };
