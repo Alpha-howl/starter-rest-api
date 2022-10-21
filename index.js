@@ -1472,6 +1472,7 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
             success: false, message: "unknown-error", roomData: {
                 gotten: await (db.collection("Room").get(roomId.toString())),
                 old: roomData2,
+                oldAccessed: roomData2.props,
                 conditionOld: roomData?.joinedPlayers?.includes(username),
                 conditionNew: await (db.collection("Room").get(roomId.toString())).key,
                 username,
