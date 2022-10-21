@@ -1465,11 +1465,11 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
         return;
     }
 
-    if(!roomData.joinedPlayers.contains(username)) {
+    if(!roomData?.joinedPlayers?.contains(username)) {
         // if the user has tampered with the request payload
         // reject their request
         response.status(200).send({
-            success: false, message: "unknown-error"
+            success: false, message: "unknown-error", roomData
         });
         return;
     }
