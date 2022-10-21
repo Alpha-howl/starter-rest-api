@@ -1490,7 +1490,7 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
     } else {
         // there are enough players now
         if(!roomData2.props.preparedPlayers.includes(username)) {
-            roomData2.props.preparedPlayers.append(username);
+            roomData2.props.preparedPlayers.push(username);
         }
 
         if(roomData2.props.preparedPlayers.length < MAX_NUMBER_OF_PLAYERS) {
