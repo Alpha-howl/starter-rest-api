@@ -1426,7 +1426,6 @@ async function handleJoinRoomRequest(jwt, response) {
         mazeData = mazeData.map(cell => {
             return cell.toJSO();
         });
-        console.log(mazeData);
         // inside the overflows table, increment the value of overflows
         await incrementOverflows();
         // create the record of the new room using all the data described
@@ -1446,11 +1445,11 @@ async function handleJoinRoomRequest(jwt, response) {
     // finally report back to the user and send the maze data
     // so the client can display it in a lobby-like manner while
     // waiting for more players to join
-    console.log(mazeData);
     response.status(200).send({
         success: true,
         message: "joined-room",
-        mazeData: mazeData
+        mazeData: mazeData,
+        roomId: lastRoomId
     });
     // problem - cannot decycle a Cell class. todo - fix. add a Cell method "convertToObject"
 }
