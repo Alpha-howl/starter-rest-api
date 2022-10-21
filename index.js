@@ -1451,7 +1451,6 @@ async function handleJoinRoomRequest(jwt, response) {
         mazeData: mazeData,
         roomId: lastRoomId
     });
-    // problem - cannot decycle a Cell class. todo - fix. add a Cell method "convertToObject"
 }
 async function handleReadyToPlayRequest(roomId, jwt, response) {
     const roomData = await (db.collection("Room").get(roomId.toString())).props;
