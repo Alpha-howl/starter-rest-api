@@ -129,7 +129,7 @@ app.post("/:action", async (req, response) => {
         break;
     
     case "maze-proba":
-        mazeProba();
+        mazeProba(response);
         break;
 
     
@@ -456,7 +456,7 @@ async function pubnubProba(response) {
         channel: "proba"
     });
 }
-async function mazeProba() {
+function mazeProba(response) {
     const newMaze = randomDfs(3,3);
     const JSOMaze = newMaze.map(cell => {
         return cell.toJSO();
