@@ -1415,7 +1415,7 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
         // there are enough players now
         if(!roomData.props.preparedPlayers.includes(username) || true) {
             roomData.props.preparedPlayers.push(username);
-            await db.collection("Room").set(lastRoomId.toString(), {
+            await db.collection("Room").set(roomId.toString(), {
                 mazeData: roomData.props.mazeData,
                 joinedPlayers: roomData.props.joinedPlayers,
                 preparedPlayers: roomData.props.preparedPlayers,
