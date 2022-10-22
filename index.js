@@ -334,7 +334,7 @@ async function getLastRoomJoined() {
 async function roomIsFull(roomId) {
     // check whether the room with id=roomId is full
     const roomData = await db.collection("Room").get(roomId.toString());
-    if(! roomData?.props) {
+    if(! roomData?.key) {
         // room does not exist, create it
         // convert array of cells to array of JSOs so it can be saved in the db
         console.log("Insert new room " + roomId);
@@ -1415,6 +1415,16 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
         // there are enough players now
         if(!roomData.props.preparedPlayers.includes(username) || true) {
             roomData.props.preparedPlayers.push(username);
+            await db.collection("Room").set(lastRoomId.toString(), {
+                mazeData: roomData.props.mazeData,
+                joinedPlayers: roomData.props.joinedPlayers,
+                preparedPlayers: roomData.props.preparedPlayers,
+                fullyReadyPlayers: roomData.props.fullyReadyPlayers,
+                state: roomData.props.state,
+                startTime: roomData.props.startTime,
+                teamsInfo: roomData.props.teamsInfo,
+                ttl: roomData.props.ttl // half an hour
+            });
         }
 
         if(roomData.props.preparedPlayers.length < MAX_NUMBER_OF_PLAYERS) {
