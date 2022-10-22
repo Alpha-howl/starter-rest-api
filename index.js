@@ -337,6 +337,7 @@ async function roomIsFull(roomId) {
     if(! roomData?.props) {
         // room does not exist, create it
         // convert array of cells to array of JSOs so it can be saved in the db
+        console.log("Insert new room " + roomId);
         const newGrid = randomDfs(COLS, ROWS).map(cell => {return cell.toJSO()});
         await db.collection("Room").set(roomId.toString(), {
             mazeData: newGrid,
@@ -1419,7 +1420,7 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
             response.status(200).send({
                 success: false, 
                 message: "waiting-for-players",
-                details: "preparedPlayers not enough: " + roomData.props.preparedPlayers.join()
+                roomData
             });
             return;
         } else {
