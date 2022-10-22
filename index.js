@@ -1405,8 +1405,7 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
         // not enough players have joined, wait for more
         response.status(200).send({
             success: false, 
-            message: "waiting-for-players",
-            details: "joinedPlayers not enough: " + roomData.props.joinedPlayers.join()
+            message: "waiting-for-players"
         });
         return;
     } else {
@@ -1422,8 +1421,7 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
             // some players have not displayed the maze, wait for them
             response.status(200).send({
                 success: false, 
-                message: "waiting-for-players",
-                roomData
+                message: "waiting-for-players"
             });
             return;
         } else {
