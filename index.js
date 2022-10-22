@@ -1409,12 +1409,11 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
         });
         return;
     } else {
+        console.log(roomData.props.preparedPlayers);
+        console.log(username);
         // there are enough players now
         if(!roomData.props.preparedPlayers.includes(username) || true) {
             roomData.props.preparedPlayers.push(username);
-        } else {
-            console.log(roomData.props.preparedPlayers);
-            console.log(username);
         }
 
         if(roomData.props.preparedPlayers.length < MAX_NUMBER_OF_PLAYERS) {
