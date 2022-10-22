@@ -1332,7 +1332,7 @@ async function handleJoinRoomRequest(jwt, response) {
         // the last room has an empty space - join it
         const roomData = await db.collection("Room").get(lastRoomId.toString());
         roomData.props.joinedPlayers ||= [];
-        roomData.props.joinedPlayers.push(username);
+        roomData.props.joinedPlayers.push(username); // todo later - only push username if it is not already there
         await db.collection("Room").set(lastRoomId.toString(), {
             mazeData: roomData.props.mazeData,
             joinedPlayers: roomData.props.joinedPlayers,
@@ -1380,8 +1380,7 @@ async function handleJoinRoomRequest(jwt, response) {
     });
 }
 async function handleReadyToPlayRequest(roomId, jwt, response) {
-    const roomData = await (db.collection("Room").get(roomId.toString())).props;
-    const roomData2 = await (db.collection("Room").get(roomId.toString()))
+    const roomData = await (db.collection("Room").get(roomId.toString()))
     const username = getUsernameFromJwt(jwt);
 
     if(! (await userIsLoggedIn(jwt))) {
@@ -1392,46 +1391,41 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
         return;
     }
 
-    if(! (roomData2?.props?.joinedPlayers?.includes(username))) {
+    if(! (roomData?.props?.joinedPlayers?.includes(username))) {
         // if the user has tampered with the request payload (ie changed the roomid of the sent req)
         // reject their request
         response.status(200).send({
-            success: false, message: "unknown-error", roomData: {
-                gotten: await (db.collection("Room").get(roomId.toString())),
-                old: roomData2,
-                oldAccessed: roomData2.props,
-                conditionOld: roomData?.joinedPlayers?.includes(username),
-                conditionNew: await (db.collection("Room").get(roomId.toString())).key,
-                username,
-                roomId
-            }
+            success: false, 
+            message: "unknown-error"
         });
         return;
     }
-    if(roomData2.props.joinedPlayers.length < MAX_NUMBER_OF_PLAYERS) {
+    if(roomData.props.joinedPlayers.length < MAX_NUMBER_OF_PLAYERS) {
         // not enough players have joined, wait for more
         response.status(200).send({
             success: false, 
-            message: "waiting-for-players"
+            message: "waiting-for-players",
+            details: "joinedPlayers not enough: " + roomData.props.joinedPlayers.join()
         });
         return;
     } else {
         // there are enough players now
-        if(!roomData2.props.preparedPlayers.includes(username)) {
-            roomData2.props.preparedPlayers.push(username);
+        if(!roomData.props.preparedPlayers.includes(username) || true) {
+            roomData.props.preparedPlayers.push(username);
         }
 
-        if(roomData2.props.preparedPlayers.length < MAX_NUMBER_OF_PLAYERS) {
+        if(roomData.props.preparedPlayers.length < MAX_NUMBER_OF_PLAYERS) {
             // some players have not displayed the maze, wait for them
             response.status(200).send({
                 success: false, 
-                message: "waiting-for-players"
+                message: "waiting-for-players",
+                details: "preparedPlayers not enough: " + roomData.props.preparedPlayers.join()
             });
             return;
         } else {
             // enough players are now "prepared"
             // pick teams, generate pubnub and send response to start game
-            const teamsInfo = pickTeams(roomData2.props.preparedPlayers, COLS, ROWS);
+            const teamsInfo = pickTeams(roomData.props.preparedPlayers, COLS, ROWS);
             
             const pubnubChannelName = "ctf-room-" + roomId; // eg "ctf-room-19"
             pubnub.subscribe({channels: [pubnubChannelName]}); // see pubnub docs
