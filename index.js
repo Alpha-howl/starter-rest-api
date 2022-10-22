@@ -1335,13 +1335,13 @@ async function handleJoinRoomRequest(jwt, response) {
         roomData.props.joinedPlayers.push(username);
         await db.collection("Room").set(lastRoomId.toString(), {
             mazeData: roomData.props.mazeData,
-            joinedPlayers: roomData.joinedPlayers,
-            preparedPlayers: roomData.preparedPlayers,
-            fullyReadyPlayers: roomData.fullyReadyPlayers,
-            state: roomData.state,
-            startTime: roomData.startTime,
-            teamsInfo: roomData.teamsInfo,
-            ttl: roomData.ttl // half an hour
+            joinedPlayers: roomData.props.joinedPlayers,
+            preparedPlayers: roomData.props.preparedPlayers,
+            fullyReadyPlayers: roomData.props.fullyReadyPlayers,
+            state: roomData.props.state,
+            startTime: roomData.props.startTime,
+            teamsInfo: roomData.props.teamsInfo,
+            ttl: roomData.props.ttl // half an hour
         });
         mazeData = roomData.props.mazeData;
         console.log("Room exists");
