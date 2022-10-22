@@ -407,7 +407,7 @@ async function roomIsFull(roomId) {
     if(! roomData?.props) {
         // room does not exist, create it
         // convert array of cells to array of JSOs so it can be saved in the db
-        const newGrid = randomDfs(COLS, ROWS).map(cell => cell.toJSO());
+        const newGrid = randomDfs(COLS, ROWS);
         await db.collection("Room").set(roomId.toString(), {
             mazeData: newGrid,
             joinedPlayers: [],
@@ -418,12 +418,12 @@ async function roomIsFull(roomId) {
             teamsInfo: undefined,
             ttl: Math.floor(Date.now() / 1000) + 30*60 // half an hour
         });
-        // new room is not full, so return false
+        // the new room cannot be full, so return false
         return false;
     }
     // room exists: check how many players there are
     // return true if the room is full
-    console.log(roomData.props.joinedPlayers);
+    console.log(roomData.props.joinedPlayers.length, MAX_NUMBER_OF_PLAYERS);
     return roomData.props.joinedPlayers.length === MAX_NUMBER_OF_PLAYERS;
 }
 async function incrementOverflows() {
@@ -1398,7 +1398,7 @@ async function handleJoinRoomRequest(jwt, response) {
     const lastRoomHasSpace = Boolean(! (await roomIsFull(lastRoomId)));
 
     let mazeData;
-    if(false) {
+    if(lastRoomHasSpace) {
         // the last room has an empty space - join it
         const roomData = await db.collection("Room").get(lastRoomId.toString());
         roomData.props.joinedPlayers ||= [];
@@ -1422,9 +1422,6 @@ async function handleJoinRoomRequest(jwt, response) {
         lastRoomId += 1;
         // then generate what will be the new room's maze
         mazeData = randomDfs(COLS, ROWS);
-        mazeData = mazeData.map(cell => {
-            return cell.toJSO();
-        });
         // inside the overflows table, increment the value of overflows
         await incrementOverflows();
         // create the record of the new room using all the data described
