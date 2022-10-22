@@ -1334,7 +1334,7 @@ async function handleJoinRoomRequest(jwt, response) {
         roomData.props.joinedPlayers ||= [];
         roomData.props.joinedPlayers.push(username);
         await db.collection("Room").set(lastRoomId.toString(), {
-            mazeData: roomData.mazeData,
+            mazeData: roomData.props.mazeData,
             joinedPlayers: roomData.joinedPlayers,
             preparedPlayers: roomData.preparedPlayers,
             fullyReadyPlayers: roomData.fullyReadyPlayers,
@@ -1343,7 +1343,7 @@ async function handleJoinRoomRequest(jwt, response) {
             teamsInfo: roomData.teamsInfo,
             ttl: roomData.ttl // half an hour
         });
-        mazeData = roomData.mazeData;
+        mazeData = roomData.props.mazeData;
         console.log("Room exists");
     } else {
         console.log("Make new room");
