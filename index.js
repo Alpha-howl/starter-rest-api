@@ -223,7 +223,7 @@ class Cell {
             y: this.#y,
             index: this.#index,
             neighbours: [], // cannot compute this as it 
-            // would result in a infinite loop (client has to re-init neighbours)
+            // would result in a cyclic object loop (client can just re-init neighbours)
             visited: this.#visited,
             walls: this.#walls
         };
@@ -323,76 +323,6 @@ function randomDfs(cols, rows, probToVisitCellAgain=0.5) {
 	// finally, return the maze data (the grid array)
 	return grid;
 }
-JSON.decycle = function decycle(object) {
-
-	/* The JSON#decycle and #retrocycle functions are not mine, I just copied them from
-	here https://github.com/douglascrockford/JSON-js/blob/master/cycle.js. 
-	They change a circular object (for example `var a = {}; a.a = a;`) so that it can be converted into plain text
-	which means that dynamic references to itself cannot be represented as simple characters (this would only 
-	be possible if we had infinite bandwidth, because the resulting plaintext would be infinited in length, and we
-	need to be able to send the maze's data to a remote server.). I tried writing my own versions of these two 
-	funtions before I found the github above, and it got pretty close to working, but there was just an
-	error, which at first seemed very minor and easy to fix, but I could not solve it for several hours on end.
-	After I took a look at these functions the next day, I suddenly realised that what I was trying to do earler
-	was completely the wrong approach:
-	I tried to first convert the object into a linked list, then add all the prev. pointers, so that it became
-	a linear "pathway" which could be traversed backwards and forwards. Then the algorithm would have changed all
-	"seen" references to "go-outer-"+a_number, where a_number would be the amount of steps you need to take from 
-	the current object/reference, in order to get to the reference needed. But I later realised that there was not 
-	always a clear path from inside an object to some outside point. This is because objects are more like trees
-	than linked lists, so in order to get to a specific location you may need to go inward and not just outward.
-	This is why my approach was impossible to work, and this was the error which I initially called "minor" (because
-	I didn't understand what was REALLY happening). PS: I was going to use the bencode approach and a hash table which
-	would have had to be sent separately. Unnecessary complication of things happens very often...
-
-	The decycle function will remove circular references, and the retrocycle func will restore them.
-	*/
-
-    var objects = new WeakMap();     // object to path mappings
-
-    return (function derez(value, path) {
-
-        var old_path;   // The path of an earlier occurance of value
-        var nu;         // The new object or array
-        if (
-            typeof value === "object"
-            && value !== null
-            && !(value instanceof Boolean)
-            && !(value instanceof Date)
-            && !(value instanceof Number)
-            && !(value instanceof RegExp)
-            && !(value instanceof String)
-        ) {
-
-            old_path = objects.get(value);
-            if (old_path !== undefined) {
-                return {$ref: old_path};
-            }
-
-
-            objects.set(value, path);
-
-
-            if (Array.isArray(value)) {
-                nu = [];
-                value.forEach(function (element, i) {
-                    nu[i] = derez(element, path + "[" + i + "]");
-                });
-            } else {
-
-                nu = {};
-                Object.keys(value).forEach(function (name) {
-                    nu[name] = derez(
-                        value[name],
-                        path + "[" + JSON.stringify(name) + "]"
-                    );
-                });
-            }
-            return nu;
-        }
-        return value;
-    }(object, "$"));
-};
 
 
 
@@ -407,7 +337,7 @@ async function roomIsFull(roomId) {
     if(! roomData?.props) {
         // room does not exist, create it
         // convert array of cells to array of JSOs so it can be saved in the db
-        const newGrid = randomDfs(COLS, ROWS);
+        const newGrid = randomDfs(COLS, ROWS).map(cell => {return cell.toJSO()});
         await db.collection("Room").set(roomId.toString(), {
             mazeData: newGrid,
             joinedPlayers: [],
@@ -1422,6 +1352,7 @@ async function handleJoinRoomRequest(jwt, response) {
         lastRoomId += 1;
         // then generate what will be the new room's maze
         mazeData = randomDfs(COLS, ROWS);
+        mazeData = mazeData.map(cell => {return cell.toJSO();});
         // inside the overflows table, increment the value of overflows
         await incrementOverflows();
         // create the record of the new room using all the data described
