@@ -1410,6 +1410,7 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
         return;
     } else {
         console.log(roomData.props.preparedPlayers);
+        console.log(roomData.props.joinedPlayers);
         console.log(username);
         // there are enough players now
         if(!roomData.props.preparedPlayers.includes(username) || true) {
