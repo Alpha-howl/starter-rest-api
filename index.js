@@ -1409,9 +1409,6 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
         });
         return;
     } else {
-        console.log(roomData.props.preparedPlayers);
-        console.log(roomData.props.joinedPlayers);
-        console.log(username);
         // there are enough players now
         if(!roomData.props.preparedPlayers.includes(username) || true) {
             roomData.props.preparedPlayers.push(username);
@@ -1437,7 +1434,21 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
         } else {
             // enough players are now "prepared" (ie have the maze displayed)
             // pick teams, generate pubnub and send response signalling front end to start the game
-            const teamsInfo = pickTeams(roomData.props.preparedPlayers, COLS, ROWS);
+            let teamsInfo = roomData.props.teamsInfo;
+            if(!teamsInfo) {
+                teamsInfo = pickTeams(roomData.props.preparedPlayers, COLS, ROWS);
+                roomData.props.teamsInfo = teamsInfo;
+                await db.collection("Room").set(roomId.toString(), {
+                    mazeData: roomData.props.mazeData,
+                    joinedPlayers: roomData.props.joinedPlayers,
+                    preparedPlayers: roomData.props.preparedPlayers,
+                    fullyReadyPlayers: roomData.props.fullyReadyPlayers,
+                    state: roomData.props.state,
+                    startTime: roomData.props.startTime,
+                    teamsInfo: roomData.props.teamsInfo,
+                    ttl: roomData.props.ttl // half an hour
+                });
+            }
             
             const pubnubChannelName = "ctf-room-" + roomId; // eg "ctf-room-19"
             pubnub.subscribe({channels: [pubnubChannelName]}); // see pubnub docs
