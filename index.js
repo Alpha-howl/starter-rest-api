@@ -394,14 +394,14 @@ async function pubnubProba(response) {
         channel: "proba"
     });
 }
-function mazeProba(response) {
+async function mazeProba(response) {
     const newMaze = randomDfs(11, 11);
     const JSOMaze = newMaze.map(cell => {
         return cell.toJSO();
     });
 
     await db.collection("Overflows").set("Overflows", {overflows: 0});
-    await await db.collection("Room").set("59", {
+    await db.collection("Room").set("59", {
             mazeData: JSOMaze,
             joinedPlayers: [],
             preparedPlayers: [],
