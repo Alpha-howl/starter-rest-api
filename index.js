@@ -395,10 +395,23 @@ async function pubnubProba(response) {
     });
 }
 function mazeProba(response) {
-    const newMaze = randomDfs(3,3);
+    const newMaze = randomDfs(11, 11);
     const JSOMaze = newMaze.map(cell => {
         return cell.toJSO();
     });
+
+    await db.collection("Overflows").set("Overflows", {overflows: 0});
+    await await db.collection("Room").set("59", {
+            mazeData: JSOMaze,
+            joinedPlayers: [],
+            preparedPlayers: [],
+            fullyReadyPlayers: {},
+            state: "loading",
+            startTime: undefined,
+            teamsInfo: undefined,
+            ttl: Math.floor(Date.now() / 1000) + 30*60 // half an hour
+        });
+
     response.status(200).send({
         success: true, 
         message: JSOMaze
