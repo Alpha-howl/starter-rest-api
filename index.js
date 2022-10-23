@@ -145,7 +145,7 @@ app.post("/:action", async (req, response) => {
 
 const COLS = 11;
 const ROWS = 11;
-const MAX_NUMBER_OF_PLAYERS = 2;
+const MAX_NUMBER_OF_PLAYERS = 6;
 
 
 
@@ -399,18 +399,6 @@ async function mazeProba(response) {
     const JSOMaze = newMaze.map(cell => {
         return cell.toJSO();
     });
-
-    await db.collection("Overflows").set("Overflows", {overflows: 0});
-    await db.collection("Room").set("59", {
-            mazeData: JSOMaze,
-            joinedPlayers: [],
-            preparedPlayers: [],
-            fullyReadyPlayers: {},
-            state: "loading",
-            startTime: undefined,
-            teamsInfo: undefined,
-            ttl: Math.floor(Date.now() / 1000) + 30*60 // half an hour
-        });
 
     response.status(200).send({
         success: true, 
