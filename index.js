@@ -389,6 +389,7 @@ async function pubnubProba(response) {
             "worls": true
         }
     });
+    console.log("Proba pubnub");
     response.status(200).send({
         success: true,
         channel: "proba"
