@@ -139,7 +139,7 @@ app.post("/:action", async (req, response) => {
         break;
 
     case "pubnub-open":
-        pubnubOpen(response);
+        pubnubOpen(response, req.body.channelName);
         break;
     
     case "maze-proba":
@@ -394,16 +394,11 @@ const pubnub = new Pubnub({
     uuid: "sec-c-ZWVkYzZiZDAtODJjYS00YmVkLThmOWYtZjg4ODkwZjhlNWFk"
 });
 
-async function pubnubOpen(response) {
-    pubnub.subscribe({channels: ["proba"]});
+async function pubnubOpen(response, channelName) {
+    pubnub.subscribe({channels: [channelName]}); // see pubnub docs
     pubnub.addListener({
-        message: function(receivedMessage) {
-            if(receivedMessage.message === "please-send-back-a-message") {
-                pubnub.publish({
-                    channel: "proba",
-                    message: "msg from server"
-                });
-            }
+        message: receivedMsg => {
+            handlePubNubReceivedMessage(receivedMsg);
         }
     });
 
