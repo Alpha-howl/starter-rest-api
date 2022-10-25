@@ -389,7 +389,16 @@ async function pubnubProba(response) {
             "worls": true
         }
     });
-    console.log("Proba pubnub");
+    pubnub.addListener({
+        message: receivedMessage => {
+            if(receivedMessage.message == "please-send-back-a-message") {
+                pubnub.publish({
+                    channel: "proba",
+                    message: "Done, send back"
+                });
+            }
+        }
+    })
     response.status(200).send({
         success: true,
         channel: "proba"
