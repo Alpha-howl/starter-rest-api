@@ -1486,7 +1486,7 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
     }
 }
 async function handlePubNubReceivedMessage(receivedMessage) {
-    console.log(receivedMessage.message.jwt);
+    console.log(receivedMessage.message);
     const username = getUsernameFromJwt(receivedMessage.message.jwt);
     const roomId = receivedMessage.message.roomId;
 
