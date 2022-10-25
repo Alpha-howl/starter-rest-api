@@ -395,6 +395,7 @@ const pubnub = new Pubnub({
 });
 
 async function pubnubOpen(response, channelName) {
+    console.log(channelName);
     pubnub.subscribe({channels: [channelName]}); // see pubnub docs
     pubnub.addListener({
         message: receivedMsg => {
@@ -1482,10 +1483,12 @@ async function handlePubNubReceivedMessage(receivedMessage) {
 
     const roomData = await db.collection("Room").get(roomId.toString()); 
     if(! roomData.props.preparedPlayers.includes(username)) {
+        console.log("return");
         return;
     }
 
     if(! jwtIsValid(receivedMessage.message.jwt)) {
+        console.log("return");
         return;
     }
 
@@ -1505,6 +1508,8 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             roomData.props.fullyReadyPlayers[username] = {
                 position: spawnPoint, isDead: false, team: team
             }
+
+            console.log(5050, numOfPlayers, MAX_NUMBER_OF_PLAYERS);
             if(numOfPlayers == MAX_NUMBER_OF_PLAYERS) {
                 pubnub.publish({
                     channel: "ctf-room-" + roomId + receivedMessage.message.jwt,
@@ -1525,14 +1530,14 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 }, 3200);
             } else {
                 db.collection("Room").set(roomId.toString(), {
-                    mazeData: roomData.mazeData,
-                    joinedPlayers: roomData.joinedPlayers,
-                    preparedPlayers: roomData.preparedPlayers,
-                    fullyReadyPlayers: roomData.fullyReadyPlayers,
-                    state: roomData.state,
+                    mazeData: roomData.props.mazeData,
+                    joinedPlayers: roomData.props.joinedPlayers,
+                    preparedPlayers: roomData.props.preparedPlayers,
+                    fullyReadyPlayers: roomData.props.fullyReadyPlayers,
+                    state: roomData.props.state,
                     startTime: undefined,
-                    teamsInfo: roomData.teamsInfo,
-                    ttl: roomData.ttl
+                    teamsInfo: roomData.props.teamsInfo,
+                    ttl: roomData.props.ttl
                 });
             }
             break;
