@@ -1470,20 +1470,6 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
     }
 }
 async function handlePubNubReceivedMessage(receivedMessage) {
-    const username = getUsernameFromJwt(receivedMessage.message.jwt);
-    const roomId = receivedMessage.message.roomId;
-
-    const roomData = await db.collection("Room").get(roomId.toString()); 
-    if(! roomData.props.preparedPlayers.includes(username)) {
-        console.log("return");
-        return;
-    }
-
-    if(! jwtIsValid(receivedMessage.message.jwt)) {
-        console.log("return");
-        return;
-    }
-
     const action = receivedMessage.message.action;
     switch(action) {
         case "tone" : {
@@ -1491,6 +1477,24 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             break;
         }
         case "ready-to-play": {
+
+            // first perform some security checks:
+            const username = getUsernameFromJwt(receivedMessage.message.jwt);
+            const roomId = receivedMessage.message.roomId;
+
+            const roomData = await db.collection("Room").get(roomId.toString()); 
+            if(! roomData.props.preparedPlayers.includes(username)) {
+                console.log("return");
+                return false;
+            }
+
+            if(! jwtIsValid(receivedMessage.message.jwt)) {
+                console.log("return");
+                return false;
+            }
+
+
+
             // client is ready to start playing
             const teamsInfo = roomData.props.teamsInfo;
             const userTeamInfo = teamsInfo.teamA.players.includes(username) ? 
