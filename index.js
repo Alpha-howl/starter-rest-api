@@ -9,6 +9,11 @@ const crypto = require("crypto");
 const axios = require("axios").default;
 
 const Pubnub = require("pubnub");
+pubnub.addListener({
+    message: function(receivedMessage) {
+        handlePubNubReceivedMessage(receivedMessage);
+    }
+});
 
 
 function hashString(str) {
@@ -1470,11 +1475,6 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
             
             const pubnubChannelName = "ctf-room-" + roomId + jwt; // eg "ctf-room-19"
             pubnub.subscribe({channels: [pubnubChannelName]}); // see pubnub docs
-            pubnub.addListener({
-                message: function(receivedMessage) {
-                    handlePubNubReceivedMessage(receivedMessage);
-                }
-            });
             
             response.status(200).send({
                 success: true,
