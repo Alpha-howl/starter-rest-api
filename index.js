@@ -395,6 +395,18 @@ const pubnub = new Pubnub({
 });
 
 async function pubnubOpen(response) {
+    pubnub.subscribe({channels: ["proba"]});
+    pubnub.addListener({
+        message: function(receivedMessage) {
+            if(receivedMessage.message === "please-send-back-a-message") {
+                pubnub.publish({
+                    channel: "proba",
+                    message: "msg from server"
+                });
+            }
+        }
+    });
+
     setTimeout(() => {
         response.status(200).send("closing");
     }, 20000);
