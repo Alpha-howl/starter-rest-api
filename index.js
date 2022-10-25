@@ -1501,8 +1501,8 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 position: spawnPoint, isDead: false, team: team
             }
 
-            console.log(5050, numOfPlayers, MAX_NUMBER_OF_PLAYERS);
-            if(numOfPlayers == MAX_NUMBER_OF_PLAYERS) {
+            const numOfPlayers = roomData.props.preparedPlayers.length;
+            if(numOfPlayers === MAX_NUMBER_OF_PLAYERS) {
                 pubnub.publish({
                     channel: "ctf-room-" + roomId + receivedMessage.message.jwt,
                     message: {message: "start-in-3s"}
