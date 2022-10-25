@@ -1501,6 +1501,10 @@ async function handlePubNubReceivedMessage(receivedMessage) {
 
     const action = receivedMessage.action;
     switch(action) {
+        case "tone" : {
+            console.log("Toned");
+            break;
+        }
         case "ready-to-play": {
             // client is ready to start playing
             const teamsInfo = roomData.teamsInfo;
