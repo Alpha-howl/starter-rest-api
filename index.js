@@ -409,11 +409,7 @@ async function pubnubOpen(response) {
 
     setTimeout(() => {
         response.status(200).send("closing");
-    }, 20000);
-
-    setTimeout(() => {
-        console.log("Closed");
-    }, 4 * 60 * 1000);
+    }, 29000);
 }
 async function mazeProba(response) {
     const newMaze = randomDfs(11, 11);
