@@ -10,6 +10,8 @@ const axios = require("axios").default;
 
 const Pubnub = require("pubnub");
 
+const timeout = require("connect-timeout");
+
 
 
 function hashString(str) {
@@ -33,13 +35,21 @@ function decrypt(encrypted) {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(function(req, res, next){
-    res.setTimeout(600000 /*10 mins*/, function(){
+
+app.use(timeout(120000));
+app.use(haltOnTimedout);
+
+function haltOnTimedout(req, res, next){
+  if (!req.timedout) next();
+}
+
+/* app.use(function(req, res, next){
+    res.setTimeout(600000, function(){
         console.log("Request has timed out.");
             res.send(408);
         });
     next();
-});
+}); */
 
 app.post("/:action", async (req, response) => {
   response.header("Access-Control-Allow-Origin", "*");
@@ -1612,6 +1622,7 @@ app.use('*', (req, res) => {
 
 // Start the server
 const port = process.env.PORT || 3000; 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`index.js listening on ${port}`);
 });
+server.setTimeout(600000);
