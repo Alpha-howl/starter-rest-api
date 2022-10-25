@@ -1507,9 +1507,10 @@ async function handlePubNubReceivedMessage(receivedMessage) {
 
             const numOfPlayers = roomData.props.preparedPlayers.length;
             if(numOfPlayers === MAX_NUMBER_OF_PLAYERS) {
+                // all players have now drawn the maze and are ready to play
                 pubnub.publish({
                     channel: "ctf-room-" + roomId + receivedMessage.message.jwt,
-                    message: {message: "start-in-3s"}
+                    message: {action: "start-in-3s"}
                 });
                 setTimeout(() => {
                     roomData.props.state = "playing";
