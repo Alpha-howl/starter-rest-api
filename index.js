@@ -46,9 +46,9 @@ app.post("/:action", async (req, response) => {
   response.header("Access-Control-Allow-Origin", "*");
   response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
-  req.setTimeout(4 * 60 * 1000); // No need to offset
+  req.setTimeout(4 * 60 * 1000);
 
-  req.socket.removeAllListeners('timeout'); // This is the work around
+  req.socket.removeAllListeners('timeout');
   req.socket.once("timeout", () => {
       req.timedout = true;
       res.status(504).send("timeout");
@@ -160,7 +160,7 @@ app.post("/:action", async (req, response) => {
 
 const COLS = 11;
 const ROWS = 11;
-const MAX_NUMBER_OF_PLAYERS = 6;
+const MAX_NUMBER_OF_PLAYERS = 1;
 
 
 
