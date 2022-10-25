@@ -395,14 +395,8 @@ const pubnub = new Pubnub({
 });
 
 async function pubnubOpen(response, channelName) {
-    console.log(channelName);
+    console.log("channel name:", channelName);
     pubnub.subscribe({channels: [channelName]}); // see pubnub docs
-    pubnub.addListener({
-        message: receivedMsg => {
-            handlePubNubReceivedMessage(receivedMsg);
-        }
-    });
-
     setTimeout(() => {
         response.status(200).send("closing");
     }, 26000);
