@@ -1491,12 +1491,10 @@ async function handlePubNubReceivedMessage(receivedMessage) {
 
     const roomData = await db.collection("Room").get(roomId.toString()); 
     if(! roomData.props.preparedPlayers.includes(username)) {
-        console.log(roomData.props.preparedPlayers);
         return;
     }
 
     if(! jwtIsValid(receivedMessage.message.jwt)) {
-        console.log("invalid jwt");
         return;
     }
 
@@ -1508,32 +1506,29 @@ async function handlePubNubReceivedMessage(receivedMessage) {
         }
         case "ready-to-play": {
             // client is ready to start playing
-            const teamsInfo = roomData.teamsInfo;
+            const teamsInfo = roomData.props.teamsInfo;
             const userTeamInfo = teamsInfo.teamA.players.includes(username) ? 
                 ["teamA", teamsInfo.teamA] : ["teamB", teamsInfo.teamB];
             const spawnPoint = userTeamInfo[1].spawnPoint;
             const team = userTeamInfo[0];
-            roomData.fullyReadyPlayers[username] = {
+            roomData.props.fullyReadyPlayers[username] = {
                 position: spawnPoint, isDead: false, team: team
             }
-            const numOfPlayers = Object.keys(roomData.fullyReadyPlayers).length
-            console.log(numOfPlayers, MAX_NUMBER_OF_PLAYERS); 
             if(numOfPlayers == MAX_NUMBER_OF_PLAYERS) {
-                console.log("Start in 3s signal sent");
                 pubnub.publish({
                     channel: "ctf-room-" + roomId + receivedMessage.message.jwt,
                     message: {message: "start-in-3s"}
                 });
                 setTimeout(() => {
-                    roomData.state = "playing";
+                    roomData.props.state = "playing";
                     db.collection("Room").set(roomId.toString(), {
-                        mazeData: roomData.mazeData,
-                        joinedPlayers: roomData.joinedPlayers,
-                        preparedPlayers: roomData.preparedPlayers,
-                        fullyReadyPlayers: roomData.fullyReadyPlayers,
-                        state: roomData.state,
+                        mazeData: roomData.props.mazeData,
+                        joinedPlayers: roomData.props.joinedPlayers,
+                        preparedPlayers: roomData.props.preparedPlayers,
+                        fullyReadyPlayers: roomData.props.fullyReadyPlayers,
+                        state: roomData.props.state,
                         startTime: Date.now(),
-                        teamsInfo: roomData.teamsInfo,
+                        teamsInfo: roomData.props.teamsInfo,
                         ttl: Math.floor(Date.now() / 1000) + 30*60
                     });
                 }, 3200);
