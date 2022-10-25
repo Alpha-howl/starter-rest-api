@@ -1486,7 +1486,6 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
     }
 }
 async function handlePubNubReceivedMessage(receivedMessage) {
-    console.log(receivedMessage.message);
     const username = getUsernameFromJwt(receivedMessage.message.jwt);
     const roomId = receivedMessage.message.roomId;
 
@@ -1518,7 +1517,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             const numOfPlayers = Object.keys(roomData.fullyReadyPlayers).length
             if(numOfPlayers == MAX_NUMBER_OF_PLAYERS) {
                 pubnub.publish({
-                    channel: "ctf-room-" + roomId,
+                    channel: "ctf-room-" + roomId + receivedMessage.message.jwt,
                     message: {message: "start-in-3s"}
                 });
                 setTimeout(() => {
