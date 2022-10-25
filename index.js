@@ -9,11 +9,6 @@ const crypto = require("crypto");
 const axios = require("axios").default;
 
 const Pubnub = require("pubnub");
-pubnub.addListener({
-    message: function(receivedMessage) {
-        handlePubNubReceivedMessage(receivedMessage);
-    }
-});
 
 
 function hashString(str) {
@@ -1548,6 +1543,11 @@ async function handlePubNubReceivedMessage(receivedMessage) {
         }
     }
 }
+pubnub.addListener({
+    message: function(receivedMessage) {
+        handlePubNubReceivedMessage(receivedMessage);
+    }
+});
 
 function pickTeams(preparedPlayers, cols, rows) { 
 	// preparedPlayers is the array of usernames 
