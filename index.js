@@ -10,9 +10,6 @@ const axios = require("axios").default;
 
 const Pubnub = require("pubnub");
 
-const timeout = require("connect-timeout");
-
-
 
 function hashString(str) {
     return crypto.createHash("sha256").update(str).digest("hex");
@@ -33,23 +30,29 @@ function decrypt(encrypted) {
 }
 
 
+function haltOnTimedout(req, res, next) {
+  if (!req.timedout) {
+    next();
+  }
+}
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(timeout(120000));
+app.use("/pubnub-proba", (req, res, next) => {
+    req.setTimeout(4 * 60 * 1000); // No need to offset
+
+    req.socket.removeAllListeners('timeout'); // This is the work around
+    req.socket.once('timeout', () => {
+        req.timedout = true;
+        res.status(504).send('Timeout');
+    });
+
+    next();
+});
 app.use(haltOnTimedout);
 
-function haltOnTimedout(req, res, next){
-  if (!req.timedout) next();
-}
-
-/* app.use(function(req, res, next){
-    res.setTimeout(600000, function(){
-        console.log("Request has timed out.");
-            res.send(408);
-        });
-    next();
-}); */
 
 app.post("/:action", async (req, response) => {
   response.header("Access-Control-Allow-Origin", "*");
@@ -1622,7 +1625,6 @@ app.use('*', (req, res) => {
 
 // Start the server
 const port = process.env.PORT || 3000; 
-const server = app.listen(port, () => {
+app.listen(port, () => {
   console.log(`index.js listening on ${port}`);
 });
-server.setTimeout(600000);
