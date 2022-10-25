@@ -1517,6 +1517,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 position: spawnPoint, isDead: false, team: team
             }
             const numOfPlayers = Object.keys(roomData.fullyReadyPlayers).length
+            console.log(numOfPlayers, MAX_NUMBER_OF_PLAYERS);
             if(numOfPlayers == MAX_NUMBER_OF_PLAYERS) {
                 console.log("Start in 3s signal sent");
                 pubnub.publish({
