@@ -1490,7 +1490,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
     const username = getUsernameFromJwt(receivedMessage.message.jwt);
     const roomId = receivedMessage.message.roomId;
 
-    const roomData = await db.collection("Room").get(roomId.toString());
+    const roomData = await db.collection("Room").get(roomId.toString()); 
     if(! roomData.props.preparedPlayers.includes(username)) {
         return;
     }
