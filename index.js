@@ -138,8 +138,8 @@ app.post("/:action", async (req, response) => {
         testDynamo(response, req);
         break;
 
-    case "pubnub-proba":
-        pubnubProba(response);
+    case "pubnub-open":
+        pubnubOpen(response);
         break;
     
     case "maze-proba":
@@ -394,30 +394,14 @@ const pubnub = new Pubnub({
     uuid: "sec-c-ZWVkYzZiZDAtODJjYS00YmVkLThmOWYtZjg4ODkwZjhlNWFk"
 });
 
-async function pubnubProba(response) {
-    pubnub.subscribe({
-        channels: ["proba"],
-    });
-    await pubnub.publish({
-        channel: "proba",
-        message: {
-            "worls": true
-        }
-    });
-    pubnub.addListener({
-        message: receivedMessage => {
-            if(receivedMessage.message == "please-send-back-a-message") {
-                pubnub.publish({
-                    channel: "proba",
-                    message: "Done, sent it back"
-                });
-            }
-        }
-    });
-    /* response.status(200).send({
-        success: true,
-        channel: "proba"
-    }); */
+async function pubnubOpen(response) {
+    setTimeout(() => {
+        response.status(200).send("closing");
+    }, 20000);
+
+    setTimeout(() => {
+        console.log("Closed");
+    }, 4 * 60 * 1000);
 }
 async function mazeProba(response) {
     const newMaze = randomDfs(11, 11);
