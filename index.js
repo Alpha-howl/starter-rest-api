@@ -39,24 +39,20 @@ function haltOnTimedout(req, res, next) {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-app.use("/pubnub-proba", (req, res, next) => {
-    req.setTimeout(4 * 60 * 1000); // No need to offset
-
-    req.socket.removeAllListeners('timeout'); // This is the work around
-    req.socket.once('timeout', () => {
-        req.timedout = true;
-        res.status(504).send('Timeout');
-    });
-
-    next();
-});
 app.use(haltOnTimedout);
 
 
 app.post("/:action", async (req, response) => {
   response.header("Access-Control-Allow-Origin", "*");
   response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
+  req.setTimeout(4 * 60 * 1000); // No need to offset
+
+  req.socket.removeAllListeners('timeout'); // This is the work around
+  req.socket.once("timeout", () => {
+      req.timedout = true;
+      res.status(504).send("timeout");
+  });
   
   const action = req?.params?.action;
   switch(action.toLowerCase()) {
