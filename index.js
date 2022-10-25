@@ -33,7 +33,13 @@ function decrypt(encrypted) {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use(function(req, res, next){
+    res.setTimeout(600000 /*10 mins*/, function(){
+        console.log("Request has timed out.");
+            res.send(408);
+        });
+    next();
+});
 
 app.post("/:action", async (req, response) => {
   response.header("Access-Control-Allow-Origin", "*");
@@ -399,10 +405,10 @@ async function pubnubProba(response) {
             }
         }
     });
-    response.status(200).send({
+    /* response.status(200).send({
         success: true,
         channel: "proba"
-    });
+    }); */
 }
 async function mazeProba(response) {
     const newMaze = randomDfs(11, 11);
