@@ -395,7 +395,6 @@ const pubnub = new Pubnub({
 });
 
 async function pubnubOpen(response, channelName) {
-    console.log("channel name:", channelName);
     pubnub.subscribe({channels: [channelName]}); // see pubnub docs
     setTimeout(() => {
         response.status(200).send("closing");
@@ -1471,7 +1470,6 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
     }
 }
 async function handlePubNubReceivedMessage(receivedMessage) {
-    console.log(receivedMessage);
     const username = getUsernameFromJwt(receivedMessage.message.jwt);
     const roomId = receivedMessage.message.roomId;
 
@@ -1486,7 +1484,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
         return;
     }
 
-    const action = receivedMessage.action;
+    const action = receivedMessage.message.action;
     switch(action) {
         case "tone" : {
             console.log("Toned");
