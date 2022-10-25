@@ -1468,7 +1468,7 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
                 });
             }
             
-            const pubnubChannelName = "ctf-room-" + roomId; // eg "ctf-room-19"
+            const pubnubChannelName = "ctf-room-" + roomId + jwt; // eg "ctf-room-19"
             pubnub.subscribe({channels: [pubnubChannelName]}); // see pubnub docs
             pubnub.addListener({
                 message: function(receivedMessage) {
