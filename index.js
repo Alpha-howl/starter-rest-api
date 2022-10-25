@@ -1518,6 +1518,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             }
             const numOfPlayers = Object.keys(roomData.fullyReadyPlayers).length
             if(numOfPlayers == MAX_NUMBER_OF_PLAYERS) {
+                console.log("Start in 3s signal sent");
                 pubnub.publish({
                     channel: "ctf-room-" + roomId + receivedMessage.message.jwt,
                     message: {message: "start-in-3s"}
