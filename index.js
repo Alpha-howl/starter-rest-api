@@ -1491,10 +1491,12 @@ async function handlePubNubReceivedMessage(receivedMessage) {
 
     const roomData = await db.collection("Room").get(roomId.toString()); 
     if(! roomData.props.preparedPlayers.includes(username)) {
+        console.log(roomData.props.preparedPlayers);
         return;
     }
 
     if(! jwtIsValid(receivedMessage.message.jwt)) {
+        console.log("invalid jwt");
         return;
     }
 
