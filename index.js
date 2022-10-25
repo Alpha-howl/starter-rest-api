@@ -394,11 +394,11 @@ async function pubnubProba(response) {
             if(receivedMessage.message == "please-send-back-a-message") {
                 pubnub.publish({
                     channel: "proba",
-                    message: "Done, send back"
+                    message: "Done, sent it back"
                 });
             }
         }
-    })
+    });
     response.status(200).send({
         success: true,
         channel: "proba"
