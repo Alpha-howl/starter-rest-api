@@ -1568,7 +1568,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
 
             // use receivedMessage.message.pressedArrowKeys playerX and playerY and roomData, username, to validate new frame
             // then send back the new frame data using findRadiusAround player etc
-            const playerData = roomData.props.fullyReadyPlayers[username];
+            const playerData = roomData.props.fullyReadyPlayers[username] || {position: [0,0]};
             if(receivedMessage.message.pressedArrowKeys.left) {
                 playerData.position[0] -= amplifier;
             }
