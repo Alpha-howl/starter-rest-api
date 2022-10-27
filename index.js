@@ -161,6 +161,7 @@ app.post("/:action", async (req, response) => {
 const COLS = 11;
 const ROWS = 11;
 const MAX_NUMBER_OF_PLAYERS = 1;
+const VISION_RADIUS = 3;
 
 
 
@@ -1470,6 +1471,23 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
     }
 }
 async function handlePubNubReceivedMessage(receivedMessage) {
+    let roomData, username, roomId;
+    const securityCheck = async () => {
+        const jwt = receivedMessage.channel.split(/ctf-room-\d+/)[1];
+        username = getUsernameFromJwt(jwt);
+        roomId = receivedMessage.channel.match(/\d+/)[0];
+
+        roomData = await db.collection("Room").get(roomId.toString()); 
+        if(! roomData.props.preparedPlayers.includes(username)) {
+            console.log("return");
+            return false;
+        }
+
+        if(! jwtIsValid(receivedMessage.message.jwt)) {
+            console.log("return");
+            return false;
+        }
+    }
     const action = receivedMessage.message.action;
     switch(action) {
         case "tone" : {
@@ -1539,6 +1557,61 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             }
             break;
         }
+        case "validate-frame": {
+            // first perform some security checks:
+            const securityCheckPassed = await securityCheck();
+            if(securityCheckPassed === false) {
+                break;
+            }
+
+            const amplifier = 0.06;
+
+            // use receivedMessage.message.pressedArrowKeys playerX and playerY and roomData, username, to validate new frame
+            // then send back the new frame data using findRadiusAround player etc
+            const playerData = roomData.props.fullyReadyPlayers[username];
+            if(pressedArrowKeys.left) {
+                playerData.position[0] -= amplifier;
+            }
+            if(pressedArrowKeys.right) {
+                playerData.position[0] += amplifier;
+            }
+            if(pressedArrowKeys.up) {
+                playerData.position[1] -= amplifier;
+            }
+            if(pressedArrowKeys.down) {
+                playerData.position[1] += amplifier;
+            }
+            roomData.props.fullyReadyPlayers[username] = playerData;
+
+
+            // update roomdata in db
+            await db.collection("Room").set(roomId.toString(), {
+                mazeData: roomData.props.mazeData,
+                joinedPlayers: roomData.props.joinedPlayers,
+                preparedPlayers: roomData.props.preparedPlayers,
+                fullyReadyPlayers: roomData.props.fullyReadyPlayers,
+                state: roomData.props.state,
+                startTime: undefined,
+                teamsInfo: roomData.props.teamsInfo,
+                ttl: roomData.props.ttl
+            });
+
+
+            // now return the results - including the part of the maze the client will have access to:
+            const cellGrid = roomData.props.mazeData.map(jsoCell => {
+                return convertJsoCellToClassCell(jsoCell);
+            });
+            const smallGrid = findRadiusAroundPlayer(cellGrid, playerX, playerY, COLS, VISION_RADIUS);
+
+            pubnub.publish({
+                channel: receivedMessage.channel,
+                message: {
+                    action: "frame-results",
+                    smallGrid,
+                    playerData
+                }
+            });
+        }
     }
 }
 pubnub.addListener({
@@ -1546,6 +1619,41 @@ pubnub.addListener({
         handlePubNubReceivedMessage(receivedMessage);
     }
 });
+function convertJsoCellToClassCell(jsoCell) {
+	const cellClassObk = new Cell(jsoCell.x, jsoCell.y, jsoCell.index);
+    if(jsoCell.visited) {
+    	cellClassObk.markAsVisited();
+    }
+    jsoCell.walls.forEach((wall, index) => {
+    	if(wall === false) {
+    		cellClassObk.removeWall(index);
+    	}
+    });
+
+    return cellClassObk;
+}
+
+function findRadiusAroundPlayer(grid, playerX, playerY, cols, radius) {
+	const sqrRadius = radius*radius;
+	const gridToBeDisplayed = [];
+	for(let i = 0; i < grid.length; i++) {
+		const currentCell = grid[i];
+		//const playerCell = grid[getIndexFromXY(playerX, playerY, cols)];
+
+		const cellX = currentCell.getX();
+		const cellY = currentCell.getY();
+		const pythagSquareDistanceFromPlayer = (playerX - cellX)**2 + (playerY - cellY)**2;
+
+		if(pythagSquareDistanceFromPlayer > sqrRadius+2) {
+			continue;
+		}
+
+		gridToBeDisplayed.push(currentCell);
+
+	}
+
+	return gridToBeDisplayed;
+}
 
 function pickTeams(preparedPlayers, cols, rows) { 
 	// preparedPlayers is the array of usernames 
