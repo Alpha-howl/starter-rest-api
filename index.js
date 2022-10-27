@@ -1559,10 +1559,56 @@ async function handlePubNubReceivedMessage(receivedMessage) {
         }
         case "validate-frame": {
             // first perform some security checks:
+            const securityCheckPassed = await securityCheck();
+            if(securityCheckPassed === false) {
+                break;
+            }
+
+            const amplifier = 0.06;
+
+            // use receivedMessage.message.pressedArrowKeys playerX and playerY and roomData, username, to validate new frame
+            // then send back the new frame data using findRadiusAround player etc
+            const playerData = roomData.props.fullyReadyPlayers[username];
+            if(pressedArrowKeys.left) {
+                playerData.position[0] -= amplifier;
+            }
+            if(pressedArrowKeys.right) {
+                playerData.position[0] += amplifier;
+            }
+            if(pressedArrowKeys.up) {
+                playerData.position[1] -= amplifier;
+            }
+            if(pressedArrowKeys.down) {
+                playerData.position[1] += amplifier;
+            }
+            roomData.props.fullyReadyPlayers[username] = playerData;
+
+
+            // update roomdata in db
+            await db.collection("Room").set(roomId.toString(), {
+                mazeData: roomData.props.mazeData,
+                joinedPlayers: roomData.props.joinedPlayers,
+                preparedPlayers: roomData.props.preparedPlayers,
+                fullyReadyPlayers: roomData.props.fullyReadyPlayers,
+                state: roomData.props.state,
+                startTime: undefined,
+                teamsInfo: roomData.props.teamsInfo,
+                ttl: roomData.props.ttl
+            });
+
+
+            // now return the results - including the part of the maze the client will have access to:
+            const cellGrid = roomData.props.mazeData.map(jsoCell => {
+                return convertJsoCellToClassCell(jsoCell);
+            });
+            const smallGrid = findRadiusAroundPlayer(cellGrid, playerX, playerY, COLS, VISION_RADIUS);
+
             pubnub.publish({
                 channel: receivedMessage.channel,
                 message: {
-                    action: "frame-results"
+                    action: "frame-results",
+                    smallGrid,
+                    playerData
                 }
             });
             break;
