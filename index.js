@@ -1465,7 +1465,8 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
                 success: true,
                 message: "start-game",
                 pubnubChannelName,
-                teamsInfo
+                teamsInfo,
+                username
             });
         }
     }
