@@ -1563,10 +1563,10 @@ async function handlePubNubReceivedMessage(receivedMessage) {
         }
         case "validate-frame": {
             // first perform some security checks:
-            const securityCheckPassed = await securityCheck();
+            /* const securityCheckPassed = await securityCheck();
             if(securityCheckPassed === false) {
                 break;
-            }
+            } */
 
             const amplifier = 0.06*100;
 
