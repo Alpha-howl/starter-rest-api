@@ -1541,7 +1541,10 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 // all players have now drawn the maze and are ready to play
                 pubnub.publish({
                     channel: "ctf-room-" + roomId + receivedMessage.message.jwt,
-                    message: {action: "start-in-3s"}
+                    message: {
+                        action: "start-in-3s",
+                        spawnPoint 
+                    }
                 });
                 setTimeout(() => {
                     db.collection("Room").set(roomId.toString(), {
