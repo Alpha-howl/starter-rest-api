@@ -1525,6 +1525,16 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             }
 
             console.log("fullyReadyPlayers updated", roomData.props.fullyReadyPlayers);
+            await db.collection("Room").set(roomId.toString(), {
+                mazeData: roomData.props.mazeData,
+                joinedPlayers: roomData.props.joinedPlayers,
+                preparedPlayers: roomData.props.preparedPlayers,
+                fullyReadyPlayers: roomData.props.fullyReadyPlayers,
+                state: roomData.props.state,
+                startTime: undefined,
+                teamsInfo: roomData.props.teamsInfo,
+                ttl: roomData.props.ttl
+            });
             
             const numOfPlayers = roomData.props.preparedPlayers.length;
             if(numOfPlayers === MAX_NUMBER_OF_PLAYERS) {
@@ -1534,29 +1544,17 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                     message: {action: "start-in-3s"}
                 });
                 setTimeout(() => {
-                    roomData.props.state = "playing";
                     db.collection("Room").set(roomId.toString(), {
                         mazeData: roomData.props.mazeData,
                         joinedPlayers: roomData.props.joinedPlayers,
                         preparedPlayers: roomData.props.preparedPlayers,
                         fullyReadyPlayers: roomData.props.fullyReadyPlayers,
-                        state: roomData.props.state,
+                        state: "playing",
                         startTime: Date.now(),
                         teamsInfo: roomData.props.teamsInfo,
                         ttl: Math.floor(Date.now() / 1000) + 30*60
                     });
-                }, 3200);
-            } else {
-                db.collection("Room").set(roomId.toString(), {
-                    mazeData: roomData.props.mazeData,
-                    joinedPlayers: roomData.props.joinedPlayers,
-                    preparedPlayers: roomData.props.preparedPlayers,
-                    fullyReadyPlayers: roomData.props.fullyReadyPlayers,
-                    state: roomData.props.state,
-                    startTime: undefined,
-                    teamsInfo: roomData.props.teamsInfo,
-                    ttl: roomData.props.ttl
-                });
+                }, 3000);
             }
             break;
         }
