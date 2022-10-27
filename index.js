@@ -1559,12 +1559,12 @@ async function handlePubNubReceivedMessage(receivedMessage) {
         }
         case "validate-frame": {
             // first perform some security checks:
-            /* const securityCheckPassed = await securityCheck();
+            const securityCheckPassed = await securityCheck();
             if(securityCheckPassed === false) {
                 break;
             }
 
-            const amplifier = 0.06;
+            const amplifier = 0.06;/*
 
             // use receivedMessage.message.pressedArrowKeys playerX and playerY and roomData, username, to validate new frame
             // then send back the new frame data using findRadiusAround player etc
