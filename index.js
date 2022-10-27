@@ -1479,7 +1479,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
 
         roomData = await db.collection("Room").get(roomId.toString()); 
         if(! roomData.props.preparedPlayers.includes(username)) {
-            console.log("return", roomData.props.preparedPlayers, username);
+            console.log("return", roomData.props.preparedPlayers, roomData.props.joinedPlayers, username);
             return false;
         }
 
