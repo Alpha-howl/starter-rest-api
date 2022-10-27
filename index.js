@@ -1559,7 +1559,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
         }
         case "validate-frame": {
             // first perform some security checks:
-            const securityCheckPassed = await securityCheck();
+            /* const securityCheckPassed = await securityCheck();
             if(securityCheckPassed === false) {
                 break;
             }
@@ -1601,14 +1601,14 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             const cellGrid = roomData.props.mazeData.map(jsoCell => {
                 return convertJsoCellToClassCell(jsoCell);
             });
-            const smallGrid = findRadiusAroundPlayer(cellGrid, playerX, playerY, COLS, VISION_RADIUS);
+            const smallGrid = findRadiusAroundPlayer(cellGrid, playerX, playerY, COLS, VISION_RADIUS); */
 
             pubnub.publish({
                 channel: receivedMessage.channel,
                 message: {
                     action: "frame-results",
-                    smallGrid,
-                    playerData
+                    //smallGrid,
+                    //playerData
                 }
             });
             break;
