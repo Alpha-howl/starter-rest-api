@@ -1489,7 +1489,6 @@ async function handlePubNubReceivedMessage(receivedMessage) {
         }
     }
     const action = receivedMessage.message.action;
-    console.log("Got ", action);
     switch(action) {
         case "tone" : {
             console.log("Toned");
@@ -1563,8 +1562,8 @@ async function handlePubNubReceivedMessage(receivedMessage) {
         }
         case "validate-frame": {
             // first perform some security checks:
-            /* const securityCheckPassed = await securityCheck();
-            if(securityCheckPassed === false) {
+            const securityCheckPassed = await securityCheck();
+            /*if(securityCheckPassed === false) {
                 break;
             } */
 
