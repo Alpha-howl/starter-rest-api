@@ -1604,7 +1604,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             const cellGrid = roomData.props.mazeData.map(jsoCell => {
                 return convertJsoCellToClassCell(jsoCell);
             });
-            const smallGrid = findRadiusAroundPlayer(cellGrid, playerX, playerY, COLS, VISION_RADIUS);
+            const smallGrid = findRadiusAroundPlayer(cellGrid, receivedMessage.message.playerX, receivedMessage.message.playerY, COLS, VISION_RADIUS);
 
             pubnub.publish({
                 channel: receivedMessage.channel,
