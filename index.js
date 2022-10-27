@@ -1478,13 +1478,13 @@ async function handlePubNubReceivedMessage(receivedMessage) {
         roomId = receivedMessage.channel.match(/\d+/)[0];
 
         roomData = await db.collection("Room").get(roomId.toString()); 
-        if(! roomData.props.preparedPlayers.includes(username)) {
-            console.log("return", roomData.props.preparedPlayers, roomData.props.joinedPlayers, username);
+        if(! roomData.props.joinedPlayers.includes(username)) {
+            console.log("'return'");
             return false;
         }
 
         if(! jwtIsValid(jwt)) {
-            console.log("return, jwt invalid");
+            console.log("'return, jwt invalid'");
             return false;
         }
     }
@@ -1569,16 +1569,16 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             // use receivedMessage.message.pressedArrowKeys playerX and playerY and roomData, username, to validate new frame
             // then send back the new frame data using findRadiusAround player etc
             const playerData = roomData.props.fullyReadyPlayers[username];
-            if(pressedArrowKeys.left) {
+            if(receivedMessage.message.pressedArrowKeys.left) {
                 playerData.position[0] -= amplifier;
             }
-            if(pressedArrowKeys.right) {
+            if(receivedMessage.message.pressedArrowKeys.right) {
                 playerData.position[0] += amplifier;
             }
-            if(pressedArrowKeys.up) {
+            if(receivedMessage.message.pressedArrowKeys.up) {
                 playerData.position[1] -= amplifier;
             }
-            if(pressedArrowKeys.down) {
+            if(receivedMessage.message.pressedArrowKeys.down) {
                 playerData.position[1] += amplifier;
             }
             roomData.props.fullyReadyPlayers[username] = playerData;
