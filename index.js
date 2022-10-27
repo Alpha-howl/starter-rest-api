@@ -1609,7 +1609,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             });
             const smallGrid = findRadiusAroundPlayer(cellGrid, receivedMessage.message.playerX, receivedMessage.message.playerY, COLS, VISION_RADIUS);
 
-            pubnub.publish({
+            await pubnub.publish({
                 channel: receivedMessage.channel,
                 message: {
                     action: "frame-results",
