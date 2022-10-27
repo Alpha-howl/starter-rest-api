@@ -1524,10 +1524,9 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 position: spawnPoint, isDead: false, team: team
             }
 
+            console.log("fullyReadyPlayers updated", roomData.props.fullyReadyPlayers);
+            
             const numOfPlayers = roomData.props.preparedPlayers.length;
-            console.log("fullyReadyPlayers updated", roomData.props.fullyReadyPlayers[username]);
-            console.log("number of players", numOfPlayers, MAX_NUMBER_OF_PLAYERS);
-
             if(numOfPlayers === MAX_NUMBER_OF_PLAYERS) {
                 // all players have now drawn the maze and are ready to play
                 pubnub.publish({
