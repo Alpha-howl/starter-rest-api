@@ -1581,6 +1581,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             if(receivedMessage.message.pressedArrowKeys.down) {
                 playerData.position[1] += amplifier;
             }
+            roomData.props.fullyReadyPlayers ||= {};
             roomData.props.fullyReadyPlayers[username] = playerData;
 
 
@@ -1591,7 +1592,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 preparedPlayers: roomData.props.preparedPlayers,
                 fullyReadyPlayers: roomData.props.fullyReadyPlayers,
                 state: roomData.props.state,
-                startTime: undefined,
+                startTime: roomData.props.startTime,
                 teamsInfo: roomData.props.teamsInfo,
                 ttl: roomData.props.ttl
             });
@@ -1607,7 +1608,9 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 channel: receivedMessage.channel,
                 message: {
                     action: "frame-results",
-                    smallGrid,
+                    smallGrid: smallGrid.map(cell => {
+                        return cell.toJSO();
+                    }),
                     playerData
                 }
             });
