@@ -1613,9 +1613,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 channel: receivedMessage.channel,
                 message: {
                     action: "frame-results",
-                    smallGrid: smallGrid.map(cell => {
-                        return cell.toJSO();
-                    }),
+                    nearbyItems: [], // todo - find nearby players, traps, etc (that are inside VISION_RADIUS)
                     playerData
                 }
             });
