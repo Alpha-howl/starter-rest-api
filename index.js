@@ -1588,7 +1588,6 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             roomData.props.fullyReadyPlayers ||= {};
             roomData.props.fullyReadyPlayers[username] = playerData;
 
-            console.log(roomData.props.fullyReadyPlayers);
 
 
             // update roomdata in db
