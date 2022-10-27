@@ -1607,8 +1607,8 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 channel: receivedMessage.channel,
                 message: {
                     action: "frame-results",
-                    //smallGrid,
-                    //playerData
+                    smallGrid,
+                    playerData
                 }
             });
             break;
