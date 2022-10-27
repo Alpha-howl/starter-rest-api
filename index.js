@@ -1601,18 +1601,25 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 ttl: roomData.props.ttl
             });
 
-
-            // now return the results - including the part of the maze the client will have access to:
-            const cellGrid = roomData.props.mazeData.map(jsoCell => {
-                return convertJsoCellToClassCell(jsoCell);
+            const nearbyItems = []; // todo - find nearby players, traps, etc (that are inside VISION_RADIUS)
+            const usernames = Object.keys(roomData.props.fullyReadyPlayers);
+            usernames.forEach(currentUsername => {
+                if(currentUsername === username) {
+                    return;
+                }
+                const currentItem = roomData.props.fullyReadyPlayers[currentUsername];
+                const sqrDstFromPlayer = (currentItem.position[0] - playerData.position[0])**2 + (currentItem.position[1] - playerData.position[1])**2;
+                if(sqrDstFromPlayer < VISION_RADIUS**2) {
+                    // it is close enough to player so they can see this item => push it in nearbyItems to report it to the player
+                    nearbyItems.push(currentItem);
+                }
             });
-            const smallGrid = findRadiusAroundPlayer(cellGrid, receivedMessage.message.playerX, receivedMessage.message.playerY, COLS, VISION_RADIUS);
 
             await pubnub.publish({
                 channel: receivedMessage.channel,
                 message: {
                     action: "frame-results",
-                    nearbyItems: [], // todo - find nearby players, traps, etc (that are inside VISION_RADIUS)
+                    nearbyItems, // todo - find nearby players, traps, etc (that are inside VISION_RADIUS)
                     playerData
                 }
             });
