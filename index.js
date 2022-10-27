@@ -1489,6 +1489,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
         }
     }
     const action = receivedMessage.message.action;
+    console.log("Got ", action);
     switch(action) {
         case "tone" : {
             console.log("Toned");
