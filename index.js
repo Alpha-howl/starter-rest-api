@@ -1568,7 +1568,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 break;
             }
 
-            const amplifier = 0.06*25;
+            const amplifier = 0.06*100;
 
             // use receivedMessage.message.pressedArrowKeys playerX and playerY and roomData, username, to validate new frame
             // then send back the new frame data using findRadiusAround player etc
