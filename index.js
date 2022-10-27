@@ -1479,12 +1479,12 @@ async function handlePubNubReceivedMessage(receivedMessage) {
 
         roomData = await db.collection("Room").get(roomId.toString()); 
         if(! roomData.props.preparedPlayers.includes(username)) {
-            console.log("return");
+            console.log("return", roomData.props.preparedPlayers, username);
             return false;
         }
 
-        if(! jwtIsValid(receivedMessage.message.jwt)) {
-            console.log("return");
+        if(! jwtIsValid(jwt)) {
+            console.log("return, jwt invalid");
             return false;
         }
     }
@@ -1559,7 +1559,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
         }
         case "validate-frame": {
             // first perform some security checks:
-            /* const securityCheckPassed = await securityCheck();
+            const securityCheckPassed = await securityCheck();
             if(securityCheckPassed === false) {
                 break;
             }
@@ -1601,7 +1601,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             const cellGrid = roomData.props.mazeData.map(jsoCell => {
                 return convertJsoCellToClassCell(jsoCell);
             });
-            const smallGrid = findRadiusAroundPlayer(cellGrid, playerX, playerY, COLS, VISION_RADIUS); */
+            const smallGrid = findRadiusAroundPlayer(cellGrid, playerX, playerY, COLS, VISION_RADIUS);
 
             pubnub.publish({
                 channel: receivedMessage.channel,
