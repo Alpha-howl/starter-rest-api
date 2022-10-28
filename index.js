@@ -1567,36 +1567,27 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             break;
         }
         case "validate-frame": {
-            console.log(5050);
             // first perform some security checks:
             const securityCheckPassed = await securityCheck();
             /*if(securityCheckPassed === false) {
                 break;
             } */
 
-            let amplifier = 0.08;
-            const hitboxData = {width: .22, height: .22};
-            const mazeGrid = roomData.props.mazeData.map(convertJsoCellToClassCell);
+            const amplifier = 0.08;
 
             // use receivedMessage.message.pressedArrowKeys playerX and playerY and roomData, username, to validate new frame
             // then send back the new frame data 
             const playerData = roomData.props.fullyReadyPlayers[username] || {position: [0,0]};
-            const closeWalls = getWallsPlayerWillCollideWith(playerData.position, mazeGrid, amplifier, COLS, hitboxData);
-
-            if(closeWalls.some(wall => wall===true)) {
-                amplifier = 0.05;
-            }
-            
-            if(receivedMessage.message.pressedArrowKeys.left && !closeWalls[3]) {
+            if(receivedMessage.message.pressedArrowKeys.left) {
                 playerData.position[0] -= amplifier;
             }
-            if(receivedMessage.message.pressedArrowKeys.right && !closeWalls[1]) {
+            if(receivedMessage.message.pressedArrowKeys.right) {
                 playerData.position[0] += amplifier;
             }
-            if(receivedMessage.message.pressedArrowKeys.up && !closeWalls[0]) {
+            if(receivedMessage.message.pressedArrowKeys.up) {
                 playerData.position[1] -= amplifier;
             }
-            if(receivedMessage.message.pressedArrowKeys.down && !closeWalls[2]) {
+            if(receivedMessage.message.pressedArrowKeys.down) {
                 playerData.position[1] += amplifier;
             }
             roomData.props.fullyReadyPlayers ||= {};
