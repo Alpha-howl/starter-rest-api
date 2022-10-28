@@ -1567,6 +1567,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             break;
         }
         case "validate-frame": {
+            console.log(5050);
             // first perform some security checks:
             const securityCheckPassed = await securityCheck();
             /*if(securityCheckPassed === false) {
