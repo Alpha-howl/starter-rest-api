@@ -1490,10 +1490,6 @@ async function handlePubNubReceivedMessage(receivedMessage) {
         }
     }
 
-    if(! jwtIsValid(receivedMessage.message.jwt)) {
-        return;
-    }
-
     const action = receivedMessage.message.action;
     switch(action) {
         case "tone" : {
@@ -1716,10 +1712,6 @@ function pickTeams(preparedPlayers, cols, rows) {
 	return teamsInfo;
 }
 
-
-
-
-
 function getWallsPlayerWillCollideWith(coords, grid, amplifier, cols, hitboxData) {
 	const position = {
 		x: coords[0],
@@ -1811,8 +1803,12 @@ function getWallsPlayerWillCollideWith(coords, grid, amplifier, cols, hitboxData
 		}
 	}
 
-	return [false, false, false, false];
+	return wallsThePlayerIsCloseTo;
 }
+
+
+
+
 
 
 
