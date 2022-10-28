@@ -1716,6 +1716,9 @@ function pickTeams(preparedPlayers, cols, rows) {
 function getIndexFromXY(x, y, cols) {
 	return y*cols + x;
 }
+
+
+
 function getWallsPlayerWillCollideWith(coords, grid, amplifier, cols, hitboxData) {
 	const position = {
 		x: coords[0],
@@ -1778,12 +1781,12 @@ function getWallsPlayerWillCollideWith(coords, grid, amplifier, cols, hitboxData
 		// sidesThePlayerIsCloseTo will have at most 2 elmnts
 		// use .some(..) to check if any of the sides the player is close to 
 		// has a wall diagonally from it
-		const playerCannotMoveThere = sidesThePlayerIsCloseTo.some((side, sideIndex) => { 
+		const playerCannotMoveThere = sidesThePlayerIsCloseTo.some((side, sideIndex) => {
 			// invert side to correspond to destination wall index
-			const wallIndexToCheckOfDestination = 3-sideIndex;
+			const wallIndexToCheckOfDestination = 3-side;
 
-			const movementX = sideIndex === 3 ? -1 : sideIndex === 1 ? 1 : 0;
-			const movementY = sideIndex === 0 ? -1 : sideIndex === 2 ? 1 : 0;
+			const movementX = side === 3 ? -1 : side === 1 ? 1 : 0;
+			const movementY = side === 0 ? -1 : side === 2 ? 1 : 0;
 			const destinationIndex = getIndexFromXY(col+movementX,row+movementY,cols);
 			const destinationCell = grid[destinationIndex];
 
