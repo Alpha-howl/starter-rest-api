@@ -1489,6 +1489,11 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             return false;
         }
     }
+
+    if(! jwtIsValid(receivedMessage.message.jwt)) {
+        return;
+    }
+
     const action = receivedMessage.message.action;
     switch(action) {
         case "tone" : {
@@ -1568,21 +1573,29 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 break;
             } */
 
-            const amplifier = 0.08;
+            let amplifier = 0.08;
+            const hitboxData = {width: .22, height: .22};
+            const mazeGrid = roomData.props.mazeData.map(convertJsoCellToClassCell);
 
             // use receivedMessage.message.pressedArrowKeys playerX and playerY and roomData, username, to validate new frame
-            // then send back the new frame data using findRadiusAround player etc
+            // then send back the new frame data 
             const playerData = roomData.props.fullyReadyPlayers[username] || {position: [0,0]};
-            if(receivedMessage.message.pressedArrowKeys.left) {
+            const closeWalls = getWallsPlayerWillCollideWith(playerData.position, mazeGrid, amplifier, COLS, hitboxData);
+
+            if(closeWalls.some(wall => wall===true)) {
+                amplifier = 0.05;
+            }
+            
+            if(receivedMessage.message.pressedArrowKeys.left && !closeWalls[3]) {
                 playerData.position[0] -= amplifier;
             }
-            if(receivedMessage.message.pressedArrowKeys.right) {
+            if(receivedMessage.message.pressedArrowKeys.right && !closeWalls[1]) {
                 playerData.position[0] += amplifier;
             }
-            if(receivedMessage.message.pressedArrowKeys.up) {
+            if(receivedMessage.message.pressedArrowKeys.up && !closeWalls[0]) {
                 playerData.position[1] -= amplifier;
             }
-            if(receivedMessage.message.pressedArrowKeys.down) {
+            if(receivedMessage.message.pressedArrowKeys.down && !closeWalls[2]) {
                 playerData.position[1] += amplifier;
             }
             roomData.props.fullyReadyPlayers ||= {};
@@ -1738,3 +1751,7 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`index.js listening on ${port}`);
 });
+
+
+
+
