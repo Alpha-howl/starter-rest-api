@@ -1567,27 +1567,36 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             break;
         }
         case "validate-frame": {
+            console.log(5050);
             // first perform some security checks:
             const securityCheckPassed = await securityCheck();
             /*if(securityCheckPassed === false) {
                 break;
             } */
 
-            const amplifier = 0.08;
+            let amplifier = 0.08;
+            const hitboxData = {width: .22, height: .22};
+            const mazeGrid = roomData.props.mazeData.map(convertJsoCellToClassCell);
 
             // use receivedMessage.message.pressedArrowKeys playerX and playerY and roomData, username, to validate new frame
             // then send back the new frame data 
             const playerData = roomData.props.fullyReadyPlayers[username] || {position: [0,0]};
-            if(receivedMessage.message.pressedArrowKeys.left) {
+            const closeWalls = getWallsPlayerWillCollideWith(playerData.position, mazeGrid, amplifier, COLS, hitboxData);
+
+            if(closeWalls.some(wall => wall===true)) {
+                amplifier = 0.05;
+            }
+            
+            if(receivedMessage.message.pressedArrowKeys.left && !closeWalls[3]) {
                 playerData.position[0] -= amplifier;
             }
-            if(receivedMessage.message.pressedArrowKeys.right) {
+            if(receivedMessage.message.pressedArrowKeys.right && !closeWalls[1]) {
                 playerData.position[0] += amplifier;
             }
-            if(receivedMessage.message.pressedArrowKeys.up) {
+            if(receivedMessage.message.pressedArrowKeys.up && !closeWalls[0]) {
                 playerData.position[1] -= amplifier;
             }
-            if(receivedMessage.message.pressedArrowKeys.down) {
+            if(receivedMessage.message.pressedArrowKeys.down && !closeWalls[2]) {
                 playerData.position[1] += amplifier;
             }
             roomData.props.fullyReadyPlayers ||= {};
@@ -1711,7 +1720,99 @@ function pickTeams(preparedPlayers, cols, rows) {
 
 
 
+function getWallsPlayerWillCollideWith(coords, grid, amplifier, cols, hitboxData) {
+	const position = {
+		x: coords[0],
+		y: coords[1]
+	};
 
+	const row = Math.floor(position.y);
+	const col = Math.floor(position.x);
+
+	const positionInCell = {
+		x: position.x-col,
+		y: position.y-row
+	};
+
+
+
+
+	const cellObject = grid[getIndexFromXY(col, row, cols)];
+	const currentCellWalls = cellObject.getWalls();
+
+	let wallsThePlayerIsCloseTo = Array(4).fill(false); // in format [top, right, bottom, left]
+	const sidesThePlayerIsCloseTo = [];
+
+	// if-else clause for left&right
+	if(positionInCell.x - hitboxData.width/2 - amplifier < 0) {
+		// player is close to left edge of the cell
+		// => check if there is a wall there
+		sidesThePlayerIsCloseTo.push(3);
+		wallsThePlayerIsCloseTo[3] = currentCellWalls[3];
+	}
+	else if(positionInCell.x + hitboxData.width/2 + amplifier > 1) {
+		// player is close to right edge of the cell
+		// => check if there is a wall there
+		sidesThePlayerIsCloseTo.push(1);
+		wallsThePlayerIsCloseTo[1] = currentCellWalls[1];
+	}
+	
+	// separate if-else clause for top&bottom
+	if(positionInCell.y - hitboxData.height/2 - amplifier < 0) {
+		// player is close to top edge of cell
+		// => check if there is a wall there
+		sidesThePlayerIsCloseTo.push(0);
+		wallsThePlayerIsCloseTo[0] = currentCellWalls[0];
+	}
+	else if(positionInCell.y + hitboxData.height/2 > 1) {
+		// player is close to bottom edge of cell
+		// => check if there is a wall there
+		sidesThePlayerIsCloseTo.push(2);
+		wallsThePlayerIsCloseTo[2] = currentCellWalls[2];
+	}
+
+	const playerNotByWalls = ! wallsThePlayerIsCloseTo.some(wall => {
+		return wall === true;
+	});
+	if(playerNotByWalls && sidesThePlayerIsCloseTo.length === 2 /*===2*/) {
+		// player's cell has no walls, now look at destination cell
+		// the destination will always be diagonal otherwise the player's
+		// cell would have had walls at the place the destination has walls
+		
+		// sidesThePlayerIsCloseTo will have at most 2 elmnts
+		// use .some(..) to check if any of the sides the player is close to 
+		// has a wall diagonally from it
+		const playerCannotMoveThere = sidesThePlayerIsCloseTo.some((side, sideIndex) => {
+			// invert side to correspond to destination wall index
+			const wallIndexToCheckOfDestination = 3-sideIndex;
+
+			const movementX = sideIndex === 3 ? -1 : sideIndex === 1 ? 1 : 0;
+			const movementY = sideIndex === 0 ? -1 : sideIndex === 2 ? 1 : 0;
+			const destinationIndex = getIndexFromXY(col+movementX,row+movementY,cols);
+			const destinationCell = grid[destinationIndex];
+
+			if(destinationIndex < 0) {
+				// destionation is outside grid, do not allow this.
+				return true;
+			}
+
+			// now return true if a wall is blocking the path:
+			return destinationCell.getWalls()[wallIndexToCheckOfDestination] === true;
+		});
+		// todo - explain this ^ with a diagram
+
+		if(playerCannotMoveThere) {
+			// if the player is trying to move diagonally into a cell that has walls
+			// at the corner the player is trying to enter it from, then
+			// act as if the current cell has one of those walls which will cause
+			// the player to slide down or across the outside of 
+			// the destination cell instead of entering it.
+			wallsThePlayerIsCloseTo[sidesThePlayerIsCloseTo[0]] = true;
+		}
+	}
+
+	return wallsThePlayerIsCloseTo;
+}
 
 
 
