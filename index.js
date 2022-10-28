@@ -1712,6 +1712,10 @@ function pickTeams(preparedPlayers, cols, rows) {
 	return teamsInfo;
 }
 
+
+function getIndexFromXY(x, y, cols) {
+	return y*cols + x;
+}
 function getWallsPlayerWillCollideWith(coords, grid, amplifier, cols, hitboxData) {
 	const position = {
 		x: coords[0],
