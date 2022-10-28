@@ -1811,7 +1811,7 @@ function getWallsPlayerWillCollideWith(coords, grid, amplifier, cols, hitboxData
 		}
 	}
 
-	return wallsThePlayerIsCloseTo;
+	return [false, false, false, false];
 }
 
 
