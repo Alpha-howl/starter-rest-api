@@ -1631,7 +1631,8 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 message: {
                     action: "frame-results",
                     nearbyItems, // todo - find nearby players, traps, etc (that are inside VISION_RADIUS)
-                    playerData
+                    playerData,
+                    closeWalls
                 }
             });
             break;
