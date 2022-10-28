@@ -1778,7 +1778,7 @@ function getWallsPlayerWillCollideWith(coords, grid, amplifier, cols, hitboxData
 		// sidesThePlayerIsCloseTo will have at most 2 elmnts
 		// use .some(..) to check if any of the sides the player is close to 
 		// has a wall diagonally from it
-		const playerCannotMoveThere = sidesThePlayerIsCloseTo.some((side, sideIndex) => {
+		const playerCannotMoveThere = sidesThePlayerIsCloseTo.some((side, sideIndex) => { 
 			// invert side to correspond to destination wall index
 			const wallIndexToCheckOfDestination = 3-side;
 
