@@ -1578,6 +1578,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             // then send back the new frame data 
             const playerData = roomData.props.fullyReadyPlayers[username] || {position: [0,0]};
             const closeWalls = getWallsPlayerWillCollideWith(playerData.position, mazeGrid, amplifier, COLS, hitboxData);
+            console.log(closeWalls);
 
             if(closeWalls.some(wall => wall===true)) {
                 amplifier = 0.05;
