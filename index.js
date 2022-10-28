@@ -1563,7 +1563,6 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             break;
         }
         case "validate-frame": {
-            console.log(5050);
             // first perform some security checks:
             const securityCheckPassed = await securityCheck();
             /*if(securityCheckPassed === false) {
@@ -1571,18 +1570,18 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             } */
 
             let amplifier = 0.08;
-            const hitboxData = {width: .22, height: .22};
-            const mazeGrid = roomData.props.mazeData.map(convertJsoCellToClassCell);
+            const hitboxData = {width: .22, height: .22}; // 28/10
+            const mazeGrid = roomData.props.mazeData.map(convertJsoCellToClassCell); // 28/10
 
             // use receivedMessage.message.pressedArrowKeys playerX and playerY and roomData, username, to validate new frame
             // then send back the new frame data 
             const playerData = roomData.props.fullyReadyPlayers[username] || {position: [0,0]};
-            const closeWalls = getWallsPlayerWillCollideWith(playerData.position, mazeGrid, amplifier, COLS, hitboxData);
-            console.log(closeWalls);
+            const closeWalls = getWallsPlayerWillCollideWith(playerData.position, mazeGrid, amplifier, COLS, hitboxData); // 28/10
+            console.log(username, closeWalls); 
 
             if(closeWalls.some(wall => wall===true)) {
-                amplifier = 0.05;
-            }
+                amplifier = 0.05; 
+            }// 28/10
             
             if(receivedMessage.message.pressedArrowKeys.left && !closeWalls[3]) {
                 playerData.position[0] -= amplifier;
@@ -1613,7 +1612,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 ttl: roomData.props.ttl
             });
 
-            const nearbyItems = []; // todo - find nearby players, traps, etc (that are inside VISION_RADIUS)
+            const nearbyItems = []; // find nearby players, traps, etc (that are inside VISION_RADIUS) done at 27/10
             const usernames = Object.keys(roomData.props.fullyReadyPlayers);
             usernames.forEach(currentUsername => {
                 if(currentUsername === username) {
