@@ -1637,7 +1637,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             if(roomData.props.flagInfo[oppositeTeam].carriedBy === username) {
                 roomData.props.flagInfo[oppositeTeam].position = playerData.position; // 29/10
             }
-
+            let playerIsDead = false;
             const nearbyItems = []; // find nearby players, traps, etc (that are inside VISION_RADIUS) done at 27/10
             const usernames = Object.keys(roomData.props.fullyReadyPlayers);
             const otherItems = [
@@ -1690,7 +1690,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                         const itemSpawnPoint = roomData.props.teamsInfo[currentItem.team].spawnPoint;
                         const currentItemDstToSpawn = findSqrDst(currentItem.position, itemSpawnPoint);
 
-                        const playerIsDead = playerDstToSpawn > currentItemDstToSpawn;
+                        playerIsDead = playerDstToSpawn > currentItemDstToSpawn;
                         roomData.props.fullyReadyPlayers[currentUsername].isDead = !playerIsDead;
                         roomData.props.fullyReadyPlayers[username].isDead = playerIsDead;
 
@@ -1743,7 +1743,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                     action: "frame-results",
                     nearbyItems, // todo - find nearby players, traps, etc (that are inside VISION_RADIUS)
                     playerData,
-                    closeWalls
+                    youAreDead: playerIsDead
                 }
             });
             break;
