@@ -164,6 +164,9 @@ const MAX_NUMBER_OF_PLAYERS = 2;
 const VISION_RADIUS = 3;
 
 
+const spawnPointA = [0,0];
+const spawnPointB = [COLS-1, ROWS-1];
+
 
 class Cell {
 	#x;
@@ -354,6 +357,16 @@ async function roomIsFull(roomId) {
         // room does not exist, create it
         // convert array of cells to array of JSOs so it can be saved in the db
         console.log("Insert new room " + roomId);
+        const flagInfo = {
+            teamA: {
+                carriedBy: undefined, 
+                position: spawnPointA
+            },
+            teamB: {
+                carriedBy: undefined,
+                position: spawnPointB
+            }
+        };
         const newGrid = randomDfs(COLS, ROWS).map(cell => {return cell.toJSO()});
         await db.collection("Room").set(roomId.toString(), {
             mazeData: newGrid,
@@ -363,6 +376,7 @@ async function roomIsFull(roomId) {
             state: "loading",
             startTime: undefined,
             teamsInfo: undefined,
+            flagInfo,
             ttl: Math.floor(Date.now() / 1000) + 30*60 // half an hour
         });
         // the new room cannot be full, so return false
@@ -1731,8 +1745,6 @@ function pickTeams(preparedPlayers, cols, rows) {
 	// team A will spawn in the top left
 	// team b will spawn in the bottom right
 	// so they are an equal dst from centre
-	const spawnPointA = [0,0];
-	const spawnPointB = [cols-1, rows-1];
 
 	const teamsInfo = {
 		teamA: {
