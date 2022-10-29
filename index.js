@@ -1674,7 +1674,14 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                     // it is close enough to player so they can see this item => push it in nearbyItems to report it to the player
                     
                     // collision detection with other players
-                    if(isCollided(playerData.position, currentItem.position)) {
+                    const playerAndOtherPlayerCollided = isCollided(
+                        playerData.position, 
+                        hitboxData.player,
+                        
+                        currentItem.position,
+                        hitboxData.player
+                    );
+                    if(playerAndOtherPlayerCollided) {
                         // 2 players collided, kill the one which is further from its spawn
                         // playerIsDead below is for the player who sent the pubnub message
                         const playerSpawnPoint = roomData.props.teamsInfo[playerData.team].spawnPoint;
@@ -1745,6 +1752,14 @@ async function handlePubNubReceivedMessage(receivedMessage) {
 }
 function findSqrDst(coords1, coords2) {
     return (coords1[0] - coords2[0])**2 + (coords1[1] - coords2[1])**2;
+}
+function isCollided(rectACoords, rectADimensions, rectBCoords, rectBDimensions) {
+    return (
+        rectACoords[0] < rectBCoords[0] + rectBDimensions.width &&
+        rectACoords[0] + rectADimensions.width > rectBCoords[0] &&
+        rectACoords[1] < rectBCoords[1] + rectBDimensions.height &&
+        rectACoords[1] + rectADimensions.height > rectBCoords[1]
+    );
 }
 
 
