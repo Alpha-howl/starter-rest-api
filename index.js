@@ -1823,7 +1823,7 @@ function getWallsPlayerWillCollideWith(coords, grid, amplifier, cols, hitboxData
 		sidesThePlayerIsCloseTo.push(0);
 		wallsThePlayerIsCloseTo[0] = currentCellWalls[0];
 	}
-	else if(positionInCell.y + hitboxData.height/2 > 1) {
+	else if(positionInCell.y + hitboxData.height/2 + amplifier > 1) {
 		// player is close to bottom edge of cell
 		// => check if there is a wall there
 		sidesThePlayerIsCloseTo.push(2);
