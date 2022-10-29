@@ -359,11 +359,11 @@ async function roomIsFull(roomId) {
         console.log("Insert new room " + roomId);
         const flagInfo = {
             teamA: {
-                carriedBy: "Dimitar", 
+                carriedBy: false, 
                 position: spawnPointA
             },
             teamB: {
-                carriedBy: "Dimitar",
+                carriedBy: false,
                 position: spawnPointB
             }
         };
@@ -1379,11 +1379,11 @@ async function handleJoinRoomRequest(jwt, response) {
 
         const flagInfo = {
             teamA: {
-                carriedBy: "Dimitar", 
+                carriedBy: false, 
                 position: spawnPointA
             },
             teamB: {
-                carriedBy: "Dimitar",
+                carriedBy: false,
                 position: spawnPointB
             }
         };
