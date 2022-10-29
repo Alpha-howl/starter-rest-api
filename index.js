@@ -1686,7 +1686,11 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                         roomData.teamsInfo[playerData.team].score ||= 0;
                                         roomData.teamsInfo[playerData.team].score += 1;
                                         eventsToDisplayOnScreen.push({
-                                            name: "delivered-flag"
+                                            name: "delivered-flag",
+                                            scores: {
+                                                [oppositeTeam]: roomData.flagInfo[oppositeTeam].score || 0,
+                                                [playerData.team]: roomData.teamsInfo[playerData.team].score
+                                            }
                                         });
                                     }
                                     break;
@@ -1811,10 +1815,21 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                     action: "frame-results",
                     nearbyItems, // todo - find nearby players, traps, etc (that are inside VISION_RADIUS)
                     playerData,
-                    youAreDead: playerIsDead,
-                    eventsToDisplayOnScreen
+                    youAreDead: playerIsDead
                 }
             });
+
+            if(eventsToDisplayOnScreen.length != 0) {
+                const publicChannel = receivedMessage.channel
+
+                pubnub.publish({
+                    channel: publicChannel,
+                    message: {
+                        eventsToDisplayOnScreen
+                    }
+                });
+            }
+
             break;
         }
     }
