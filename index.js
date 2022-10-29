@@ -1606,7 +1606,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             // then send back the new frame data 
             const playerData = roomData.props.fullyReadyPlayers[username] || {position: [0,0]};
             const positionOffsetTakenIntoAccount = [playerData.position[0] + 0.5, playerData.position[1] + 0.5];
-            const closeWalls = getWallsPlayerWillCollideWith(positionOffsetTakenIntoAccount, mazeGrid, amplifier, COLS, hitboxData); // 28/10
+            const closeWalls = getWallsPlayerWillCollideWith(positionOffsetTakenIntoAccount, mazeGrid, amplifier, COLS, hitboxData.player); // 28/10
 
             if(closeWalls.some(wall => wall===true)) {
                 amplifier = 0.05; 
