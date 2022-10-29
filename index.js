@@ -1815,7 +1815,8 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                     action: "frame-results",
                     nearbyItems, // todo - find nearby players, traps, etc (that are inside VISION_RADIUS)
                     playerData,
-                    youAreDead: playerIsDead
+                    youAreDead: playerIsDead,
+                    eventsToDisplayOnScreen
                 }
             });
 
