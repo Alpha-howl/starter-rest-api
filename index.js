@@ -1376,6 +1376,17 @@ async function handleJoinRoomRequest(jwt, response) {
         // then generate what will be the new room's maze
         mazeData = randomDfs(COLS, ROWS);
         mazeData = mazeData.map(cell => {return cell.toJSO();});
+
+        const flagInfo = {
+            teamA: {
+                carriedBy: undefined, 
+                position: spawnPointA
+            },
+            teamB: {
+                carriedBy: undefined,
+                position: spawnPointB
+            }
+        };
         // inside the overflows table, increment the value of overflows
         await incrementOverflows();
         // create the record of the new room using all the data described
@@ -1388,6 +1399,7 @@ async function handleJoinRoomRequest(jwt, response) {
             state: "loading",
             startTime: undefined,
             teamsInfo: undefined,
+            flagInfo,
             ttl: Math.floor(Date.now() / 1000) + 30*60 // half an hour
         });
     }
