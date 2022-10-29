@@ -1694,7 +1694,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                         roomData.props.fullyReadyPlayers[currentUsername].isDead = !playerIsDead;
                         roomData.props.fullyReadyPlayers[username].isDead = playerIsDead;
 
-                        setTimeout(() => {
+                        setTimeout(async () => {
                             // after 3 secs revive and respawn player
                             if(playerIsDead) {
                                 roomData.props.fullyReadyPlayers[username].isDead = false;
