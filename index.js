@@ -1649,21 +1649,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             });
 
             const nearbyItems = []; // find nearby players, traps, etc (that are inside VISION_RADIUS) done at 27/10
-            
             const usernames = Object.keys(roomData.props.fullyReadyPlayers);
-            usernames.forEach(currentUsername => {
-                if(currentUsername === username) {
-                    return;
-                }
-                const currentItem = roomData.props.fullyReadyPlayers[currentUsername];
-                currentItem.hitboxData = hitboxData.player;
-                const sqrDstFromPlayer = (currentItem.position[0] - playerData.position[0])**2 + (currentItem.position[1] - playerData.position[1])**2;
-                if(sqrDstFromPlayer < VISION_RADIUS**2) {
-                    // it is close enough to player so they can see this item => push it in nearbyItems to report it to the player
-                    nearbyItems.push(currentItem);
-                }
-            });
-
             const otherItems = [
                 {
                     name: "flag",
@@ -1681,6 +1667,18 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 }
             ];
             otherItems.forEach(currentItem => {
+                const sqrDstFromPlayer = (currentItem.position[0] - playerData.position[0])**2 + (currentItem.position[1] - playerData.position[1])**2;
+                if(sqrDstFromPlayer < VISION_RADIUS**2) {
+                    // it is close enough to player so they can see this item => push it in nearbyItems to report it to the player
+                    nearbyItems.push(currentItem);
+                }
+            });
+            usernames.forEach(currentUsername => {
+                if(currentUsername === username) {
+                    return;
+                }
+                const currentItem = roomData.props.fullyReadyPlayers[currentUsername];
+                currentItem.hitboxData = hitboxData.player;
                 const sqrDstFromPlayer = (currentItem.position[0] - playerData.position[0])**2 + (currentItem.position[1] - playerData.position[1])**2;
                 if(sqrDstFromPlayer < VISION_RADIUS**2) {
                     // it is close enough to player so they can see this item => push it in nearbyItems to report it to the player
