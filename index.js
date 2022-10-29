@@ -1821,7 +1821,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             });
 
             if(eventsToDisplayOnScreen.length != 0) {
-                const publicChannel = receivedMessage.channel
+                const publicChannel = receivedMessage.channel.match(/ctf-room-\d+/)[0];
 
                 pubnub.publish({
                     channel: publicChannel,
