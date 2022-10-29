@@ -1685,7 +1685,9 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                         roomData.flagInfo[oppositeTeam].carriedBy = false;
                                         roomData.teamsInfo[playerData.team].score ||= 0;
                                         roomData.teamsInfo[playerData.team].score += 1;
-                                        eventsToDisplayOnScreen.push("delivered-flag");
+                                        eventsToDisplayOnScreen.push({
+                                            name: "delivered-flag"
+                                        });
                                     }
                                     break;
                                 }
@@ -1751,7 +1753,11 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                     roomData.props.flagInfo[oppositeTeam].position = oppTeamSpawnPoint;
                                 }
                                 // push an event which will be parsed by client and displayed on the screen
-                                eventsToDisplayOnScreen.push("die");
+                                eventsToDisplayOnScreen.push({
+                                    name: "die",
+                                    killer: "currentUsername",
+                                    method: "melee"
+                                });
                             } 
                             if(itemIsDead) {
                                 roomData.props.fullyReadyPlayers[currentUsername].isDead = false;
