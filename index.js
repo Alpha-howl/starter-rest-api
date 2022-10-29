@@ -1743,6 +1743,24 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                         roomData.props.fullyReadyPlayers[username].isDead = playerIsDead;
                         roomData.props.fullyReadyPlayers[currentUsername].isDead = itemIsDead;
 
+                        // push an event which will be parsed by client and displayed on the screen
+                        if(playerIsDead) {
+                            eventsToDisplayOnScreen.push({
+                                name: "die",
+                                killer: currentUsername,
+                                killed: username,
+                                method: "melee"
+                            });
+                        }
+                        if(itemIsDead) {
+                            eventsToDisplayOnScreen.push({
+                                name: "kill",
+                                killer: username,
+                                killed: currentUsername,
+                                method: "melee"
+                            });
+                        }
+
                         setTimeout(async () => {
                             // after 3 secs revive and respawn player
                             if(playerIsDead) {
@@ -1756,12 +1774,6 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                     const oppTeamSpawnPoint = roomData.props.teamsInfo[oppositeTeam].spawnPoint;
                                     roomData.props.flagInfo[oppositeTeam].position = oppTeamSpawnPoint;
                                 }
-                                // push an event which will be parsed by client and displayed on the screen
-                                eventsToDisplayOnScreen.push({
-                                    name: "die",
-                                    killer: "currentUsername",
-                                    method: "melee"
-                                });
                             } 
                             if(itemIsDead) {
                                 roomData.props.fullyReadyPlayers[currentUsername].isDead = false;
