@@ -1570,7 +1570,10 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             } */
 
             let amplifier = 0.08;
-            const hitboxData = {width: .22, height: .22}; // 28/10
+            const hitboxData = {
+                player: {width: .22, height: .22},
+                flag: {width: 1, height: 1}
+            }; // 28/10
             const mazeGrid = roomData.props.mazeData.map(convertJsoCellToClassCell); // 28/10
 
             // use receivedMessage.message.pressedArrowKeys playerX and playerY and roomData, username, to validate new frame
@@ -1599,6 +1602,12 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             roomData.props.fullyReadyPlayers[username] = playerData;
 
 
+            const oppositeTeam = playerData.team === "teamA" ? "teamB" : "teamA";
+
+            if(roomData.props.flagInfo[oppositeTeam].carriedBy === username) {
+                roomData.props.flagInfo[oppositeTeam].position = playerData.position; // 29/10
+            }
+
 
             // update roomdata in db
             await db.collection("Room").set(roomId.toString(), {
@@ -1609,22 +1618,50 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 state: roomData.props.state,
                 startTime: roomData.props.startTime,
                 teamsInfo: roomData.props.teamsInfo,
+                flagInfo: roomData.props.flagInfo,
                 ttl: roomData.props.ttl
             });
 
             const nearbyItems = []; // find nearby players, traps, etc (that are inside VISION_RADIUS) done at 27/10
+            
             const usernames = Object.keys(roomData.props.fullyReadyPlayers);
             usernames.forEach(currentUsername => {
                 if(currentUsername === username) {
                     return;
                 }
                 const currentItem = roomData.props.fullyReadyPlayers[currentUsername];
+                currentItem.hitboxData = hitboxData.player;
                 const sqrDstFromPlayer = (currentItem.position[0] - playerData.position[0])**2 + (currentItem.position[1] - playerData.position[1])**2;
                 if(sqrDstFromPlayer < VISION_RADIUS**2) {
                     // it is close enough to player so they can see this item => push it in nearbyItems to report it to the player
                     nearbyItems.push(currentItem);
                 }
             });
+
+            const otherItems = [
+                {
+                    name: "flag",
+                    team: "teamA",
+                    hitboxData: hitboxData.flag,
+                    position: roomData.props.flagInfo["teamA"].position,
+                    isDead: false
+                },
+                {
+                    name: "flag",
+                    team: "teamB",
+                    hitboxData: hitboxData.flag,
+                    position: roomData.props.flagInfo["teamB"].position,
+                    isDead: false
+                }
+            ];
+            otherItems.forEach(currentItem => {
+                const sqrDstFromPlayer = (currentItem.position[0] - playerData.position[0])**2 + (currentItem.position[1] - playerData.position[1])**2;
+                if(sqrDstFromPlayer < VISION_RADIUS**2) {
+                    // it is close enough to player so they can see this item => push it in nearbyItems to report it to the player
+                    nearbyItems.push(currentItem);
+                }
+            });
+            
 
             await pubnub.publish({
                 channel: receivedMessage.channel,
