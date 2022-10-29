@@ -1803,13 +1803,13 @@ function getWallsPlayerWillCollideWith(coords, grid, amplifier, cols, hitboxData
 	const sidesThePlayerIsCloseTo = [];
 
 	// if-else clause for left&right
-	if(positionInCell.x - hitboxData.width/2 - amplifier < 0) {
+	if(positionInCell.x - hitboxData.width/2 < 0) {
 		// player is close to left edge of the cell
 		// => check if there is a wall there
 		sidesThePlayerIsCloseTo.push(3);
 		wallsThePlayerIsCloseTo[3] = currentCellWalls[3];
 	}
-	else if(positionInCell.x + hitboxData.width/2 + amplifier > 1) {
+	else if(positionInCell.x + hitboxData.width/2 > 1) {
 		// player is close to right edge of the cell
 		// => check if there is a wall there
 		sidesThePlayerIsCloseTo.push(1);
