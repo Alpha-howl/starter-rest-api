@@ -1595,6 +1595,10 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 break;
             } */
 
+            if(roomData.props.fullyReadyPlayers[username].isDead) {
+                break;
+            }
+
             let amplifier = 0.08;
             const hitboxData = {
                 player: {width: .22, height: .22},
@@ -1634,20 +1638,6 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 roomData.props.flagInfo[oppositeTeam].position = playerData.position; // 29/10
             }
 
-
-            // update roomdata in db
-            await db.collection("Room").set(roomId.toString(), {
-                mazeData: roomData.props.mazeData,
-                joinedPlayers: roomData.props.joinedPlayers,
-                preparedPlayers: roomData.props.preparedPlayers,
-                fullyReadyPlayers: roomData.props.fullyReadyPlayers,
-                state: roomData.props.state,
-                startTime: roomData.props.startTime,
-                teamsInfo: roomData.props.teamsInfo,
-                flagInfo: roomData.props.flagInfo,
-                ttl: roomData.props.ttl
-            });
-
             const nearbyItems = []; // find nearby players, traps, etc (that are inside VISION_RADIUS) done at 27/10
             const usernames = Object.keys(roomData.props.fullyReadyPlayers);
             const otherItems = [
@@ -1679,13 +1669,66 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 }
                 const currentItem = roomData.props.fullyReadyPlayers[currentUsername];
                 currentItem.hitboxData = hitboxData.player;
-                const sqrDstFromPlayer = (currentItem.position[0] - playerData.position[0])**2 + (currentItem.position[1] - playerData.position[1])**2;
+                const sqrDstFromPlayer = findSqrDst(currentItem.position, playerData.position);
                 if(sqrDstFromPlayer < VISION_RADIUS**2) {
                     // it is close enough to player so they can see this item => push it in nearbyItems to report it to the player
+                    
+                    // collision detection with other players
+                    if(isCollided(playerData.position, currentItem.position)) {
+                        // 2 players collided, kill the one which is further from its spawn
+                        // playerIsDead below is for the player who sent the pubnub message
+                        const playerSpawnPoint = roomData.props.teamsInfo[playerData.team].spawnPoint;
+                        const playerDstToSpawn = findSqrDst(playerData.position, playerSpawnPoint);
+
+                        const itemSpawnPoint = roomData.props.teamsInfo[currentItem.team].spawnPoint;
+                        const currentItemDstToSpawn = findSqrDst(currentItem.position, itemSpawnPoint);
+
+                        const playerIsDead = playerDstToSpawn > currentItemDstToSpawn;
+                        roomData.props.fullyReadyPlayers[currentUsername].isDead = !playerIsDead;
+                        roomData.props.fullyReadyPlayers[username].isDead = playerIsDead;
+
+                        setTimeout(() => {
+                            // after 3 secs revive and respawn player
+                            if(playerIsDead) {
+                                roomData.props.fullyReadyPlayers[username].isDead = false;
+                                roomData.props.fullyReadyPlayers[username].position = playerSpawnPoint;
+                            } else {
+                                roomData.props.fullyReadyPlayers[currentUsername].isDead = false;
+                                roomData.props.fullyReadyPlayers[currentUsername].position = itemSpawnPoint;
+                            }
+                            await db.collection("Room").set(roomId.toString(), {
+                                mazeData: roomData.props.mazeData,
+                                joinedPlayers: roomData.props.joinedPlayers,
+                                preparedPlayers: roomData.props.preparedPlayers,
+                                fullyReadyPlayers: roomData.props.fullyReadyPlayers,
+                                state: roomData.props.state,
+                                startTime: roomData.props.startTime,
+                                teamsInfo: roomData.props.teamsInfo,
+                                flagInfo: roomData.props.flagInfo,
+                                ttl: roomData.props.ttl
+                            });
+                        }, 3000);
+                        
+                    }
+
                     nearbyItems.push(currentItem);
                 }
             });
             
+
+
+            // update roomdata in db
+            await db.collection("Room").set(roomId.toString(), {
+                mazeData: roomData.props.mazeData,
+                joinedPlayers: roomData.props.joinedPlayers,
+                preparedPlayers: roomData.props.preparedPlayers,
+                fullyReadyPlayers: roomData.props.fullyReadyPlayers,
+                state: roomData.props.state,
+                startTime: roomData.props.startTime,
+                teamsInfo: roomData.props.teamsInfo,
+                flagInfo: roomData.props.flagInfo,
+                ttl: roomData.props.ttl
+            });
 
             await pubnub.publish({
                 channel: receivedMessage.channel,
@@ -1700,6 +1743,13 @@ async function handlePubNubReceivedMessage(receivedMessage) {
         }
     }
 }
+function findSqrDst(coords1, coords2) {
+    return (coords1[0] - coords2[0])**2 + (coords1[1] - coords2[1])**2;
+}
+
+
+
+
 pubnub.addListener({
     message: function(receivedMessage) {
         handlePubNubReceivedMessage(receivedMessage);
