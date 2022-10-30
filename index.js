@@ -1754,8 +1754,11 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                         // them is carrying a flag. If 2 carriers collide, both die.
                         playerIsDead = playerDstToSpawn > currentItemDstToSpawn || enemyFlag.carriedBy === username;
                         const itemIsDead = currentItemDstToSpawn > playerDstToSpawn || playersFlag.carriedBy === currentUsername;
+
                         roomData.props.fullyReadyPlayers[username].isDead = playerIsDead;
                         roomData.props.fullyReadyPlayers[currentUsername].isDead = itemIsDead;
+
+                        console.log(username, "is dead", playerIsDead, "\n", currentUsername, "is dead", itemIsDead);
 
                         // push an event which will be parsed by client and displayed on the screen
                         if(playerIsDead) {
