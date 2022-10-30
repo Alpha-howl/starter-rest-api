@@ -1595,7 +1595,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             /*if(securityCheckPassed === false) {
                 break;
             } */
-            let amplifier = 0.08;
+            let amplifier = 0.4;
 
             if(roomData.props.fullyReadyPlayers[username].isDead) {
                 amplifier = 0;
@@ -1615,7 +1615,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             const closeWalls = getWallsPlayerWillCollideWith(positionOffsetTakenIntoAccount, mazeGrid, amplifier, COLS, hitboxData.player); // 28/10
 
             if(closeWalls.some(wall => wall===true)) {
-                amplifier = 0.05; 
+                amplifier -= 0.03;
             }// 28/10
             
             if(receivedMessage.message.pressedArrowKeys.left && !closeWalls[3]) {
