@@ -1698,7 +1698,12 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                     }
                                     break;
                                 }
-                                // player collided with enemy flag => pick it up
+                                // player collided with enemy flag => pick it up if it already isn't
+                                const alreadyPickedUp = roomData.props.flagInfo[currentItem.team].carriedBy === username;
+                                if(alreadyPickedUp) {
+                                    break;
+                                }
+                                // user is picking it up for the first time
                                 roomData.props.flagInfo[currentItem.team].carriedBy = username;
                                 eventsToDisplayOnScreen.push({
                                     name: "flag-stolen",
