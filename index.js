@@ -1841,13 +1841,13 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 channel: receivedMessage.channel,
                 message: {
                     action: "frame-results",
-                    nearbyItems, // todo - find nearby players, traps, etc (that are inside VISION_RADIUS)
+                    nearbyItems,
                     playerData,
                     youAreDead: playerIsDead
                 }
             });
 
-            if(eventsToDisplayOnScreen.length != 0) {
+            /* if(eventsToDisplayOnScreen.length != 0) {
                 const publicChannel = receivedMessage.channel.match(/ctf-room-\d+/)[0];
 
                 pubnub.publish({
@@ -1857,7 +1857,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                         eventsToDisplayOnScreen
                     }
                 });
-            }
+            } */
 
             break;
         }
