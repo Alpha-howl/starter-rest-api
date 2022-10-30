@@ -1595,13 +1595,13 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             /*if(securityCheckPassed === false) {
                 break;
             } */
+            let amplifier = 0.08;
 
             if(roomData.props.fullyReadyPlayers[username].isDead) {
-                console.log(username, "is dead");
-                break;
+                amplifier = 0;
             }
 
-            let amplifier = 0.08;
+            
             const hitboxData = {
                 player: {width: .22, height: .22},
                 flag: {width: 1, height: 1}
@@ -1765,7 +1765,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                 killed: username,
                                 method: "melee"
                             });
-                        }
+                        }/* 
                         if(itemIsDead) {
                             eventsToDisplayOnScreen.push({
                                 name: "kill",
@@ -1773,7 +1773,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                 killed: currentUsername,
                                 method: "melee"
                             });
-                        }
+                        } */
 
                         setTimeout(async () => {
                             // after 3 secs revive and respawn player
@@ -1789,7 +1789,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                     roomData.props.flagInfo[oppositeTeam].position = oppTeamSpawnPoint;
                                 }
                             } 
-                            if(itemIsDead) {
+                            /* if(itemIsDead) {
                                 roomData.props.fullyReadyPlayers[currentUsername].isDead = false;
                                 roomData.props.fullyReadyPlayers[currentUsername].position = itemSpawnPoint;
 
@@ -1800,7 +1800,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                     const oppTeamSpawnPoint = roomData.props.teamsInfo[oppositeTeam].spawnPoint;
                                     roomData.props.flagInfo[oppositeTeam].position = oppTeamSpawnPoint;
                                 }
-                            }
+                            } */
                             await db.collection("Room").set(roomId.toString(), {
                                 mazeData: roomData.props.mazeData,
                                 joinedPlayers: roomData.props.joinedPlayers,
