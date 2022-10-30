@@ -1803,7 +1803,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                     roomData.props.flagInfo[oppositeTeam].position = oppTeamSpawnPoint;
                                 }
                             } */
-                            await db.collection("Room").set(roomId.toString(), {
+                            /* await db.collection("Room").set(roomId.toString(), {
                                 mazeData: roomData.props.mazeData,
                                 joinedPlayers: roomData.props.joinedPlayers,
                                 preparedPlayers: roomData.props.preparedPlayers,
@@ -1813,7 +1813,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                 teamsInfo: roomData.props.teamsInfo,
                                 flagInfo: roomData.props.flagInfo,
                                 ttl: roomData.props.ttl
-                            });
+                            }); */
                         //}, 3000);
                         
                     }
