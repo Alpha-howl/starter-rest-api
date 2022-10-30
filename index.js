@@ -1719,7 +1719,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                     nearbyItems.push(currentItem);
                 }
             });
-            usernames.forEach(async currentUsername => {
+            usernames.forEach(currentUsername => {
                 if(currentUsername === username) {
                     return;
                 }
