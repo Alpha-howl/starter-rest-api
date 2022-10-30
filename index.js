@@ -1843,21 +1843,23 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                     action: "frame-results",
                     nearbyItems,
                     playerData,
-                    youAreDead: playerIsDead
+                    youAreDead: playerIsDead,
+                    eventsToDisplayOnScreen
                 }
             });
 
-            /* if(eventsToDisplayOnScreen.length != 0) {
+            if(eventsToDisplayOnScreen.length != 0) {
                 const publicChannel = receivedMessage.channel.match(/ctf-room-\d+/)[0];
-
-                pubnub.publish({
-                    channel: publicChannel,
-                    message: {
-                        action: "event-occured",
-                        eventsToDisplayOnScreen
-                    }
-                });
-            } */
+                setTimeout(() => {
+                    pubnub.publish({
+                        channel: publicChannel,
+                        message: {
+                            action: "event-occured",
+                            eventsToDisplayOnScreen
+                        }
+                    });
+                }, 120);
+            }
 
             break;
         }
