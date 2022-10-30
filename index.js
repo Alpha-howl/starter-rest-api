@@ -1760,14 +1760,14 @@ async function handlePubNubReceivedMessage(receivedMessage) {
 
 
                         // push an event which will be parsed by client and displayed on the screen
-                       /*  if(playerIsDead) {
+                        if(playerIsDead) {
                             eventsToDisplayOnScreen.push({
                                 name: "kill",
                                 killer: currentUsername,
                                 killed: username,
                                 method: "melee"
                             });
-                        } */
+                        }
                         if(itemIsDead) {
                             eventsToDisplayOnScreen.push({
                                 name: "kill",
@@ -1848,7 +1848,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 }
             });
 
-            if(eventsToDisplayOnScreen.length != 0) {
+            /* if(eventsToDisplayOnScreen.length != 0) {
                 const publicChannel = receivedMessage.channel.match(/ctf-room-\d+/)[0];
                 setTimeout(() => {
                     pubnub.publish({
@@ -1859,7 +1859,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                         }
                     });
                 }, 120);
-            }
+            } */
 
             break;
         }
