@@ -694,7 +694,8 @@ async function handleUserLoginAttempt(usernameOrEmail, password, response) {
         response.status(200).send({
             success: true,
             message: "user-logged-in",
-            jwt: newJwt
+            jwt: newJwt,
+            username: key
         });
         
 
@@ -1686,7 +1687,9 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                         roomData.teamsInfo[playerData.team].score ||= 0;
                                         roomData.teamsInfo[playerData.team].score += 1;
                                         eventsToDisplayOnScreen.push({
-                                            name: "delivered-flag",
+                                            name: "flag-captured",
+                                            capturer: username,
+                                            capturerTeam: playerData.team,
                                             scores: {
                                                 [oppositeTeam]: roomData.flagInfo[oppositeTeam].score || 0,
                                                 [playerData.team]: roomData.teamsInfo[playerData.team].score
@@ -1697,6 +1700,11 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                 }
                                 // player collided with enemy flag => pick it up
                                 roomData.props.flagInfo[currentItem.team].carriedBy = username;
+                                eventsToDisplayOnScreen.push({
+                                    name: "flag-stolen",
+                                    stolenFlagTeam: currentItem.team,
+                                    flagStealer: username
+                                });
                                 break;
                             }
                         }
@@ -1746,7 +1754,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                         // push an event which will be parsed by client and displayed on the screen
                         if(playerIsDead) {
                             eventsToDisplayOnScreen.push({
-                                name: "die",
+                                name: "kill",
                                 killer: currentUsername,
                                 killed: username,
                                 method: "melee"
@@ -1827,8 +1835,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                     action: "frame-results",
                     nearbyItems, // todo - find nearby players, traps, etc (that are inside VISION_RADIUS)
                     playerData,
-                    youAreDead: playerIsDead,
-                    eventsToDisplayOnScreen
+                    youAreDead: playerIsDead
                 }
             });
 
@@ -1838,6 +1845,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 pubnub.publish({
                     channel: publicChannel,
                     message: {
+                        action: "event-occured",
                         eventsToDisplayOnScreen
                     }
                 });
