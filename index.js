@@ -1844,7 +1844,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                     nearbyItems,
                     playerData,
                     youAreDead: playerIsDead,
-                    eventsToDisplayOnScreen
+                    // eventsToDisplayOnScreen
                 }
             });
 
