@@ -1681,7 +1681,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                     // => if he was also carrying the enemy flag, 
                                     // add a point to his team's score, then break
                                     const oppositeTeam = playerData.team === "teamA" ? "teamB" : "teamA";
-                                    const isDeliveringEnemyFlag = roomData.flagInfo[oppositeTeam].carriedBy === playerData.team;
+                                    const isDeliveringEnemyFlag = roomData.flagInfo[oppositeTeam].carriedBy === username;
                                     if(isDeliveringEnemyFlag) {
                                         roomData.flagInfo[oppositeTeam].carriedBy = false;
                                         roomData.teamsInfo[playerData.team].score ||= 0;
