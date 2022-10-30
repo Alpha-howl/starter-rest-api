@@ -1681,18 +1681,18 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                     // => if he was also carrying the enemy flag, 
                                     // add a point to his team's score, then break
                                     const oppositeTeam = playerData.team === "teamA" ? "teamB" : "teamA";
-                                    const isDeliveringEnemyFlag = roomData.flagInfo[oppositeTeam].carriedBy === username;
+                                    const isDeliveringEnemyFlag = roomData.props.flagInfo[oppositeTeam].carriedBy === username;
                                     if(isDeliveringEnemyFlag) {
-                                        roomData.flagInfo[oppositeTeam].carriedBy = false;
-                                        roomData.teamsInfo[playerData.team].score ||= 0;
-                                        roomData.teamsInfo[playerData.team].score += 1;
+                                        roomData.props.flagInfo[oppositeTeam].carriedBy = false;
+                                        roomData.props.teamsInfo[playerData.team].score ||= 0;
+                                        roomData.props.teamsInfo[playerData.team].score += 1;
                                         eventsToDisplayOnScreen.push({
                                             name: "flag-captured",
                                             capturer: username,
                                             capturerTeam: playerData.team,
                                             scores: {
-                                                [oppositeTeam]: roomData.flagInfo[oppositeTeam].score || 0,
-                                                [playerData.team]: roomData.teamsInfo[playerData.team].score
+                                                [oppositeTeam]: roomData.props.flagInfo[oppositeTeam].score || 0,
+                                                [playerData.team]: roomData.props.teamsInfo[playerData.team].score
                                             }
                                         });
                                     }
