@@ -1755,8 +1755,8 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                         playerIsDead = playerDstToSpawn > currentItemDstToSpawn || enemyFlag.carriedBy === username;
                         const itemIsDead = currentItemDstToSpawn > playerDstToSpawn || playersFlag.carriedBy === currentUsername;
 
-                        roomData.props.fullyReadyPlayers[username].isDead = playerIsDead;
-                        roomData.props.fullyReadyPlayers[currentUsername].isDead = itemIsDead;
+                        //roomData.props.fullyReadyPlayers[username].isDead = playerIsDead;
+                        //roomData.props.fullyReadyPlayers[currentUsername].isDead = itemIsDead;
 
 
                         // push an event which will be parsed by client and displayed on the screen
@@ -1777,7 +1777,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                             });
                         } */
 
-                        setTimeout(async () => {
+                        //setTimeout(async () => {
                             // after 3 secs revive and respawn player
                             if(playerIsDead) {
                                 roomData.props.fullyReadyPlayers[username].isDead = false;
@@ -1814,7 +1814,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                 flagInfo: roomData.props.flagInfo,
                                 ttl: roomData.props.ttl
                             });
-                        }, 3000);
+                        //}, 3000);
                         
                     }
 
