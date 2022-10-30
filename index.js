@@ -1762,7 +1762,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                         // push an event which will be parsed by client and displayed on the screen
                         if(playerIsDead) {
                             eventsToDisplayOnScreen.push({
-                                name: "kill",
+                                name: "die",
                                 killer: currentUsername,
                                 killed: username,
                                 method: "melee"
