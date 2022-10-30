@@ -1597,6 +1597,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             } */
 
             if(roomData.props.fullyReadyPlayers[username].isDead) {
+                console.log(username, "is dead");
                 break;
             }
 
