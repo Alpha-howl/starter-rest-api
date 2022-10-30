@@ -1758,7 +1758,6 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                         roomData.props.fullyReadyPlayers[username].isDead = playerIsDead;
                         roomData.props.fullyReadyPlayers[currentUsername].isDead = itemIsDead;
 
-                        console.log(username, "is dead", playerIsDead, "\n", currentUsername, "is dead", itemIsDead);
 
                         // push an event which will be parsed by client and displayed on the screen
                         if(playerIsDead) {
