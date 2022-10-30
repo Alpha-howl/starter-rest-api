@@ -1595,7 +1595,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             /*if(securityCheckPassed === false) {
                 break;
             } */
-            let amplifier = 0.4;
+            let amplifier = 0.16;
 
             if(roomData.props.fullyReadyPlayers[username].isDead) {
                 amplifier = 0;
