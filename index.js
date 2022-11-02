@@ -1569,7 +1569,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             const numOfPlayers = roomData.props.preparedPlayers.length;
             if(numOfPlayers === MAX_NUMBER_OF_PLAYERS) {
                 const delay = 10000; // start in 10 secs
-                const startTime = Date.now() + delay;
+                const startTime = roomData.props.startTime || Date.now() + delay;
                 // all players have now drawn the maze and are ready to play
                 pubnub.publish({
                     channel: "ctf-room-" + roomId + receivedMessage.message.jwt,
@@ -1579,18 +1579,20 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                         startAt: startTime
                     }
                 });
-                setTimeout(() => {
-                    db.collection("Room").set(roomId.toString(), {
-                        mazeData: roomData.props.mazeData,
-                        joinedPlayers: roomData.props.joinedPlayers,
-                        preparedPlayers: roomData.props.preparedPlayers,
-                        fullyReadyPlayers: roomData.props.fullyReadyPlayers,
-                        state: "playing",
-                        startTime: startTime,
-                        teamsInfo: roomData.props.teamsInfo,
-                        ttl: Math.floor(startTime / 1000) + 30*60
-                    });
-                }, delay);
+                if(roomData.props.startTime === undefined) {
+                    setTimeout(() => {
+                        db.collection("Room").set(roomId.toString(), {
+                            mazeData: roomData.props.mazeData,
+                            joinedPlayers: roomData.props.joinedPlayers,
+                            preparedPlayers: roomData.props.preparedPlayers,
+                            fullyReadyPlayers: roomData.props.fullyReadyPlayers,
+                            state: "playing",
+                            startTime: startTime,
+                            teamsInfo: roomData.props.teamsInfo,
+                            ttl: Math.floor(startTime / 1000) + 30*60
+                        });
+                    }, delay);
+                }
             }
             break;
         }
