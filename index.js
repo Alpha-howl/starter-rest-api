@@ -1498,6 +1498,8 @@ async function handleReadyToPlayRequest(roomId, jwt, response) {
         }
     }
 }
+
+let lastTimeStamp = 0;
 async function handlePubNubReceivedMessage(receivedMessage) {
     let roomData, username, roomId;
     const securityCheck = async () => {
@@ -1596,6 +1598,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             if(lastTimeStamp > receivedMessage.message.timeStamp) {
                 break;
             }
+            lastTimeStamp = receivedMessage.message.timeStamp;
             // first perform some security checks:
             const securityCheckPassed = await securityCheck(); 
             /*if(securityCheckPassed === false) {
