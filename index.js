@@ -1704,7 +1704,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                             capturer: username,
                                             capturerTeam: playerData.team,
                                             scores: {
-                                                [oppositeTeam]: roomData.props.flagInfo[oppositeTeam].score || 0,
+                                                [oppositeTeam]: roomData.props.teamsInfo[oppositeTeam].score || 0,
                                                 [playerData.team]: roomData.props.teamsInfo[playerData.team].score
                                             }
                                         });
@@ -1857,7 +1857,11 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                     playerData,
                     youAreDead: playerIsDead,
                     timeStamp: performance.now(),
-                    eventsToDisplayOnScreen
+                    scores: {
+                        teamA: roomData.props.teamsInfo.teamA.score || 0,
+                        teamB: roomData.props.teamsInfo.teamB.score || 0
+                    }
+                    //eventsToDisplayOnScreen
                 }
             });
 
