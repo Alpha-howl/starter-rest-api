@@ -1580,18 +1580,16 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                     }
                 });
                 if(roomData.props.startTime === undefined) {
-                    setTimeout(() => {
-                        db.collection("Room").set(roomId.toString(), {
-                            mazeData: roomData.props.mazeData,
-                            joinedPlayers: roomData.props.joinedPlayers,
-                            preparedPlayers: roomData.props.preparedPlayers,
-                            fullyReadyPlayers: roomData.props.fullyReadyPlayers,
-                            state: "playing",
-                            startTime: startTime,
-                            teamsInfo: roomData.props.teamsInfo,
-                            ttl: Math.floor(startTime / 1000) + 30*60
-                        });
-                    }, delay);
+                    db.collection("Room").set(roomId.toString(), {
+                        mazeData: roomData.props.mazeData,
+                        joinedPlayers: roomData.props.joinedPlayers,
+                        preparedPlayers: roomData.props.preparedPlayers,
+                        fullyReadyPlayers: roomData.props.fullyReadyPlayers,
+                        state: "playing",
+                        startTime: startTime,
+                        teamsInfo: roomData.props.teamsInfo,
+                        ttl: Math.floor(startTime / 1000) + 30*60
+                    });
                 }
             }
             break;
