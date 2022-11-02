@@ -1694,8 +1694,11 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                     // add a point to his team's score, then break
                                     const oppositeTeam = playerData.team === "teamA" ? "teamB" : "teamA";
                                     const isDeliveringEnemyFlag = roomData.props.flagInfo[oppositeTeam].carriedBy === username;
+                                    console.log("isDeliveringEnemyFlag", username, oppositeTeam, roomData.props.flagInfo[oppositeTeam].carriedBy);
                                     if(isDeliveringEnemyFlag) {
+                                        const flagSpawnPoint = roomData.props.teamsInfo[oppositeTeam].spawnPoint;
                                         roomData.props.flagInfo[oppositeTeam].carriedBy = false;
+                                        roomData.props.flagInfo[oppositeTeam].position = flagSpawnPoint;
                                         roomData.props.teamsInfo[playerData.team].score ||= 0;
                                         roomData.props.teamsInfo[playerData.team].score += 1;
                                         eventsToDisplayOnScreen.push({
