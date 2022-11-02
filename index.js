@@ -1566,12 +1566,15 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             
             const numOfPlayers = roomData.props.preparedPlayers.length;
             if(numOfPlayers === MAX_NUMBER_OF_PLAYERS) {
+                const delay = 10000; // start in 10 secs
+                const startTime = Date.now() + delay;
                 // all players have now drawn the maze and are ready to play
                 pubnub.publish({
                     channel: "ctf-room-" + roomId + receivedMessage.message.jwt,
                     message: {
                         action: "start-in-3s",
-                        spawnPoint 
+                        spawnPoint,
+                        startAt: startTime
                     }
                 });
                 setTimeout(() => {
@@ -1581,15 +1584,18 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                         preparedPlayers: roomData.props.preparedPlayers,
                         fullyReadyPlayers: roomData.props.fullyReadyPlayers,
                         state: "playing",
-                        startTime: Date.now(),
+                        startTime: startTime,
                         teamsInfo: roomData.props.teamsInfo,
-                        ttl: Math.floor(Date.now() / 1000) + 30*60
+                        ttl: Math.floor(startTime / 1000) + 30*60
                     });
-                }, 3000);
+                }, delay);
             }
             break;
         }
         case "validate-frame": {
+            if(lastTimeStamp > receivedMessage.message.timeStamp) {
+                break;
+            }
             // first perform some security checks:
             const securityCheckPassed = await securityCheck(); 
             /*if(securityCheckPassed === false) {
@@ -1844,6 +1850,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                     nearbyItems,
                     playerData,
                     youAreDead: playerIsDead,
+                    timeStamp: performance.now()
                     // eventsToDisplayOnScreen
                 }
             });
