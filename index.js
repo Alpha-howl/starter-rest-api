@@ -1850,7 +1850,6 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 ttl: roomData.props.ttl
             });
 
-            console.log("pub frame-res")
             await pubnub.publish({
                 channel: receivedMessage.channel,
                 message: {
