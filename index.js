@@ -1596,11 +1596,9 @@ async function handlePubNubReceivedMessage(receivedMessage) {
         }
         case "validate-frame": {
             if(lastTimeStamp > receivedMessage.message.timeStamp) {
-                console.log(5500);
                 break;
             }
 
-            console.log(5050);
             lastTimeStamp = receivedMessage.message.timeStamp;
             // first perform some security checks:
             const securityCheckPassed = await securityCheck(); 
@@ -1852,6 +1850,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 ttl: roomData.props.ttl
             });
 
+            console.log("pub frame-res")
             await pubnub.publish({
                 channel: receivedMessage.channel,
                 message: {
