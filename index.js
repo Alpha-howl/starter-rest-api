@@ -1602,9 +1602,9 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             lastTimeStamp = receivedMessage.message.timeStamp;
             // first perform some security checks:
             const securityCheckPassed = await securityCheck(); 
-            /*if(securityCheckPassed === false) {
+            if(securityCheckPassed === false) {
                 break;
-            } */
+            }
             let amplifier = 0.16;
 
             if(roomData.props.fullyReadyPlayers[username].isDead) {
@@ -1612,11 +1612,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             }
 
             
-            const hitboxData = {
-                player: {width: .22, height: .22},
-                flag: {width: 1, height: 1}
-            }; // 28/10
-            const mazeGrid = roomData.props.mazeData.map(convertJsoCellToClassCell); // 28/10
+            const mazeGrid = roomData.props.mazeData.map(convertJsoCellToClassCell);
 
             // use receivedMessage.message.pressedArrowKeys playerX and playerY and roomData, username, to validate new frame
             // then send back the new frame data 
@@ -1656,30 +1652,14 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 channel: receivedMessage.channel,
                 message: {
                     action: "frame-results",
-                    nearbyItems,
                     playerData,
-                    youAreDead: playerIsDead,
                     timeStamp: performance.now(),
                     scores: {
                         teamA: roomData.props.teamsInfo.teamA.score || 0,
                         teamB: roomData.props.teamsInfo.teamB.score || 0
                     }
-                    //eventsToDisplayOnScreen
                 }
             });
-
-            /* if(eventsToDisplayOnScreen.length != 0) {
-                const publicChannel = receivedMessage.channel.match(/ctf-room-\d+/)[0];
-                setTimeout(() => {
-                    pubnub.publish({
-                        channel: publicChannel,
-                        message: {
-                            action: "event-occured",
-                            eventsToDisplayOnScreen
-                        }
-                    });
-                }, 120);
-            } */
 
             break;
         }
