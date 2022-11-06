@@ -1651,7 +1651,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             }
             let playerIsDead = false;
             let eventsToDisplayOnScreen = [];
-            const nearbyItems = []; // find nearby players, traps, etc (that are inside VISION_RADIUS) done at 27/10
+            const nearbyItems = []; // find nearby things (that are inside VISION_RADIUS) done at 27/10
             const usernames = Object.keys(roomData.props.fullyReadyPlayers);
             const otherItems = [
                 {
@@ -2066,7 +2066,6 @@ function getWallsPlayerWillCollideWith(coords, grid, amplifier, cols, hitboxData
 			// act as if the current cell has one of those walls which will cause
 			// the player to slide down or across the outside of 
 			// the destination cell instead of entering it.
-			console.log("Stopped glitch");
 			wallsThePlayerIsCloseTo[sidesThePlayerIsCloseTo[0]] = true;
 		}
 	}
