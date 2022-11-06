@@ -2021,7 +2021,7 @@ function getWallsPlayerWillCollideWith(coords, grid, amplifier, cols, hitboxData
 		sidesThePlayerIsCloseTo.push(0);
 		wallsThePlayerIsCloseTo[0] = currentCellWalls[0];
 	}
-	else if(positionInCell.y + hitboxData.height/2 + amplifier > 1) {
+	else if(positionInCell.y + hitboxData.height/2 > 1) {
 		// player is close to bottom edge of cell
 		// => check if there is a wall there
 		sidesThePlayerIsCloseTo.push(2);
@@ -2039,12 +2039,14 @@ function getWallsPlayerWillCollideWith(coords, grid, amplifier, cols, hitboxData
 		// sidesThePlayerIsCloseTo will have at most 2 elmnts
 		// use .some(..) to check if any of the sides the player is close to 
 		// has a wall diagonally from it
-		const playerCannotMoveThere = sidesThePlayerIsCloseTo.some((side, sideIndex) => {
+		const playerCannotMoveThere = sidesThePlayerIsCloseTo.some(side => {
 			// invert side to correspond to destination wall index
-			const wallIndexToCheckOfDestination = 3-side;
+			const wallIndexToCheckOfDestination = side+2 < 4 ? side+2 : side-2;
 
-			const movementX = side === 3 ? -1 : side === 1 ? 1 : 0;
-			const movementY = side === 0 ? -1 : side === 2 ? 1 : 0;
+			const movementX = sidesThePlayerIsCloseTo.includes(3) ? -1 
+							: sidesThePlayerIsCloseTo.includes(1) ? 1 : 0;
+			const movementY = sidesThePlayerIsCloseTo.includes(0) ? -1 
+							: sidesThePlayerIsCloseTo.includes(2) ? 1 : 0;
 			const destinationIndex = getIndexFromXY(col+movementX,row+movementY,cols);
 			const destinationCell = grid[destinationIndex];
 
@@ -2064,6 +2066,7 @@ function getWallsPlayerWillCollideWith(coords, grid, amplifier, cols, hitboxData
 			// act as if the current cell has one of those walls which will cause
 			// the player to slide down or across the outside of 
 			// the destination cell instead of entering it.
+			console.log("Stopped glitch");
 			wallsThePlayerIsCloseTo[sidesThePlayerIsCloseTo[0]] = true;
 		}
 	}
