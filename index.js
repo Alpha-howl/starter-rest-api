@@ -1669,69 +1669,6 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                     isDead: false
                 }
             ];
-            otherItems.forEach(currentItem => {
-                const sqrDstFromPlayer = findSqrDst(currentItem.position, playerData.position);
-                if(sqrDstFromPlayer < VISION_RADIUS**2) {
-                    // it is close enough to player so they can see this item => push it in nearbyItems to report it to the player
-
-                    // collision detection with player and this item
-                    const playerCollidedWithItem = isCollided(
-                        playerData.position, 
-                        hitboxData.player,
-                        
-                        currentItem.position,
-                        currentItem.hitboxData
-                    );
-                    if(playerCollidedWithItem) {
-                        // player collided with item
-                        switch (currentItem.name) {
-                            case "flag" : {
-                                // player ran into a flag => check if it is his flag or enemies' flag
-                                if(currentItem.team === playerData.team) {
-                                    // player collided with his own flag,
-                                    // => if he was also carrying the enemy flag, 
-                                    // add a point to his team's score, then break
-                                    const oppositeTeam = playerData.team === "teamA" ? "teamB" : "teamA";
-                                    const isDeliveringEnemyFlag = roomData.props.flagInfo[oppositeTeam].carriedBy === username;
-                                    console.log("isDeliveringEnemyFlag", username, oppositeTeam, roomData.props.flagInfo[oppositeTeam].carriedBy);
-                                    if(isDeliveringEnemyFlag) {
-                                        const flagSpawnPoint = roomData.props.teamsInfo[oppositeTeam].spawnPoint;
-                                        roomData.props.flagInfo[oppositeTeam].carriedBy = false;
-                                        roomData.props.flagInfo[oppositeTeam].position = flagSpawnPoint;
-                                        roomData.props.teamsInfo[playerData.team].score ||= 0;
-                                        roomData.props.teamsInfo[playerData.team].score += 1;
-                                        eventsToDisplayOnScreen.push({
-                                            name: "flag-captured",
-                                            capturer: username,
-                                            capturerTeam: playerData.team,
-                                            scores: {
-                                                [oppositeTeam]: roomData.props.teamsInfo[oppositeTeam].score || 0,
-                                                [playerData.team]: roomData.props.teamsInfo[playerData.team].score
-                                            }
-                                        });
-                                    }
-                                    break;
-                                }
-                                // player collided with enemy flag => pick it up if it already isn't
-                                const alreadyPickedUp = roomData.props.flagInfo[currentItem.team].carriedBy === username;
-                                if(alreadyPickedUp) {
-                                    break;
-                                }
-                                // user is picking it up for the first time
-                                roomData.props.flagInfo[currentItem.team].carriedBy = username;
-                                eventsToDisplayOnScreen.push({
-                                    name: "flag-stolen",
-                                    stolenFlagTeam: currentItem.team,
-                                    flagStealer: username
-                                });
-                                break;
-                            }
-                        }
-                    }
-
-                    nearbyItems.push(currentItem);
-                }
-            });
             usernames.forEach(currentUsername => {
                 if(currentUsername === username) {
                     return;
@@ -1834,6 +1771,49 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                     nearbyItems.push(currentItem);
                 }
             });
+            otherItems.forEach(currentItem => {
+                const sqrDstFromPlayer = findSqrDst(currentItem.position, playerData.position);
+                if(sqrDstFromPlayer < VISION_RADIUS**2) {
+                    // it is close enough to player so they can see this item => push it in nearbyItems to 
+                    // report it to the player
+
+                    // collision detection with player and this item
+                    const playerCollidedWithItem = isCollided(
+                        playerData.position, 
+                        hitboxData.player,
+                        
+                        currentItem.position,
+                        currentItem.hitboxData
+                    );
+                    if(playerCollidedWithItem) {
+                        // player collided with item
+                        switch (currentItem.name) {
+                            case "flag" : {
+                                // player ran into a flag => check if it is his flag or enemies' flag
+                                if(currentItem.team === playerData.team) {
+                                    // player collided with his own flag,
+                                    // => if he was also carrying the enemy flag, 
+                                    // add a point to his team's score, then break
+                                    const oppositeTeam = playerData.team === "teamA" ? "teamB" : "teamA";
+                                    const isDeliveringEnemyFlag = roomData.props.flagInfo[oppositeTeam].carriedBy 
+                                                                                                    === username;
+                                    if(isDeliveringEnemyFlag) {
+                                        const flagSpawnPoint = roomData.props.teamsInfo[oppositeTeam].spawnPoint;
+                                        roomData.props.flagInfo[oppositeTeam].carriedBy = false;
+                                        roomData.props.flagInfo[oppositeTeam].position = flagSpawnPoint;
+                                        roomData.props.teamsInfo[playerData.team].score ||= 0;
+                                        roomData.props.teamsInfo[playerData.team].score += 1;
+                                    }
+                                    break;
+                                }
+                                roomData.props.flagInfo[currentItem.team].carriedBy = username;
+                                break;
+                            }
+                        }
+                    }
+                    nearbyItems.push(currentItem);
+                }
+            });
             
 
 
@@ -1850,7 +1830,6 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 ttl: roomData.props.ttl
             });
 
-            console.log("Frame results");
 
             await pubnub.publish({
                 channel: receivedMessage.channel,
