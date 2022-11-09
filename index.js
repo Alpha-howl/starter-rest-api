@@ -169,72 +169,72 @@ const spawnPointB = [COLS-1, ROWS-1];
 
 
 class Cell {
-    #x;
-    #y;
-    #index;
-    #neighbours = [];
-    #visited = false;
-    #walls = [true, true, true, true];
+	#x;
+	#y;
+	#index;
+	#neighbours = [];
+	#visited = false;
+	#walls = [true, true, true, true];
 
-    constructor(paramX, paramY, paramIndex) {
-        this.#x = paramX;
-        this.#y = paramY;
-        this.#index = paramIndex;
-    }
+	constructor(paramX, paramY, paramIndex) {
+		this.#x = paramX;
+		this.#y = paramY;
+		this.#index = paramIndex;
+	}
 
 
-    getY() {
-        return this.#y;
-    }
-    getX() {
-        return this.#x;
-    }
-    getIndex() {
-        return this.#index;
-    }
-    getNeighbours() {
-        return this.#neighbours;
-    }
-    isVisited() {
-        return this.#visited;
-    }
-    markAsVisited() {
-        this.#visited = true;
-    }
-    getWalls() {
-        return this.#walls;
-    }
-    removeWall(wallIndex) {
-        if(wallIndex > 3 || wallIndex < 0) {
+	getY() {
+		return this.#y;
+	}
+	getX() {
+		return this.#x;
+	}
+	getIndex() {
+		return this.#index;
+	}
+	getNeighbours() {
+		return this.#neighbours;
+	}
+	isVisited() {
+		return this.#visited;
+	}
+	markAsVisited() {
+		this.#visited = true;
+	}
+	getWalls() {
+		return this.#walls;
+	}
+	removeWall(wallIndex) {
+		if(wallIndex > 3 || wallIndex < 0) {
             console.log("Wall index out of range");
-            //throw "Error - wallIndex out of range (search 4354532)";
-            return;
-        }
-        this.#walls[wallIndex] = false;
-    }
+			//throw "Error - wallIndex out of range (search 4354532)";
+			return;
+		}
+		this.#walls[wallIndex] = false;
+	}
 
-    initialiseNeighbours(grid, cols, rows) {
-        if(this.#neighbours.length != 0) {
-            return;
-        }
+	initialiseNeighbours(grid, cols, rows) {
+		if(this.#neighbours.length != 0) {
+			return;
+		}
 
-        if(this.#x > 0) {
-            const leftNeighIndex = this.#index-1;
-            this.#neighbours.push(grid[leftNeighIndex]);
-        }
-        if(this.#y > 0) {
-            const topNeighIndex = this.#index - cols;
-            this.#neighbours.push(grid[topNeighIndex]);
-        }
-        if(this.#x < cols-1) {
-            const rightNeighIndex = this.#index + 1;
-            this.#neighbours.push(grid[rightNeighIndex]);
-        }
-        if(this.#y < rows-1) {
-            const bottomNeighIndex = this.#index + cols;
-            this.#neighbours.push(grid[bottomNeighIndex]);
-        }
-    }
+		if(this.#x > 0) {
+			const leftNeighIndex = this.#index-1;
+			this.#neighbours.push(grid[leftNeighIndex]);
+		}
+		if(this.#y > 0) {
+			const topNeighIndex = this.#index - cols;
+			this.#neighbours.push(grid[topNeighIndex]);
+		}
+		if(this.#x < cols-1) {
+			const rightNeighIndex = this.#index + 1;
+			this.#neighbours.push(grid[rightNeighIndex]);
+		}
+		if(this.#y < rows-1) {
+			const bottomNeighIndex = this.#index + cols;
+			this.#neighbours.push(grid[bottomNeighIndex]);
+		}
+	}
 
     toJSO() {
         return {
@@ -249,105 +249,105 @@ class Cell {
     }
 }
 function randomDfs(cols, rows, probToVisitCellAgain=0.5) {
-    // first, generate the initial grid of cells with all walls intact:
-    // number of cells = resolution of maze = rows x columns
-    const grid = new Array(cols*rows);
-    // inject those cells into the grid array now
-    for (let i = 0; i < grid.length; i++) {
-        // find the current cell's row and column to instantiate it
-        const row = Math.floor(i / cols);
-        const col = i % cols;
-        grid[i] = new Cell(/*x*/col, /*y*/row, /*index in grid*/i);
-    }
+	// first, generate the initial grid of cells with all walls intact:
+	// number of cells = resolution of maze = rows x columns
+	const grid = new Array(cols*rows);
+	// inject those cells into the grid array now
+	for (let i = 0; i < grid.length; i++) {
+		// find the current cell's row and column to instantiate it
+		const row = Math.floor(i / cols);
+		const col = i % cols;
+		grid[i] = new Cell(/*x*/col, /*y*/row, /*index in grid*/i);
+	}
 
-    for (let i = 0; i < grid.length; i++) {
-        // call the initialiseNeighbours method for each cell
-        grid[i].initialiseNeighbours(grid, cols, rows);
-    }
-
-
-    // define stack of cells to be processed & place
-    // the initial cell in it to start with
-    const cellsToProcessStack = [grid[0]];
+	for (let i = 0; i < grid.length; i++) {
+		// call the initialiseNeighbours method for each cell
+		grid[i].initialiseNeighbours(grid, cols, rows);
+	}
 
 
-    while (cellsToProcessStack.length != 0) {
-        // pop the last cell from the stack & call it the current cell
-        const currentCell = cellsToProcessStack.splice(-1)[0];
-
-        if (Math.random() > probToVisitCellAgain) {
-            currentCell.markAsVisited();
-        }
-
-        // check to see if cell has unvisited neighbours
-        // by using a linear search and a flag
-        let hasUnvisitedNeighbours = false;
-        const unvisitedNeighbours = [];
-        const allNeighbours = currentCell.getNeighbours();
-        for (let i = 0; i < allNeighbours.length; i++) {
-            if(!allNeighbours[i].isVisited()) {
-                hasUnvisitedNeighbours = true;
-                unvisitedNeighbours.push(allNeighbours[i]);
-            }
-        }
+	// define stack of cells to be processed & place
+	// the initial cell in it to start with
+	const cellsToProcessStack = [grid[0]];
 
 
-        if (hasUnvisitedNeighbours) {
-            // as in the structured English description, we have to do the following:
-            // if there are unvisited neighbours, push the cell onto the stack
-            // and remove the wall between that cell and one of the unvisited neighbours
+	while (cellsToProcessStack.length != 0) {
+		// pop the last cell from the stack & call it the current cell
+		const currentCell = cellsToProcessStack.splice(-1)[0];
 
-            cellsToProcessStack.push(currentCell);
-            const rand = Math.floor(Math.random()*unvisitedNeighbours.length);
-            const chosenNeighbour = unvisitedNeighbours[rand];
+		if (Math.random() > probToVisitCellAgain) {
+			currentCell.markAsVisited();
+		}
 
-            // now find the location of the neighbour relative to the current cell
-            // and remove the walls between the neighbour and the current cell
-            const indexDifference = currentCell.getIndex() - chosenNeighbour.getIndex();
-            if(indexDifference === -cols) {
-                // the neighbour is directly downwards from current cell, so
-                // remove top wall of neighbour and bottom wall of current cell
-                grid[chosenNeighbour.getIndex()].removeWall(0);
-                grid[currentCell.getIndex()].removeWall(2);
-            }
-            else if(indexDifference === cols) {
-                // neighbour is directly upwards from current cell, so
-                // remove bottom wall of neighbour and top wall of current cell
-                grid[chosenNeighbour.getIndex()].removeWall(2);
-                grid[currentCell.getIndex()].removeWall(0);
-            }
-            else if(indexDifference === -1) {
-                // neighbour is to the right -> of the current cell
-                // remove left wall of neighbour and right wall of current
-                grid[chosenNeighbour.getIndex()].removeWall(3);
-                grid[currentCell.getIndex()].removeWall(1);
-            }
-            else {
-                // indexDifference = 1, and the neighbour is to
-                // the left <- of the current cell
-                grid[chosenNeighbour.getIndex()].removeWall(1);
-                grid[currentCell.getIndex()].removeWall(3);
-            }
+		// check to see if cell has unvisited neighbours
+		// by using a linear search and a flag
+		let hasUnvisitedNeighbours = false;
+		const unvisitedNeighbours = [];
+		const allNeighbours = currentCell.getNeighbours();
+		for (let i = 0; i < allNeighbours.length; i++) {
+			if(!allNeighbours[i].isVisited()) {
+				hasUnvisitedNeighbours = true;
+				unvisitedNeighbours.push(allNeighbours[i]);
+			}
+		}
 
-            // now push neighbour to stack so it is 
-            // also processed like the current cell just was
-            cellsToProcessStack.push(grid[chosenNeighbour.getIndex()]);
 
-        } else {
-            // has no unvisited neigh.
-            // do nothing, all paths have alrady been carved around
-            // this cell - so no need for new paths
-        } // end if
-    } // end while
-    // finally, return the maze data (the grid array)
-    return grid;
+		if (hasUnvisitedNeighbours) {
+			// as in the structured English description, we have to do the following:
+			// if there are unvisited neighbours, push the cell onto the stack
+			// and remove the wall between that cell and one of the unvisited neighbours
+
+			cellsToProcessStack.push(currentCell);
+			const rand = Math.floor(Math.random()*unvisitedNeighbours.length);
+			const chosenNeighbour = unvisitedNeighbours[rand];
+
+			// now find the location of the neighbour relative to the current cell
+			// and remove the walls between the neighbour and the current cell
+			const indexDifference = currentCell.getIndex() - chosenNeighbour.getIndex();
+			if(indexDifference === -cols) {
+				// the neighbour is directly downwards from current cell, so
+				// remove top wall of neighbour and bottom wall of current cell
+				grid[chosenNeighbour.getIndex()].removeWall(0);
+				grid[currentCell.getIndex()].removeWall(2);
+			}
+			else if(indexDifference === cols) {
+				// neighbour is directly upwards from current cell, so
+				// remove bottom wall of neighbour and top wall of current cell
+				grid[chosenNeighbour.getIndex()].removeWall(2);
+				grid[currentCell.getIndex()].removeWall(0);
+			}
+			else if(indexDifference === -1) {
+				// neighbour is to the right -> of the current cell
+				// remove left wall of neighbour and right wall of current
+				grid[chosenNeighbour.getIndex()].removeWall(3);
+				grid[currentCell.getIndex()].removeWall(1);
+			}
+			else {
+				// indexDifference = 1, and the neighbour is to
+				// the left <- of the current cell
+				grid[chosenNeighbour.getIndex()].removeWall(1);
+				grid[currentCell.getIndex()].removeWall(3);
+			}
+
+			// now push neighbour to stack so it is 
+			// also processed like the current cell just was
+			cellsToProcessStack.push(grid[chosenNeighbour.getIndex()]);
+
+		} else {
+			// has no unvisited neigh.
+			// do nothing, all paths have alrady been carved around
+			// this cell - so no need for new paths
+		} // end if
+	} // end while
+	// finally, return the maze data (the grid array)
+	return grid;
 }
 
 
 
 
 async function getLastRoomJoined() {
-    const overflows = (await db.collection("Overflows").get("overflows"))?.props?.overflows;
+	const overflows = (await db.collection("Overflows").get("overflows"))?.props?.overflows;
     return (overflows || 0) + 1;
 }
 async function roomIsFull(roomId) {
@@ -398,7 +398,7 @@ async function incrementOverflows() {
 
 async function testDynamo(response, req) {
     const result = await db.collection("PasswordResetSession").set("proba", {worls: true});
-    
+	
     response.status(200).send({"proba": "75-76-77", result});
 }
 
@@ -478,26 +478,26 @@ async function validateEmail(email) {
     const emailParts = email.split("@"); // [name, domain]
 
     if(email.length > 253+64+10) {
-        valid = false;
-        message = "Email address is too long";
+    	valid = false;
+    	message = "Email address is too long";
     } else if (emailParts.length != 2) {
-        valid = false;
-        message = "Email addresses must contain one @ sign.";
+    	valid = false;
+    	message = "Email addresses must contain one @ sign.";
     } else if (emailParts[0].length > 63 || emailParts[1].length > 253 + 10) {
-        valid = false;
-        message = "The recipient's name must be under 64 characters long, and the domain part must be under 263 characters long.";
+    	valid = false;
+    	message = "The recipient's name must be under 64 characters long, and the domain part must be under 263 characters long.";
     } else if (emailParts[0].length === 0 || emailParts[1].length === 0) {
-        valid = false;
-        message = "The @ symbol cannot be at one end.";
+    	valid = false;
+    	message = "The @ symbol cannot be at one end.";
     } else if (emailParts[0].search(/[^A-Za-z0-9!#$%&'*+\-/=?^_`{}|.]/) != -1) {
-        valid = false;
-        message = "That email address contains an illegal character at position " + (emailParts[0].search(/[^A-Za-z0-9!#$%&'*+\-/=?^_`{}|]/) + 1) + ".";
+    	valid = false;
+    	message = "That email address contains an illegal character at position " + (emailParts[0].search(/[^A-Za-z0-9!#$%&'*+\-/=?^_`{}|]/) + 1) + ".";
     } else if(emailParts[1].search(/\./) === -1) {
-        valid = false;
-        message = "The domain name must have a period in it.";
+    	valid = false;
+    	message = "The domain name must have a period in it.";
     } else if(await emailExists(email)) {
-        valid = false;
-        message = "That email address is already in use. Please try another one.";
+    	valid = false;
+    	message = "That email address is already in use. Please try another one.";
     }
 
     return {valid, message};
@@ -538,44 +538,44 @@ async function validatePassword(password) {
 }
 async function validateUsername(username) {
     let valid = true;
-    let message;
+   	let message;
 
-    if(username.length < 3 || username.length > 100) {
-        valid = false;
-        message = "The username must have between 3 and 100 characters.";
-    } else if(username.search(/[^\w]/) != -1) {
-        valid = false;
-        message = "Usernames can only alphanumeric characters and underscores. Illegal detected at position " + username.search(/[^\w]/) + 1;
-    }  else if((await db.collection("User").get(username)) != null) {
-        valid = false;
-        message = "That username is already taken!";
-    }
+   	if(username.length < 3 || username.length > 100) {
+   		valid = false;
+   		message = "The username must have between 3 and 100 characters.";
+   	} else if(username.search(/[^\w]/) != -1) {
+   		valid = false;
+   		message = "Usernames can only alphanumeric characters and underscores. Illegal detected at position " + username.search(/[^\w]/) + 1;
+   	}  else if((await db.collection("User").get(username)) != null) {
+   		valid = false;
+   		message = "That username is already taken!";
+   	}
 
 
-    return {valid, message};
+   	return {valid, message};
 }
 
 
 
 async function emailExists(email) {
-    const userTable = db.collection("User");
+	const userTable = db.collection("User");
 
-    let emailFound = false;
+	let emailFound = false;
 
-    const collectionList = await userTable.list();
-    const usersArray = collectionList.results;
-    for(let i = 0; i < usersArray.length; i++) {
-        const currentUserKey = usersArray[i].key;
-        const currentUserEmail = (await userTable.get(currentUserKey)).props.email;
+	const collectionList = await userTable.list();
+	const usersArray = collectionList.results;
+	for(let i = 0; i < usersArray.length; i++) {
+		const currentUserKey = usersArray[i].key;
+		const currentUserEmail = (await userTable.get(currentUserKey)).props.email;
 
-        if(currentUserEmail === email) {
-            emailFound = true;
-            break;
-        }
+		if(currentUserEmail === email) {
+			emailFound = true;
+			break;
+		}
 
-    }
+	}
 
-    return emailFound;
+	return emailFound;
 }
 
 
@@ -603,8 +603,8 @@ async function isValid(response, ...validationData) {
                 validationFn = validatePassword;
                 break;
             default:
-                validationFn = () => {return {valid:false, message:"Not recognised typeOfValue"}};
-                break;
+            	validationFn = () => {return {valid:false, message:"Not recognised typeOfValue"}};
+            	break;
         }
 
         const validate = await validationFn(valueToValidate);
@@ -1118,10 +1118,10 @@ async function getPasswordHashAndAttempt(usernameOrEmail, password, response) {
     let key;
     if(isEmail) {
         const collectionList = await userTable.list();
-        const usersArray = collectionList.results;
+	    const usersArray = collectionList.results;
         for(let i = 0; i < usersArray.length; i++) {
             const currentUserKey = usersArray[i].key;
-            const currentUserEmail = (await userTable.get(currentUserKey)).props.email;
+		    const currentUserEmail = (await userTable.get(currentUserKey)).props.email;
             if(currentUserEmail === usernameOrEmail) {
                 key = currentUserKey;
                 break;
@@ -1290,44 +1290,44 @@ function jwtIsValid(jwtString) {
 
 
 function Basea_to_baseb(value="", base_a, base_b, result="", column=0, mag=0) {
-    const characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-    if(value != "") {
-        const current_char = value[value.length-1];
-        value = value.slice(0, -1);
-        mag += characters.indexOf(current_char)*base_a**column;
-        column++;
-        if(value != "") return Basea_to_baseb(value, base_a, base_b, result, column, mag);
-        if(base_b == 10) return mag;
-    };
-    let remainder = mag%base_b;
-    mag = Math.floor(mag/base_b);
-    result = characters[remainder] + result;
-    if(mag != 0) return Basea_to_baseb(value, base_a, base_b, result, column, mag);
-    if(mag == 0) return result;
+	const characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+	if(value != "") {
+		const current_char = value[value.length-1];
+		value = value.slice(0, -1);
+		mag += characters.indexOf(current_char)*base_a**column;
+		column++;
+		if(value != "") return Basea_to_baseb(value, base_a, base_b, result, column, mag);
+		if(base_b == 10) return mag;
+	};
+	let remainder = mag%base_b;
+	mag = Math.floor(mag/base_b);
+	result = characters[remainder] + result;
+	if(mag != 0) return Basea_to_baseb(value, base_a, base_b, result, column, mag);
+	if(mag == 0) return result;
 }
 
 function generateRandomOTP(bytes=8, charGroupLength=2) {
-    const arraySize = Math.round(bytes + (bytes/charGroupLength-1));
+	const arraySize = Math.round(bytes + (bytes/charGroupLength-1));
 
-    const bytesArray = new Array(arraySize).fill(0).map(x => Math.floor(Math.random() * 256)) //crypto.getRandomValues(new Uint8Array(arraySize));
-    const base62Array = new Array(arraySize);
+	const bytesArray = new Array(arraySize).fill(0).map(x => Math.floor(Math.random() * 256)) //crypto.getRandomValues(new Uint8Array(arraySize));
+	const base62Array = new Array(arraySize);
 
-    for(let i = 0; i < arraySize; i++) {
-        const shouldBeWhitespace = (i+1)%(charGroupLength+1) === 0 
-                                 && i != 0
-                                 && i != arraySize-1;
-        if(shouldBeWhitespace) {
-            base62Array[i] = " ";
-        } else {
-            const randomByte = bytesArray[i];
-            base62Array[i] = Basea_to_baseb(randomByte.toString(), 10, 62);
-        }
-    }
+	for(let i = 0; i < arraySize; i++) {
+		const shouldBeWhitespace = (i+1)%(charGroupLength+1) === 0 
+								 && i != 0
+								 && i != arraySize-1;
+		if(shouldBeWhitespace) {
+			base62Array[i] = " ";
+		} else {
+			const randomByte = bytesArray[i];
+			base62Array[i] = Basea_to_baseb(randomByte.toString(), 10, 62);
+		}
+	}
 
-    return base62Array.join("");
+	return base62Array.join("");
 }
 function generateRandomUSID() {
-    return generateRandomOTP(32, 32);
+	return generateRandomOTP(32, 32);
 }
 
 
@@ -1598,6 +1598,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             if(lastTimeStamp > receivedMessage.message.timeStamp) {
                 break;
             }
+
             lastTimeStamp = receivedMessage.message.timeStamp;
             // first perform some security checks:
             const securityCheckPassed = await securityCheck(); 
@@ -1650,7 +1651,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             }
             let playerIsDead = false;
             let eventsToDisplayOnScreen = [];
-            const nearbyItems = []; // find nearby players, traps, etc (that are inside VISION_RADIUS) done at 27/10
+            const nearbyItems = []; // find nearby things (that are inside VISION_RADIUS) done at 27/10
             const usernames = Object.keys(roomData.props.fullyReadyPlayers);
             const otherItems = [
                 {
@@ -1671,7 +1672,8 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             otherItems.forEach(currentItem => {
                 const sqrDstFromPlayer = findSqrDst(currentItem.position, playerData.position);
                 if(sqrDstFromPlayer < VISION_RADIUS**2) {
-                    // it is close enough to player so they can see this item => push it in nearbyItems to report it to the player
+                    // it is close enough to player so they can see this item => push it in nearbyItems to 
+                    // report it to the player
 
                     // collision detection with player and this item
                     const playerCollidedWithItem = isCollided(
@@ -1691,43 +1693,22 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                     // => if he was also carrying the enemy flag, 
                                     // add a point to his team's score, then break
                                     const oppositeTeam = playerData.team === "teamA" ? "teamB" : "teamA";
-                                    const isDeliveringEnemyFlag = roomData.props.flagInfo[oppositeTeam].carriedBy === username;
-                                    console.log("isDeliveringEnemyFlag", username, oppositeTeam, roomData.props.flagInfo[oppositeTeam].carriedBy);
+                                    const isDeliveringEnemyFlag = roomData.props.flagInfo[oppositeTeam].carriedBy 
+                                                                                                    === username;
                                     if(isDeliveringEnemyFlag) {
                                         const flagSpawnPoint = roomData.props.teamsInfo[oppositeTeam].spawnPoint;
                                         roomData.props.flagInfo[oppositeTeam].carriedBy = false;
                                         roomData.props.flagInfo[oppositeTeam].position = flagSpawnPoint;
                                         roomData.props.teamsInfo[playerData.team].score ||= 0;
                                         roomData.props.teamsInfo[playerData.team].score += 1;
-                                        eventsToDisplayOnScreen.push({
-                                            name: "flag-captured",
-                                            capturer: username,
-                                            capturerTeam: playerData.team,
-                                            scores: {
-                                                [oppositeTeam]: roomData.props.teamsInfo[oppositeTeam].score || 0,
-                                                [playerData.team]: roomData.props.teamsInfo[playerData.team].score
-                                            }
-                                        });
                                     }
                                     break;
                                 }
-                                // player collided with enemy flag => pick it up if it already isn't
-                                const alreadyPickedUp = roomData.props.flagInfo[currentItem.team].carriedBy === username;
-                                if(alreadyPickedUp) {
-                                    break;
-                                }
-                                // user is picking it up for the first time
                                 roomData.props.flagInfo[currentItem.team].carriedBy = username;
-                                eventsToDisplayOnScreen.push({
-                                    name: "flag-stolen",
-                                    stolenFlagTeam: currentItem.team,
-                                    flagStealer: username
-                                });
                                 break;
                             }
                         }
                     }
-
                     nearbyItems.push(currentItem);
                 }
             });
@@ -1849,6 +1830,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 ttl: roomData.props.ttl
             });
 
+
             await pubnub.publish({
                 channel: receivedMessage.channel,
                 message: {
@@ -1903,171 +1885,173 @@ pubnub.addListener({
     }
 });
 function convertJsoCellToClassCell(jsoCell) {
-    const cellClassObk = new Cell(jsoCell.x, jsoCell.y, jsoCell.index);
+	const cellClassObk = new Cell(jsoCell.x, jsoCell.y, jsoCell.index);
     if(jsoCell.visited) {
-        cellClassObk.markAsVisited();
+    	cellClassObk.markAsVisited();
     }
     jsoCell.walls.forEach((wall, index) => {
-        if(wall === false) {
-            cellClassObk.removeWall(index);
-        }
+    	if(wall === false) {
+    		cellClassObk.removeWall(index);
+    	}
     });
 
     return cellClassObk;
 }
 
 function findRadiusAroundPlayer(grid, playerX, playerY, cols, radius) {
-    const sqrRadius = radius*radius;
-    const gridToBeDisplayed = [];
-    for(let i = 0; i < grid.length; i++) {
-        const currentCell = grid[i];
-        //const playerCell = grid[getIndexFromXY(playerX, playerY, cols)];
+	const sqrRadius = radius*radius;
+	const gridToBeDisplayed = [];
+	for(let i = 0; i < grid.length; i++) {
+		const currentCell = grid[i];
+		//const playerCell = grid[getIndexFromXY(playerX, playerY, cols)];
 
-        const cellX = currentCell.getX();
-        const cellY = currentCell.getY();
-        const pythagSquareDistanceFromPlayer = (playerX - cellX)**2 + (playerY - cellY)**2;
+		const cellX = currentCell.getX();
+		const cellY = currentCell.getY();
+		const pythagSquareDistanceFromPlayer = (playerX - cellX)**2 + (playerY - cellY)**2;
 
-        if(pythagSquareDistanceFromPlayer > sqrRadius+2) {
-            continue;
-        }
+		if(pythagSquareDistanceFromPlayer > sqrRadius+2) {
+			continue;
+		}
 
-        gridToBeDisplayed.push(currentCell);
+		gridToBeDisplayed.push(currentCell);
 
-    }
+	}
 
-    return gridToBeDisplayed;
+	return gridToBeDisplayed;
 }
 
 function pickTeams(preparedPlayers, cols, rows) { 
-    // preparedPlayers is the array of usernames 
-    // shuffle the player usernames into a rand order:
-    const randomOrderUsernames = preparedPlayers.sort(() => Math.random() - .5); 
+	// preparedPlayers is the array of usernames 
+	// shuffle the player usernames into a rand order:
+	const randomOrderUsernames = preparedPlayers.sort(() => Math.random() - .5); 
 
-    const playerNumber = randomOrderUsernames.length; 
-    const usernamesOfTeamA = randomOrderUsernames.slice(0, playerNumber/2); 
-    const usernamesOfTeamB = randomOrderUsernames.slice(playerNumber/2, playerNumber);
+	const playerNumber = randomOrderUsernames.length; 
+	const usernamesOfTeamA = randomOrderUsernames.slice(0, playerNumber/2); 
+	const usernamesOfTeamB = randomOrderUsernames.slice(playerNumber/2, playerNumber);
 
 
-    // now spawn points...
-    // team A will spawn in the top left
-    // team b will spawn in the bottom right
-    // so they are an equal dst from centre
+	// now spawn points...
+	// team A will spawn in the top left
+	// team b will spawn in the bottom right
+	// so they are an equal dst from centre
 
-    const teamsInfo = {
-        teamA: {
-            players: usernamesOfTeamA,
-            spawnPoint: spawnPointA,
-            colour: "#E83100" // red
-        },
-        teamB: {
-            players: usernamesOfTeamB,
-            spawnPoint: spawnPointB,
-            colour: "#2D4628" // green
-        }
-    }
+	const teamsInfo = {
+		teamA: {
+			players: usernamesOfTeamA,
+			spawnPoint: spawnPointA,
+			colour: "#E83100" // red
+		},
+		teamB: {
+			players: usernamesOfTeamB,
+			spawnPoint: spawnPointB,
+			colour: "#2D4628" // green
+		}
+	}
 
-    return teamsInfo;
+	return teamsInfo;
 }
 
 
 function getIndexFromXY(x, y, cols) {
-    return y*cols + x;
+	return y*cols + x;
 }
 
 
 
 function getWallsPlayerWillCollideWith(coords, grid, amplifier, cols, hitboxData) {
-    const position = {
-        x: coords[0],
-        y: coords[1]
-    };
+	const position = {
+		x: coords[0],
+		y: coords[1]
+	};
 
-    const row = Math.floor(position.y);
-    const col = Math.floor(position.x);
+	const row = Math.floor(position.y);
+	const col = Math.floor(position.x);
 
-    const positionInCell = {
-        x: position.x-col,
-        y: position.y-row
-    };
-
-
+	const positionInCell = {
+		x: position.x-col,
+		y: position.y-row
+	};
 
 
-    const cellObject = grid[getIndexFromXY(col, row, cols)];
-    const currentCellWalls = cellObject.getWalls();
 
-    let wallsThePlayerIsCloseTo = Array(4).fill(false); // in format [top, right, bottom, left]
-    const sidesThePlayerIsCloseTo = [];
 
-    // if-else clause for left&right
-    if(positionInCell.x - hitboxData.width/2 - amplifier < 0) {
-        // player is close to left edge of the cell
-        // => check if there is a wall there
-        sidesThePlayerIsCloseTo.push(3);
-        wallsThePlayerIsCloseTo[3] = currentCellWalls[3];
-    }
-    else if(positionInCell.x + hitboxData.width/2 + amplifier > 1) {
-        // player is close to right edge of the cell
-        // => check if there is a wall there
-        sidesThePlayerIsCloseTo.push(1);
-        wallsThePlayerIsCloseTo[1] = currentCellWalls[1];
-    }
-    
-    // separate if-else clause for top&bottom
-    if(positionInCell.y - hitboxData.height/2 - amplifier < 0) {
-        // player is close to top edge of cell
-        // => check if there is a wall there
-        sidesThePlayerIsCloseTo.push(0);
-        wallsThePlayerIsCloseTo[0] = currentCellWalls[0];
-    }
-    else if(positionInCell.y + hitboxData.height/2 + amplifier > 1) {
-        // player is close to bottom edge of cell
-        // => check if there is a wall there
-        sidesThePlayerIsCloseTo.push(2);
-        wallsThePlayerIsCloseTo[2] = currentCellWalls[2];
-    }
+	const cellObject = grid[getIndexFromXY(col, row, cols)];
+	const currentCellWalls = cellObject.getWalls();
 
-    const playerNotByWalls = ! wallsThePlayerIsCloseTo.some(wall => {
-        return wall === true;
-    });
-    if(playerNotByWalls && sidesThePlayerIsCloseTo.length === 2 /*===2*/) {
-        // player's cell has no walls, now look at destination cell
-        // the destination will always be diagonal otherwise the player's
-        // cell would have had walls at the place the destination has walls
-        
-        // sidesThePlayerIsCloseTo will have at most 2 elmnts
-        // use .some(..) to check if any of the sides the player is close to 
-        // has a wall diagonally from it
-        const playerCannotMoveThere = sidesThePlayerIsCloseTo.some((side, sideIndex) => {
-            // invert side to correspond to destination wall index
-            const wallIndexToCheckOfDestination = 3-side;
+	let wallsThePlayerIsCloseTo = Array(4).fill(false); // in format [top, right, bottom, left]
+	const sidesThePlayerIsCloseTo = [];
 
-            const movementX = side === 3 ? -1 : side === 1 ? 1 : 0;
-            const movementY = side === 0 ? -1 : side === 2 ? 1 : 0;
-            const destinationIndex = getIndexFromXY(col+movementX,row+movementY,cols);
-            const destinationCell = grid[destinationIndex];
+	// if-else clause for left&right
+	if(positionInCell.x - hitboxData.width/2 - amplifier < 0) {
+		// player is close to left edge of the cell
+		// => check if there is a wall there
+		sidesThePlayerIsCloseTo.push(3);
+		wallsThePlayerIsCloseTo[3] = currentCellWalls[3];
+	}
+	else if(positionInCell.x + hitboxData.width/2 + amplifier > 1) {
+		// player is close to right edge of the cell
+		// => check if there is a wall there
+		sidesThePlayerIsCloseTo.push(1);
+		wallsThePlayerIsCloseTo[1] = currentCellWalls[1];
+	}
+	
+	// separate if-else clause for top&bottom
+	if(positionInCell.y - hitboxData.height/2 - amplifier < 0) {
+		// player is close to top edge of cell
+		// => check if there is a wall there
+		sidesThePlayerIsCloseTo.push(0);
+		wallsThePlayerIsCloseTo[0] = currentCellWalls[0];
+	}
+	else if(positionInCell.y + hitboxData.height/2 > 1) {
+		// player is close to bottom edge of cell
+		// => check if there is a wall there
+		sidesThePlayerIsCloseTo.push(2);
+		wallsThePlayerIsCloseTo[2] = currentCellWalls[2];
+	}
 
-            if(destinationIndex < 0) {
-                // destionation is outside grid, do not allow this.
-                return true;
-            }
+	const playerNotByWalls = ! wallsThePlayerIsCloseTo.some(wall => {
+		return wall === true;
+	});
+	if(playerNotByWalls && sidesThePlayerIsCloseTo.length === 2 /*===2*/) {
+		// player's cell has no walls, now look at destination cell
+		// the destination will always be diagonal otherwise the player's
+		// cell would have had walls at the place the destination has walls
+		
+		// sidesThePlayerIsCloseTo will have at most 2 elmnts
+		// use .some(..) to check if any of the sides the player is close to 
+		// has a wall diagonally from it
+		const playerCannotMoveThere = sidesThePlayerIsCloseTo.some(side => {
+			// invert side to correspond to destination wall index
+			const wallIndexToCheckOfDestination = side+2 < 4 ? side+2 : side-2;
 
-            // now return true if a wall is blocking the path:
-            return destinationCell.getWalls()[wallIndexToCheckOfDestination] === true;
-        });
-        // todo - explain this ^ with a diagram
+			const movementX = sidesThePlayerIsCloseTo.includes(3) ? -1 
+							: sidesThePlayerIsCloseTo.includes(1) ? 1 : 0;
+			const movementY = sidesThePlayerIsCloseTo.includes(0) ? -1 
+							: sidesThePlayerIsCloseTo.includes(2) ? 1 : 0;
+			const destinationIndex = getIndexFromXY(col+movementX,row+movementY,cols);
+			const destinationCell = grid[destinationIndex];
 
-        if(playerCannotMoveThere) {
-            // if the player is trying to move diagonally into a cell that has walls
-            // at the corner the player is trying to enter it from, then
-            // act as if the current cell has one of those walls which will cause
-            // the player to slide down or across the outside of 
-            // the destination cell instead of entering it.
-            wallsThePlayerIsCloseTo[sidesThePlayerIsCloseTo[0]] = true;
-        }
-    }
+			if(destinationIndex < 0) {
+				// destionation is outside grid, do not allow this.
+				return true;
+			}
 
-    return wallsThePlayerIsCloseTo;
+			// now return true if a wall is blocking the path:
+			return destinationCell.getWalls()[wallIndexToCheckOfDestination] === true;
+		});
+		// todo - explain this ^ with a diagram
+
+		if(playerCannotMoveThere) {
+			// if the player is trying to move diagonally into a cell that has walls
+			// at the corner the player is trying to enter it from, then
+			// act as if the current cell has one of those walls which will cause
+			// the player to slide down or across the outside of 
+			// the destination cell instead of entering it.
+			wallsThePlayerIsCloseTo[sidesThePlayerIsCloseTo[0]] = true;
+		}
+	}
+
+	return wallsThePlayerIsCloseTo;
 }
 
 
