@@ -1646,9 +1646,9 @@ async function handlePubNubReceivedMessage(receivedMessage) {
 
             const oppositeTeam = playerData.team === "teamA" ? "teamB" : "teamA";
 
-            if(roomData.props.flagInfo[oppositeTeam].carriedBy === username) {
+            /* if(roomData.props.flagInfo[oppositeTeam].carriedBy === username) {
                 roomData.props.flagInfo[oppositeTeam].position = playerData.position; // 29/10
-            }
+            } */
             let playerIsDead = false;
             let eventsToDisplayOnScreen = [];
             const nearbyItems = []; // find nearby things (that are inside VISION_RADIUS) done at 27/10
@@ -1704,7 +1704,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                     }
                                     break;
                                 }
-                                // roomData.props.flagInfo[currentItem.team].carriedBy = username;
+                                roomData.props.flagInfo[currentItem.team].carriedBy = username;
                                 roomData.props.flagInfo[oppositeTeam].position = playerData.position;
                                 break;
                             }
