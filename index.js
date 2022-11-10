@@ -1595,11 +1595,11 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             break;
         }
         case "validate-frame": {
-            if(lastTimeStamp > receivedMessage.message.timeStamp) {
+            /* if(lastTimeStamp > receivedMessage.message.timeStamp) {
                 break;
-            }
+            } 
 
-            lastTimeStamp = receivedMessage.message.timeStamp;
+            lastTimeStamp = receivedMessage.message.timeStamp;*/
             // first perform some security checks:
             const securityCheckPassed = await securityCheck(); 
             /*if(securityCheckPassed === false) {
@@ -1646,9 +1646,9 @@ async function handlePubNubReceivedMessage(receivedMessage) {
 
             const oppositeTeam = playerData.team === "teamA" ? "teamB" : "teamA";
 
-            if(roomData.props.flagInfo[oppositeTeam].carriedBy === username) {
+            /* if(roomData.props.flagInfo[oppositeTeam].carriedBy === username) {
                 roomData.props.flagInfo[oppositeTeam].position = playerData.position; // 29/10
-            }
+            } */
             let playerIsDead = false;
             let eventsToDisplayOnScreen = [];
             const nearbyItems = []; // find nearby things (that are inside VISION_RADIUS) done at 27/10
@@ -1701,6 +1701,10 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                         roomData.props.flagInfo[oppositeTeam].position = flagSpawnPoint;
                                         roomData.props.teamsInfo[playerData.team].score ||= 0;
                                         roomData.props.teamsInfo[playerData.team].score += 1;
+                                    } else {
+                                        if(roomData.props.flagInfo[oppositeTeam].carriedBy === username) {
+                                            roomData.props.flagInfo[oppositeTeam].position = playerData.position; // 29/10
+                                        }
                                     }
                                     break;
                                 }
