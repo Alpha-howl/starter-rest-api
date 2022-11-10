@@ -1748,8 +1748,20 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                         
                         // in a collision, the player further away from their spawn dies, or the flag carrier if one of
                         // them is carrying a flag. If 2 carriers collide, both die.
-                        playerIsDead = playerDstToSpawn > currentItemDstToSpawn || enemyFlag.carriedBy === username;
-                        const itemIsDead = currentItemDstToSpawn > playerDstToSpawn || playersFlag.carriedBy === currentUsername;
+                        
+                        const itemIsDead;
+                        let itemIsDead;
+
+                        if(enemyFlag.carriedBy === username) {
+                            playerIsDead = true;
+                        } else {
+                            playerIsDead = playerDstToSpawn > currentItemDstToSpawn;
+                        }
+                        if(playersFlag.carriedBy === currentUsername) {
+                            itemIsDead = true;
+                        } else {
+                            itemIsDead = currentItemDstToSpawn > playerDstToSpawn;
+                        }
 
                         //roomData.props.fullyReadyPlayers[username].isDead = playerIsDead;
                         //roomData.props.fullyReadyPlayers[currentUsername].isDead = itemIsDead;
