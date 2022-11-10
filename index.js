@@ -1749,7 +1749,6 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                         // in a collision, the player further away from their spawn dies, or the flag carrier if one of
                         // them is carrying a flag. If 2 carriers collide, both die.
                         
-                        const itemIsDead;
                         let itemIsDead;
 
                         if(enemyFlag.carriedBy === username) {
