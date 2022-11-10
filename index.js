@@ -1653,23 +1653,23 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             let eventsToDisplayOnScreen = [];
             const nearbyItems = []; // find nearby things (that are inside VISION_RADIUS) done at 27/10
             const usernames = Object.keys(roomData.props.fullyReadyPlayers);
-            const otherItems = [
-                {
+            const otherItems = {
+                "flagteamA": {
                     name: "flag",
                     team: "teamA",
                     hitboxData: hitboxData.flag,
                     position: roomData.props.flagInfo["teamA"].position,
                     isDead: false
                 },
-                {
+                "flagteamB": {
                     name: "flag",
                     team: "teamB",
                     hitboxData: hitboxData.flag,
                     position: roomData.props.flagInfo["teamB"].position,
                     isDead: false
                 }
-            ];
-            otherItems.forEach(currentItem => {
+            };
+            Object.values(otherItems).forEach(currentItem => {
                 const sqrDstFromPlayer = findSqrDst(currentItem.position, playerData.position);
                 if(sqrDstFromPlayer < VISION_RADIUS**2) {
                     // it is close enough to player so they can see this item => push it in nearbyItems to 
@@ -1699,6 +1699,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                         const flagSpawnPoint = roomData.props.teamsInfo[oppositeTeam].spawnPoint;
                                         roomData.props.flagInfo[oppositeTeam].carriedBy = false;
                                         roomData.props.flagInfo[oppositeTeam].position = flagSpawnPoint;
+                                        otherItems["flag" + oppositeTeam].position = flagSpawnPoint;
                                         roomData.props.teamsInfo[playerData.team].score ||= 0;
                                         roomData.props.teamsInfo[playerData.team].score += 1;
                                     }
@@ -1706,6 +1707,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                 }
                                 roomData.props.flagInfo[currentItem.team].carriedBy = username;
                                 roomData.props.flagInfo[oppositeTeam].position = playerData.position;
+                                otherItems["flag" + oppositeTeam].position = playerData.position;
                                 break;
                             }
                         }
