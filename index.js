@@ -1608,6 +1608,14 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             /*if(securityCheckPassed === false) {
                 break;
             } */
+            if(roomData.props.state != "playing") {
+                await pubnub.publish({
+                channel: receivedMessage.channel,
+                message: {
+                    action: "game-state-"+roomData.props.state
+                }
+            });
+            }
             let amplifier = 0.16;
 
             if(roomData.props.fullyReadyPlayers[username].isDead) {
@@ -1705,6 +1713,11 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                         otherItems["flag" + oppositeTeam].position = flagSpawnPoint;
                                         roomData.props.teamsInfo[playerData.team].score ||= 0;
                                         roomData.props.teamsInfo[playerData.team].score += 1;
+
+                                        if(roomData.props.teamsInfo[playerData.team].score >= 10) {
+                                            // enough points reached, end game
+                                            roomData.props.state = "ended";
+                                        }
                                     }
                                     break;
                                 }
@@ -1860,7 +1873,6 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                         teamA: roomData.props.teamsInfo.teamA.score || 0,
                         teamB: roomData.props.teamsInfo.teamB.score || 0
                     }
-                    //eventsToDisplayOnScreen
                 }
             });
 
