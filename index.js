@@ -1610,11 +1610,12 @@ async function handlePubNubReceivedMessage(receivedMessage) {
             } */
             if(roomData.props.state != "playing") {
                 await pubnub.publish({
-                channel: receivedMessage.channel,
-                message: {
-                    action: "game-state-"+roomData.props.state
-                }
-            });
+                    channel: receivedMessage.channel,
+                    message: {
+                        action: "game-state-"+roomData.props.state
+                    }
+                });
+                break;
             }
             let amplifier = 0.16;
 
