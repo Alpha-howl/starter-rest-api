@@ -1616,7 +1616,8 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                         scores: {
                             teamA: roomData.props.teamsInfo?.teamA?.score || 0,
                             teamB: roomData.props.teamsInfo?.teamB?.score || 0
-                        }
+                        },
+                        ended: true
                     }
                 });
                 break;
