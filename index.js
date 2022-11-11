@@ -1715,7 +1715,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                         roomData.props.teamsInfo[playerData.team].score ||= 0;
                                         roomData.props.teamsInfo[playerData.team].score += 1;
 
-                                        if(roomData.props.teamsInfo[playerData.team].score >= 10) {
+                                        if(roomData.props.teamsInfo[playerData.team].score >= 1) {
                                             // enough points reached, end game
                                             roomData.props.state = "ended";
                                         }
