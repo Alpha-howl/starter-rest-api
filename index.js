@@ -1717,7 +1717,20 @@ async function handlePubNubReceivedMessage(receivedMessage) {
 
                                         if(roomData.props.teamsInfo[playerData.team].score >= 1) {
                                             // enough points reached, end game
-                                            roomData.props.state = "ended";
+                                            setTimeout(() => {
+                                                roomData.props.state = "ended";
+                                                await db.collection("Room").set(roomId.toString(), {
+                                                    mazeData: roomData.props.mazeData,
+                                                    joinedPlayers: roomData.props.joinedPlayers,
+                                                    preparedPlayers: roomData.props.preparedPlayers,
+                                                    fullyReadyPlayers: roomData.props.fullyReadyPlayers,
+                                                    state: roomData.props.state,
+                                                    startTime: roomData.props.startTime,
+                                                    teamsInfo: roomData.props.teamsInfo,
+                                                    flagInfo: roomData.props.flagInfo,
+                                                    ttl: roomData.props.ttl
+                                                });
+                                            }, 1500);
                                         }
                                     }
                                     break;
