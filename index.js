@@ -1612,7 +1612,11 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 await pubnub.publish({
                     channel: receivedMessage.channel,
                     message: {
-                        action: "game-state-"+roomData.props.state
+                        action: "game-state-"+roomData.props.state,
+                        scores: {
+                            teamA: roomData.props.teamsInfo?.teamA?.score || 0,
+                            teamB: roomData.props.teamsInfo?.teamB?.score || 0
+                        }
                     }
                 });
                 break;
@@ -1717,20 +1721,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
 
                                         if(roomData.props.teamsInfo[playerData.team].score >= 1) {
                                             // enough points reached, end game
-                                            setTimeout(() => {
-                                                roomData.props.state = "ended";
-                                                await db.collection("Room").set(roomId.toString(), {
-                                                    mazeData: roomData.props.mazeData,
-                                                    joinedPlayers: roomData.props.joinedPlayers,
-                                                    preparedPlayers: roomData.props.preparedPlayers,
-                                                    fullyReadyPlayers: roomData.props.fullyReadyPlayers,
-                                                    state: roomData.props.state,
-                                                    startTime: roomData.props.startTime,
-                                                    teamsInfo: roomData.props.teamsInfo,
-                                                    flagInfo: roomData.props.flagInfo,
-                                                    ttl: roomData.props.ttl
-                                                });
-                                            }, 1500);
+                                            roomData.props.state = "ended";
                                         }
                                     }
                                     break;
