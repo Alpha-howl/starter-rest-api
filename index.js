@@ -1612,7 +1612,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                 await pubnub.publish({
                     channel: receivedMessage.channel,
                     message: {
-                        action: "game-state-"+roomData.props.state,
+                        action: "frame-results",
                         scores: {
                             teamA: roomData.props.teamsInfo?.teamA?.score || 0,
                             teamB: roomData.props.teamsInfo?.teamB?.score || 0
