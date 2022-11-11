@@ -125,7 +125,7 @@ app.post("/:action", async (req, response) => {
         break;
 
     case "join-room":
-        // todo - validate JWT and see what else needs to be done in the flow chart
+        // validate JWT and see what else needs to be done in the flow chart
         // handleJoinRoomRequest(req?.body?.jwt, response);
         handleJoinRoomRequest(req?.body?.jwt, response);
         break;
@@ -659,7 +659,7 @@ async function handleNewAccountCreation(email, username, password, response) {
 
     response.status(200).send({
         success: (result.collection === "User" && result.key === key),
-        message // todo - the front-end should recognise this code and display a corresponding message. See pg 60 of back end part of acc system.docx
+        message // the front-end should recognise this code and display a corresponding message. See pg 60 of back end part of acc system.docx
     });
 
 }
@@ -1095,8 +1095,8 @@ async function handleGetAccDetailsRequest(jwt, response) {
         return;
     }
 
-    // todo - get username from jwt
-    // todo - send data in format {success, data:{...}}
+    // get username from jwt
+    // send data in format {success, data:{...}}
     const username = getUsernameFromJwt(jwt);
     const accDetails = (await db.collection("User").get(username))?.props;
 
@@ -1356,7 +1356,10 @@ async function handleJoinRoomRequest(jwt, response) {
         // the last room has an empty space - join it
         const roomData = await db.collection("Room").get(lastRoomId.toString());
         roomData.props.joinedPlayers ||= [];
-        roomData.props.joinedPlayers.push(username); // todo later - only push username if it is not already there
+        // only push username if it is not already there
+        if(!roomData.props.joinedPlayers.includes(username)) {
+            roomData.props.joinedPlayers.push(username);
+        }
         await db.collection("Room").set(lastRoomId.toString(), {
             mazeData: roomData.props.mazeData,
             joinedPlayers: roomData.props.joinedPlayers,
@@ -2053,7 +2056,6 @@ function getWallsPlayerWillCollideWith(coords, grid, amplifier, cols, hitboxData
 			// now return true if a wall is blocking the path:
 			return destinationCell.getWalls()[wallIndexToCheckOfDestination] === true;
 		});
-		// todo - explain this ^ with a diagram
 
 		if(playerCannotMoveThere) {
 			// if the player is trying to move diagonally into a cell that has walls
