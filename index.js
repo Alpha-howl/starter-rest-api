@@ -2006,7 +2006,7 @@ function getWallsPlayerWillCollideWith(coords, grid, amplifier, cols, hitboxData
 
 
 	const cellObject = grid[getIndexFromXY(col, row, cols)];
-	const currentCellWalls = cellObject?.getWalls() || [false, false, false, false];
+	const currentCellWalls = cellObject?.getWalls() || [false, false, false, false]; 
 
 	let wallsThePlayerIsCloseTo = Array(4).fill(false); // in format [top, right, bottom, left]
 	const sidesThePlayerIsCloseTo = [];
