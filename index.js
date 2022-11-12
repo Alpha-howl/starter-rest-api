@@ -1720,7 +1720,7 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                                         roomData.props.teamsInfo[playerData.team].score ||= 0;
                                         roomData.props.teamsInfo[playerData.team].score += 1;
 
-                                        if(roomData.props.teamsInfo[playerData.team].score >= 1) {
+                                        if(roomData.props.teamsInfo[playerData.team].score >= 5) {
                                             // enough points reached, end game
                                             roomData.props.state = "ended";
                                         }
@@ -1798,52 +1798,17 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                             });
                         }
                         if(itemIsDead) {
-                            eventsToDisplayOnScreen.push({
-                                name: "kill",
-                                killer: username,
-                                killed: currentUsername,
-                                method: "melee"
-                            });
-                        }
+                            roomData.props.fullyReadyPlayers[currentUsername].isDead = false;
+                            roomData.props.fullyReadyPlayers[currentUsername].position = itemSpawnPoint;
 
-                        //setTimeout(async () => {
-                            // after 3 secs revive and respawn player
-                            /* if(playerIsDead) {
-                                roomData.props.fullyReadyPlayers[username].isDead = false;
-                                roomData.props.fullyReadyPlayers[username].position = playerSpawnPoint;
-                                
-                                // if this player was carrying the flag, reset it
-                                const oppositeTeam = playerData.team === "teamA" ? "teamB" : "teamA";
-                                if(roomData.props.flagInfo[oppositeTeam].carriedBy === username) {
-                                    roomData.props.flagInfo[oppositeTeam].carriedBy = false;
-                                    const oppTeamSpawnPoint = roomData.props.teamsInfo[oppositeTeam].spawnPoint;
-                                    roomData.props.flagInfo[oppositeTeam].position = oppTeamSpawnPoint;
-                                }
-                            }  */
-                            if(itemIsDead) {
-                                roomData.props.fullyReadyPlayers[currentUsername].isDead = false;
-                                roomData.props.fullyReadyPlayers[currentUsername].position = itemSpawnPoint;
-
-                                // if this player was carrying the flag, reset it
-                                const oppositeTeam = currentItem.team === "teamA" ? "teamB" : "teamA";
-                                if(roomData.props.flagInfo[oppositeTeam].carriedBy === currentUsername) {
-                                    roomData.props.flagInfo[oppositeTeam].carriedBy = false;
-                                    const oppTeamSpawnPoint = roomData.props.teamsInfo[oppositeTeam].spawnPoint;
-                                    roomData.props.flagInfo[oppositeTeam].position = oppTeamSpawnPoint;
-                                }
+                            // if this player was carrying the flag, reset it
+                            const oppositeTeam = currentItem.team === "teamA" ? "teamB" : "teamA";
+                            if(roomData.props.flagInfo[oppositeTeam].carriedBy === currentUsername) {
+                                roomData.props.flagInfo[oppositeTeam].carriedBy = false;
+                                const oppTeamSpawnPoint = roomData.props.teamsInfo[oppositeTeam].spawnPoint;
+                                roomData.props.flagInfo[oppositeTeam].position = oppTeamSpawnPoint;
                             }
-                            /* await db.collection("Room").set(roomId.toString(), {
-                                mazeData: roomData.props.mazeData,
-                                joinedPlayers: roomData.props.joinedPlayers,
-                                preparedPlayers: roomData.props.preparedPlayers,
-                                fullyReadyPlayers: roomData.props.fullyReadyPlayers,
-                                state: roomData.props.state,
-                                startTime: roomData.props.startTime,
-                                teamsInfo: roomData.props.teamsInfo,
-                                flagInfo: roomData.props.flagInfo,
-                                ttl: roomData.props.ttl
-                            }); */
-                        //}, 3000);
+                        }
                         
                     }
 
@@ -1881,19 +1846,6 @@ async function handlePubNubReceivedMessage(receivedMessage) {
                     }
                 }
             });
-
-            /* if(eventsToDisplayOnScreen.length != 0) {
-                const publicChannel = receivedMessage.channel.match(/ctf-room-\d+/)[0];
-                setTimeout(() => {
-                    pubnub.publish({
-                        channel: publicChannel,
-                        message: {
-                            action: "event-occured",
-                            eventsToDisplayOnScreen
-                        }
-                    });
-                }, 120);
-            } */
 
             break;
         }
