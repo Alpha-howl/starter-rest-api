@@ -404,9 +404,9 @@ async function testDynamo(response, req) {
 
 
 const pubnub = new Pubnub({
-    publishKey : "pub-c-9ab0b954-2551-4a44-85a2-cdbadb3760cb",
-    subscribeKey : "sub-c-b06b11d8-a214-11ec-81c7-420d26494bdd",
-    uuid: "sec-c-ZWVkYzZiZDAtODJjYS00YmVkLThmOWYtZjg4ODkwZjhlNWFk"
+    publishKey : "pub-c-8874688e-5c73-4365-b1a5-9a24fd51926d",
+    subscribeKey : "sub-c-e7d0b79a-a683-4936-9612-f108175de23a",
+    uuid: "sec-c-YTQwMzU4NzktYzc4Zi00YThjLWI5NzUtNzE5MjVlYmFiMGZl"
 });
 
 async function pubnubOpen(response, channelName) {
