@@ -160,7 +160,7 @@ app.post("/:action", async (req, response) => {
 
 const COLS = 11;
 const ROWS = 11;
-const MAX_NUMBER_OF_PLAYERS = 2;
+const MAX_NUMBER_OF_PLAYERS = 4;
 const VISION_RADIUS = 3;
 
 
