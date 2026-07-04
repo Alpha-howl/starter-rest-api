@@ -1,12 +1,13 @@
 const express = require("express");
 const app = express();
 
-process.env.CYCLIC_DB = "shy-plum-bass-slipCyclicDB";
-const db = require("cyclic-dynamodb");
+// process.env.CYCLIC_DB = "shy-plum-bass-slipCyclicDB";
+// const db = require("cyclic-dynamodb");
+const db = require("./db");
 
 const crypto = require("crypto");
 
-const axios = require("axios").default;
+//const axios = require("axios").default;
 
 const Pubnub = require("pubnub");
 
@@ -896,33 +897,32 @@ async function handleSendOtpByEmailRequest(usid, response) {
     // at this point, the session is valid
     // - so email over the OTP
 
-    // now send email
-    const data = {
-        emailto: email,
-        toname: username,
-        emailfrom: "Alexander@alpha-howl.com",
-        fromname: "Alexander",
-        subject: "One-time code for your CTF account",
-        messagebody: "Hi there, "+username+"! You recently requested to reset the password to your CTF account. This is the one-time code which you can use to reset the password:" + otp + ". If that was not you, just ignore this email - only those who have access to your email inbox can reset your password."
-    };
-     
-    const params = new URLSearchParams( data );
-    axios.post(
-        "https://alpha-howl.com/database/email.php", 
-        params.toString()
-    ).then(res => {
-      const isSuccessful = res?.data?.result;
-      response.status(200).send({
-        success: isSuccessful,
-        message: "email-sent"
-      });
-    }).catch(errr => {
-      console.log(errr);
-      response.status(200).send({
-        success: false,
-        message: "unkown-error"
-      });
-    });
+    try {
+          const res = await fetch("https://api.resend.com/emails", {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${process.env.RESEND_API_KEY}`
+              },
+              body: JSON.stringify({
+                  from: "CTF Game <onboarding@resend.dev>",
+                  to: email,
+                  subject: "One-time code for your CTF account",
+                  text: `Hi there, ${username}! You recently requested to reset the password to your CTF account. This is the one-time code which you can use to reset the password: ${otp}. If that was not you, just ignore this email - only those who have access to your email inbox can reset your password.`
+              })
+          });
+          const isSuccessful = res.ok;
+          response.status(200).send({
+              success: isSuccessful,
+              message: "email-sent"
+          });
+      } catch (err) {
+          console.log(err);
+          response.status(200).send({
+              success: false,
+              message: "unknown-error"
+          });
+      }
 }
 
 
