@@ -17,8 +17,8 @@ function hashString(str) {
 }
 
 function encrypt(str) {
-    const key = crypto.scryptSync("2eosBZfGtPiJZYJ5VX9V3Ob9YqxKf1dyfXnIvHXvT/jExPrE/OVHRO8UE/bbOmcyvo1AY5tnSPprrXB4nsQGynym2q0VXXL1VYvVESnl1G65LAqzY43YhYyOOG9kRlKJDyT4xkTjcPzox/Z5mvnOWdcHhfdHKB+zweTQwuGUBUI=", 16);
-    const iv = Buffer.alloc(16, 0); // fixed IV (acceptable here since key is unique per plaintext)
+    const key = crypto.scryptSync("2eosBZfGtPiJZYJ5VX9V3Ob9YqxKf1dyfXnIvHXvT/jExPrE/OVHRO8UE/bbOmcyvo1AY5tnSPprrXB4nsQGynym2q0VXXL1VYvVESnl1G65LAqzY43YhYyOOG9kRlKJDyT4xkTjcPzox/Z5mvnOWdcHhfdHKB+zweTQwuGUBUI=", "salt", 16);
+    const iv = Buffer.alloc(16, 0);
     const myCipher = crypto.createCipheriv("aes-128-cbc", key, iv);
     let encrypted = myCipher.update(str, "utf8", "hex");
     encrypted += myCipher.final("hex");
@@ -26,7 +26,7 @@ function encrypt(str) {
 }
 
 function decrypt(encrypted) {
-    const key = crypto.scryptSync("2eosBZfGtPiJZYJ5VX9V3Ob9YqxKf1dyfXnIvHXvT/jExPrE/OVHRO8UE/bbOmcyvo1AY5tnSPprrXB4nsQGynym2q0VXXL1VYvVESnl1G65LAqzY43YhYyOOG9kRlKJDyT4xkTjcPzox/Z5mvnOWdcHhfdHKB+zweTQwuGUBUI=", 16);
+    const key = crypto.scryptSync("2eosBZfGtPiJZYJ5VX9V3Ob9YqxKf1dyfXnIvHXvT/jExPrE/OVHRO8UE/bbOmcyvo1AY5tnSPprrXB4nsQGynym2q0VXXL1VYvVESnl1G65LAqzY43YhYyOOG9kRlKJDyT4xkTjcPzox/Z5mvnOWdcHhfdHKB+zweTQwuGUBUI=", "salt", 16);
     const iv = Buffer.alloc(16, 0);
     const myDecipher = crypto.createDecipheriv("aes-128-cbc", key, iv);
     let decrypted = myDecipher.update(encrypted, "hex", "utf8");
