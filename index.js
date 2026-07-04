@@ -66,7 +66,7 @@ app.post("/:action", async (req, response) => {
   req.socket.removeAllListeners('timeout');
   req.socket.once("timeout", () => {
       req.timedout = true;
-      res.status(504).send("timeout");
+      response.status(504).send("timeout");
   });
   
   const action = req?.params?.action;
